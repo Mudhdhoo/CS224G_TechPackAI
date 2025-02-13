@@ -1,4 +1,4 @@
-with open("/Users/johncao/Documents/Programming/Stanford/CS224G/src/template.tex", "r", encoding="utf-8") as f:
+with open("template.tex", "r", encoding="utf-8") as f:
     TEMPLATE = f.read()
 
 SYSTEM_PROMPT = \

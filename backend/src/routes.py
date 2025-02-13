@@ -93,7 +93,6 @@ class UploadReferenceRoute:
     def setup_routes(self):
         @self.blueprint.route('/upload_reference', methods=['POST'])
         def upload():
-            print('REF')
             if 'images' not in request.files:
                 return jsonify({'error': 'No image part in the request'}), 400
             

@@ -54,7 +54,7 @@ const Layout = () => {
               {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
             <Link to="/" className="text-xl font-semibold dark:text-white">
-              TackPack.AI
+              TechPack.ai
             </Link>
           </div>
           <div className="flex items-center gap-4">

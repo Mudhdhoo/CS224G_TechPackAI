@@ -15,7 +15,7 @@ const Navigation = () => {
       <div className="glass-panel rounded-full px-6 py-3 flex items-center justify-between shadow-lg backdrop-blur-md">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-accent-blue rounded-full"></div>
-          <span className="text-xl font-semibold text-foreground">TackPack.AI</span>
+          <span className="text-xl font-semibold text-foreground">TechPack.ai</span>
         </div>
         
         {/* Desktop Navigation */}
