@@ -7,3 +7,8 @@ dependencies:
   - pip
   - pip:
       - openai
+      - flask
+      - supabase
+      - flask_cors
+      - loguru
+      - werkzeug
