@@ -51,8 +51,8 @@ Nico (nicohenning) - Market research on the subject of Tech Pack creation. Creat
 
 ## Team Contributions - Sprint 2
 
-John (Mudhdhoo) - Wrote the code for the backend OpenAI API (the code in this repository).
+John (Mudhdhoo) - Improved the code for the LLM in the backend to display more advanced behaviour. Connected the backend to the frontend.
 
-William (WilliamEkberg) - Wrote the code for the frontend (not yet connected to the API). Market research on the subject of Tech Pack creation.
+William (WilliamEkberg) - Polished the frontend design and set up database integration.
 
-Nico (nicohenning) - Market research on the subject of Tech Pack creation. Created and planned the Spring 1 presentation.
+Nico (nicohenning) - Assisted in planning the backend and frontend system architecture. Created and planned the Spring 2 presentation.
