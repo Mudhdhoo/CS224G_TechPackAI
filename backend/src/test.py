@@ -1,43 +1,99 @@
+from openai import OpenAI
+import json
+import os
 
-# from openai import OpenAI
-# client = OpenAI()
+class LLMOrchestrator:
+    def __init__(self):
+        self.client = OpenAI()
+        self.conversation_history = [
+            {
+                "role": "system",
+                "content": "You are a helpful AI assistant. Use the generate_code function when users request code."
+            }
+        ]
+        
+        self.functions = [{
+            "name": "generate_code",
+            "description": "Generate code based on user requirements",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "description": {"type": "string"},
+                    "requirements": {"type": "array", "items": {"type": "string"}},
+                    "context": {"type": "object"}
+                },
+                "required": ["description", "requirements"]
+            }
+        }]
+    
+    def generate_code(self, description: str, requirements: list, context: dict) -> str:
+        """Generates code using GPT-4"""
+        response = self.client.chat.completions.create(
+            model="gpt-4-turbo-preview",
+            messages=[
+                {"role": "system", "content": "You are a specialized coding assistant."},
+                {"role": "user", "content": f"Description: {description}\nRequirements: {requirements}\nContext: {context}"}
+            ]
+        )
+        return response.choices[0].message.content
+    
+    def process_message(self, user_message: str) -> str:
+        """Process user message and generate response"""
+        # Add user message to history
+        self.conversation_history.append({"role": "user", "content": user_message})
+        
+        # Get response from assistant
+        response = self.client.chat.completions.create(
+            model="gpt-4-turbo-preview",
+            messages=self.conversation_history,
+            functions=self.functions,
+            function_call="auto"
+        )
+        
+        message = response.choices[0].message
+        
+        # Check if code generation is needed
+        if message.function_call and message.function_call.name == "generate_code":
+            # Generate code
+            args = json.loads(message.function_call.arguments)
+            code = self.generate_code(
+                args["description"],
+                args["requirements"],
+                args.get("context", {})
+            )
+            
+            # Add code generation result to history
+            self.conversation_history.extend([
+                dict(message),
+                {"role": "function", "name": "generate_code", "content": code}
+            ])
+            
+            # Get final response with code explanation
+            final_response = self.client.chat.completions.create(
+                model="gpt-4-turbo-preview",
+                messages=self.conversation_history
+            )
+            return final_response.choices[0].message.content
+        
+        # If no code needed, return direct response
+        self.conversation_history.append(dict(message))
+        return message.content
 
-# response = client.images.edit(
-#     model="dall-e-2",
-#     image=open("/Users/johncao/Documents/Programming/Stanford/CS224G/src/square_image.png", "rb"),
-#     mask=open("/Users/johncao/Documents/Programming/Stanford/CS224G/src/transparent_mask.png", "rb"),
-#     prompt="An image of a blazer, someone has drawn a red hollow transparent circle on it",
-#     n=1,
-#     size="512x512",
-# )
+def main():
+    # Initialize orchestrat
+    
+    orchestrator = LLMOrchestrator()
+    print("Chat started (type 'quit' to exit)")
+    
+    # Main chat loop
+    while True:
+        user_input = input("\nYou: ").strip()
+        if user_input.lower() == 'quit':
+            break
+        
+        response = orchestrator.process_message(user_input)
+        print("\nAssistant:", response)
 
-# print(response.data[0].url)
 
-# import cv2
-# import numpy as np
-
-# # Load the image into a numpy array
-# image_path = "/Users/johncao/Documents/Programming/Stanford/CS224G/illustration/illustration2.png"
-# image = cv2.imread(image_path)
-
-# # Define points of interest (example coordinates, adjust as needed)
-# points_of_interest = [(200,50), (80,130), (210,130)]
-
-# # Modify the image by adding red dots to interesting sections
-# for point in points_of_interest:
-#     cv2.circle(image, point, 3, (0, 0, 255), -1)
-
-# cv2.imshow("Highlighted Areas", image)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
-
-from fastapi import FastAPI
-
-# Create a FastAPI instance
-app = FastAPI()
-
-# Define a simple route
-@app.get("/")
-def read_root():
-    return {"message": "Heldsalo, FastAPI!"}
-
+if __name__ == "__main__":
+    main()

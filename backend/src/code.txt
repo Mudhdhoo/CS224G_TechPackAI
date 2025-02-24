@@ -36,9 +36,9 @@
 \hline
 \rowcolor{headerblue}\multicolumn{4}{|c|}{\textcolor{white}{\textbf{PRODUCT DETAILS}}} \\
 \hline
-Brand Name: & Designer: & Season: & Category: \\
+Brand Name: J.Lindeberg & Designer: John Cao & Season: Fall/Winter & Category: Blazer \\
 \hline
-Date: & Style Name: & Style Number: & Main Fabric: \\
+Date: \today & Style Name: Classic Blazer & Style Number: 001 & Main Fabric: Wool Blend \\
 \hline
 \end{tabularx}
 
@@ -49,7 +49,7 @@ Date: & Style Name: & Style Number: & Main Fabric: \\
 \hline
 \rowcolor{headerblue}\multicolumn{1}{|c|}{\textcolor{white}{\textbf{STYLE DESCRIPTION}}} \\
 \hline
-% INSERT DESCRIPTION HERE
+This classic black blazer features a notched lapel and a single-button closure. It is designed with two front pockets and tailored seams for a structured fit, ideal for both formal and semi-formal occasions.
 \end{tabularx}
 \hline
 
@@ -63,8 +63,9 @@ Date: & Style Name: & Style Number: & Main Fabric: \\
 \begin{center}
 % First row of drawings
 \begin{tabular}{ccc}
-% INSERT FIGURES HERE, ONLY INSERT THE NUMBER OF FIGURES YOU WERE GIVEN
-\includegraphics[width=0.4\textwidth,height=8cm,keepaspectratio]{} &
+\includegraphics[width=0.4\textwidth,height=8cm,keepaspectratio]{figures/illustration1.png} &
+\includegraphics[width=0.4\textwidth,height=8cm,keepaspectratio]{figures/illustration2.png} &
+\includegraphics[width=0.4\textwidth,height=8cm,keepaspectratio]{figures/reference1.png} \\
 \end{tabular}
 \end{center}
 \end{tabularx}
@@ -80,7 +81,15 @@ Date: & Style Name: & Style Number: & Main Fabric: \\
 \hline
 \textbf{Item} & \textbf{Description} & \textbf{XS} & \textbf{S} & \textbf{M} & \textbf{L} & \textbf{XL}\\
 \hline
-& & & & & & \\
+Chest & Width across the chest, wool blend & 86 cm & 90 cm & 94 cm & 98 cm & 102 cm \\
+\hline
+Waist & Width at the waist, wool blend & 78 cm & 82 cm & 86 cm & 90 cm & 94 cm \\
+\hline
+Hip & Width at the hip, wool blend & 92 cm & 96 cm & 100 cm & 104 cm & 108 cm \\
+\hline
+Sleeve Length & From shoulder to cuff, wool blend & 60 cm & 61 cm & 62 cm & 63 cm & 64 cm \\
+\hline
+Back Length & From neck to hem, wool blend & 70 cm & 72 cm & 74 cm & 76 cm & 78 cm \\
 \hline
 \end{tabularx}
 
@@ -91,7 +100,13 @@ Date: & Style Name: & Style Number: & Main Fabric: \\
 \hline
 \rowcolor{headerblue}\multicolumn{1}{|c|}{\textcolor{white}{\textbf{CARE INSTRUCTIONS}}} \\
 \hline
-% INSERT CARE INSTRUCTIONS HERE
+\begin{itemize}
+\item Dry clean only.
+\item Do not bleach.
+\item Iron at low temperature.
+\item Avoid direct sunlight when drying.
+\item Store on a hanger to maintain shape.
+\end{itemize}
 \end{tabularx}
 \hline
 
@@ -105,6 +120,5 @@ Date: & Style Name: & Style Number: & Main Fabric: \\
 % INSERT ADDITIONAL COMMENTS HERE
 \end{tabularx}
 \hline
-
 
 \end{document}
