@@ -7,7 +7,7 @@ const AuthLayout = () => {
       <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b z-50">
         <div className="container h-full flex items-center justify-between">
           <Link to="/" className="text-xl font-semibold">
-            TackPack.AI
+            TechPack.ai
           </Link>
           <nav className="flex items-center gap-4">
             <Link to="/login" className="nav-link">
