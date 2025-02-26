@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -14,7 +14,7 @@ const Navigation = () => {
     <nav className="fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-6xl z-50">
       <div className="glass-panel rounded-full px-6 py-3 flex items-center justify-between shadow-lg backdrop-blur-md">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-accent-blue rounded-full"></div>
+          <img src="/images/logo-v2.svg" alt="TechPack.ai Logo" className="w-8 h-8" />
           <span className="text-xl font-semibold text-foreground">TechPack.ai</span>
         </div>
         
@@ -55,9 +55,10 @@ const Navigation = () => {
               </Link>
               <Link to="/signup">
                 <Button 
-                  className="bg-accent-blue hover:bg-accent-blue/90 text-foreground"
+                  className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold px-6 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
-                  Try for Free
+                  Try for free
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
             </>
