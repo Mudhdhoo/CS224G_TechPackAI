@@ -46,13 +46,13 @@ const Hero = () => {
       <div className="absolute top-2 left-[25%] w-2 h-2 bg-white rounded-full animate-ping animation-delay-1000" />
       <div className="absolute top-5 right-[30%] w-3 h-3 bg-white rounded-full animate-ping animation-delay-4000" />
       
-      <div className="min-h-screen flex flex-col items-center justify-center text-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div className="min-h-screen flex flex-col items-center justify-center text-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
         <div className="max-w-5xl mx-auto space-y-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex items-center justify-center gap-2 mb-6"
+            className="flex items-center justify-center gap-2 mb-8 mt-8"
           >
             <motion.span 
               className="px-3 py-1 rounded-full bg-accent-blue/10 text-accent-blue text-sm font-medium inline-flex items-center"
