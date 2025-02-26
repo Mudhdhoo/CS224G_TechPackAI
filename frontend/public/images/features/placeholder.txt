@@ -1,0 +1,33 @@
+To complete the feature section, you'll need to create and add the following GIFs:
+
+1. ai-builder.gif
+- Show the AI automatically generating a tech pack
+- Include measurements being auto-filled
+- Show material suggestions appearing
+
+2. ai-chat.gif
+- Display chat interface with AI
+- Show real-time suggestions
+- Include auto-completion of missing details
+
+3. collaboration.gif
+- Show multiple users working on same tech pack
+- Include real-time updates
+- Display approval workflow
+
+4. version-control.gif
+- Show version history timeline
+- Include diff view of changes
+- Display restore version functionality
+
+5. manufacturer.gif
+- Show manufacturer feedback interface
+- Include comment threads
+- Display approval status updates
+
+Each GIF should be:
+- 16:9 or 4:3 aspect ratio
+- High quality but optimized for web
+- 3-5 seconds loop
+- Smooth transitions
+- Light theme to match design
