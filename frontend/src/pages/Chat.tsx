@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Send, PenTool, FileText } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,11 +28,15 @@ type Message = {
 const Chat = () => {
   const [inputMessage, setInputMessage] = useState("");
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [isStreaming, setIsStreaming] = useState(false);
   const { id: projectId } = useParams();
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  
+  // Use a ref to track current streamed content to avoid race conditions
+  const streamedContentRef = useRef("");
 
   const { data: messages = [], isLoading: messagesLoading } = useQuery({
     queryKey: ['messages', projectId],
@@ -80,6 +84,80 @@ const Chat = () => {
     }
   };
 
+  // Fixed streaming implementation
+  const sendStreamingMessage = async (content: string) => {
+    if (!projectId || !user) {
+      toast({
+        title: "Error",
+        description: "Missing project ID or user",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Reset streamed content
+      streamedContentRef.current = "";
+      setIsStreaming(true);
+
+      // Create temporary message objects for UI
+      const tempUserMessage: Message = {
+        id: `temp-user-${Date.now()}`,
+        content: content,
+        type: 'user',
+        project_id: projectId,
+        user_id: user.id,
+        created_at: new Date().toISOString(),
+      };
+
+      const tempAssistantId = `temp-assistant-${Date.now()}`;
+      const tempAssistantMessage: Message = {
+        id: tempAssistantId,
+        content: "", // Will be updated while streaming
+        type: 'assistant',
+        project_id: projectId,
+        user_id: user.id,
+        created_at: new Date().toISOString(),
+      };
+
+      // Update UI with temporary messages
+      queryClient.setQueryData(['messages', projectId], (oldData: Message[] = []) => [
+        ...oldData, 
+        tempUserMessage, 
+        tempAssistantMessage
+      ]);
+
+      // Start streaming
+      await techpackAI.sendMessageStream(content, projectId, (chunk) => {
+        // Update the content ref with new chunk
+        streamedContentRef.current += chunk;
+        
+        // Update the assistant's message with the current streamed content
+        queryClient.setQueryData(['messages', projectId], (oldData: Message[] = []) => {
+          return oldData.map(msg => 
+            msg.id === tempAssistantId 
+              ? { ...msg, content: streamedContentRef.current } 
+              : msg
+          );
+        });
+      });
+
+      // When streaming is done, refetch to get the proper IDs from the database
+      queryClient.invalidateQueries({ queryKey: ['messages', projectId] });
+      
+    } catch (error) {
+      toast({
+        title: "Failed to send message",
+        description: error instanceof Error ? error.message : "Unknown error",
+        variant: "destructive",
+      });
+    } finally {
+      setIsStreaming(false);
+      setInputMessage("");
+    }
+  };
+
+  // Legacy non-streaming implementation (kept for fallback)
   const { mutate: sendMessage, isPending: isSending } = useMutation({
     mutationFn: async (content: string) => {
       if (!projectId || !user) throw new Error('Missing project ID or user');
@@ -106,7 +184,9 @@ const Chat = () => {
       });
       return;
     }
-    sendMessage(inputMessage);
+    
+    // Use streaming version instead of the mutate function
+    sendStreamingMessage(inputMessage);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -189,9 +269,9 @@ const Chat = () => {
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              disabled={isSending}
+              disabled={isStreaming}
             />
-            <Button size="icon" onClick={handleSendMessage} disabled={isSending}>
+            <Button size="icon" onClick={handleSendMessage} disabled={isStreaming}>
               <Send size={18} />
             </Button>
           </div>

@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -106,10 +106,6 @@ const ProjectSetup = () => {
     }
 
     try {
-      // Upload design files
-      const uploadIllustration = await handleSubmit(e, "upload_illustration")
-      const uploadReference = await handleSubmit(e, "upload_reference")
-
       // Create project in Supabase
       const { data: project, error } = await supabase
         .from('projects')
@@ -131,6 +127,10 @@ const ProjectSetup = () => {
         description: "Redirecting to chat...",
       });
 
+      // Upload design files
+      const uploadIllustration = await handleSubmit(e, "upload_illustration", user.id, project.id)
+      const uploadReference = await handleSubmit(e, "upload_reference", user.id, project.id)
+
       // Navigate to the chat page using the Supabase-generated project ID
       navigate(`/project/${project.id}/chat`);
     } catch (error) {
@@ -143,10 +143,13 @@ const ProjectSetup = () => {
     }
   };
 
-  const handleSubmit = async (e, endpoint) => {
+  const handleSubmit = async (e, endpoint, userId, projectId) => {
     e.preventDefault();
 
     const formData = new FormData();
+
+    formData.append("userId", userId);
+    formData.append("projectId", projectId);
 
     if (endpoint === "upload_illustration"){
       illustrationFiles.forEach((file) => {
@@ -161,7 +164,7 @@ const ProjectSetup = () => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/${endpoint}`, {
         method: "POST",
-        body: formData,
+        body: formData
       });
 
       const data = await response.json();
