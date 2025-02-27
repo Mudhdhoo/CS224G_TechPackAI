@@ -36,9 +36,9 @@
 \hline
 \rowcolor{headerblue}\multicolumn{4}{|c|}{\textcolor{white}{\textbf{PRODUCT DETAILS}}} \\
 \hline
-Brand Name: J.Lindeberg & Designer: John Cao & Season: Fall/Winter & Category: Blazer \\
+Brand Name: RAPA & Designer: BAPA & Season: Fall/Winter & Category: Blazer \\
 \hline
-Date: \today & Style Name: Classic Blazer & Style Number: 001 & Main Fabric: Wool Blend \\
+Date: \today & Style Name: Classic Modern Blazer & Style Number: BZ001 & Main Fabric: Wool Blend \\
 \hline
 \end{tabularx}
 
@@ -49,7 +49,7 @@ Date: \today & Style Name: Classic Blazer & Style Number: 001 & Main Fabric: Woo
 \hline
 \rowcolor{headerblue}\multicolumn{1}{|c|}{\textcolor{white}{\textbf{STYLE DESCRIPTION}}} \\
 \hline
-This classic black blazer features a notched lapel and a single-button closure. It is designed with two front pockets and tailored seams for a structured fit, ideal for both formal and semi-formal occasions.
+A classic blazer design featuring a notched lapel and two front buttons, complemented by front pockets and a sleek back with two sleeve buttons. The reference image shows a modern touch with a single button closure, enhancing its contemporary appeal.
 \end{tabularx}
 \hline
 
@@ -63,9 +63,9 @@ This classic black blazer features a notched lapel and a single-button closure. 
 \begin{center}
 % First row of drawings
 \begin{tabular}{ccc}
-\includegraphics[width=0.4\textwidth,height=8cm,keepaspectratio]{figures/illustration1.png} &
-\includegraphics[width=0.4\textwidth,height=8cm,keepaspectratio]{figures/illustration2.png} &
-\includegraphics[width=0.4\textwidth,height=8cm,keepaspectratio]{figures/reference1.png} \\
+\includegraphics[width=0.3\textwidth,height=8cm,keepaspectratio]{figures/illustration1.png} &
+\includegraphics[width=0.3\textwidth,height=8cm,keepaspectratio]{figures/illustration2.png} &
+\includegraphics[width=0.3\textwidth,height=8cm,keepaspectratio]{figures/reference1.png} \\
 \end{tabular}
 \end{center}
 \end{tabularx}
@@ -81,15 +81,13 @@ This classic black blazer features a notched lapel and a single-button closure. 
 \hline
 \textbf{Item} & \textbf{Description} & \textbf{XS} & \textbf{S} & \textbf{M} & \textbf{L} & \textbf{XL}\\
 \hline
-Chest & Width across the chest, wool blend & 86 cm & 90 cm & 94 cm & 98 cm & 102 cm \\
+Shoulder Width & Seam to seam across the shoulders & 42cm & 44cm & 46cm & 48cm & 50cm \\
 \hline
-Waist & Width at the waist, wool blend & 78 cm & 82 cm & 86 cm & 90 cm & 94 cm \\
+Chest Width & Across the chest from armpit to armpit & 48cm & 50cm & 52cm & 54cm & 56cm \\
 \hline
-Hip & Width at the hip, wool blend & 92 cm & 96 cm & 100 cm & 104 cm & 108 cm \\
+Sleeve Length & From shoulder seam to cuff & 60cm & 62cm & 64cm & 66cm & 68cm \\
 \hline
-Sleeve Length & From shoulder to cuff, wool blend & 60 cm & 61 cm & 62 cm & 63 cm & 64 cm \\
-\hline
-Back Length & From neck to hem, wool blend & 70 cm & 72 cm & 74 cm & 76 cm & 78 cm \\
+Back Length & From collar seam to hem & 70cm & 72cm & 74cm & 76cm & 78cm \\
 \hline
 \end{tabularx}
 
@@ -101,11 +99,11 @@ Back Length & From neck to hem, wool blend & 70 cm & 72 cm & 74 cm & 76 cm & 78 
 \rowcolor{headerblue}\multicolumn{1}{|c|}{\textcolor{white}{\textbf{CARE INSTRUCTIONS}}} \\
 \hline
 \begin{itemize}
-\item Dry clean only.
-\item Do not bleach.
-\item Iron at low temperature.
-\item Avoid direct sunlight when drying.
-\item Store on a hanger to maintain shape.
+    \item Dry clean only to maintain fabric quality.
+    \item Do not bleach to avoid color fading.
+    \item Iron at low temperature if necessary.
+    \item Store on a hanger to preserve shape.
+    \item Avoid prolonged exposure to sunlight.
 \end{itemize}
 \end{tabularx}
 \hline

@@ -1,7 +1,8 @@
-from flask import Blueprint, request, jsonify, send_file
+from flask import Blueprint, request, jsonify, send_file, Response, stream_with_context
 import werkzeug
 import base64
 import os
+import json
 
 class ChatRoutes:
     def __init__(self, model, database):
@@ -15,26 +16,40 @@ class ChatRoutes:
         def chat():
             data = request.get_json()
 
-            # Set CORS Headers if not initialized properly
-            response = jsonify({"message": "Received", "data": data})
-            response.headers.add("Access-Control-Allow-Origin", "*")
-            response.headers.add("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-            response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
             message = data.get("content", "")
             project_id = data.get("projectId", "")
             user_id = data.get("userId", "")
-            try:
-                reply = self.model.chat(message,
-                                        project_id,
-                                        user_id
-                                        )
-                
-                # Return the reply in a JSON response
-                return jsonify({"content": reply})
-            except Exception as e:
-                print(e)
-                return jsonify({"error": str(e)}), 500
+            
+            # Return SSE stream
+            def generate():
+                try:
+                    # Save user message to database first
+                    self.database.save_message(message, "user", project_id, user_id)
+                    
+                    # Stream the response
+                    response_content = ""
+                    for chunk in self.model.chat_stream(message, project_id, user_id):
+                        response_content += chunk
+                        yield f"data: {json.dumps({'content': chunk})}\n\n"
+                    
+                    # Save the complete response to database after streaming
+                    self.database.save_message(response_content, "assistant", project_id, user_id)
+                    
+                    # Send done signal
+                    yield f"data: {json.dumps({'done': True})}\n\n"
+                    
+                except Exception as e:
+                    print(e)
+                    yield f"data: {json.dumps({'error': str(e)})}\n\n"
+            
+            return Response(stream_with_context(generate()), 
+                            mimetype='text/event-stream',
+                            headers={
+                                'Cache-Control': 'no-cache',
+                                'Access-Control-Allow-Origin': '*',
+                                'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+                                'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+                            })
 
 class UploadIllustrationRoute:
     def __init__(self, customer_agent, code_agent, database):
@@ -51,14 +66,17 @@ class UploadIllustrationRoute:
             if 'images' not in request.files:
                 return jsonify({'error': 'No image part in the request'}), 400
             
+            user_id = request.form.get('userId')    # Get user ID
+            project_id = request.form.get('projectId')  # Get project ID
             images = request.files.getlist("images")  # Get all uploaded files
+
             for image in images:
                 if image.filename == '':
                     return jsonify({'error': 'No selected file'}), 400
                 
                 # Secure the filename and save it in a local "uploads" folder (create this folder)
                 filename = werkzeug.utils.secure_filename(image.filename)
-                upload_folder = os.path.join(os.getcwd(), 'uploads')
+                upload_folder = os.path.join(os.getcwd(), f'uploads/{project_id}/illustration')
                 os.makedirs(upload_folder, exist_ok=True)
                 file_path = os.path.join(upload_folder, filename)
                 image.save(file_path)
@@ -82,6 +100,7 @@ class UploadIllustrationRoute:
                     )
                 self.customer_agent.conv_history.append(conv)
                 self.code_agent.conv_history.append(conv)
+              #  self.database.save_image(image, project_id, user_id)
             
             return jsonify({'message': 'File uploaded successfully'})
         
@@ -96,17 +115,21 @@ class UploadReferenceRoute:
     def setup_routes(self):
         @self.blueprint.route('/upload_reference', methods=['POST'])
         def upload():
+            print('REFERENCE')
             if 'images' not in request.files:
                 return jsonify({'error': 'No image part in the request'}), 400
             
+            user_id = request.form.get('userId')    # Get user ID
+            project_id = request.form.get('projectId')  # Get project ID
             images = request.files.getlist("images")  # Get all uploaded files
+
             for image in images:
                 if image.filename == '':
                     return jsonify({'error': 'No selected file'}), 400
                 
                 # Secure the filename and save it in a local "uploads" folder (create this folder)
                 filename = werkzeug.utils.secure_filename(image.filename)
-                upload_folder = os.path.join(os.getcwd(), 'uploads')
+                upload_folder = os.path.join(os.getcwd(), f'uploads/{project_id}/reference')
                 os.makedirs(upload_folder, exist_ok=True)
                 file_path = os.path.join(upload_folder, filename)
                 image.save(file_path)
@@ -114,7 +137,7 @@ class UploadReferenceRoute:
                 # # Encode image to base64
                 with open(file_path, "rb") as image_file:
                     image = base64.b64encode(image_file.read()).decode("utf-8")
-
+            
                 conv = {
                         "role": "user",
                         "content": [{
@@ -128,8 +151,9 @@ class UploadReferenceRoute:
                         "image_url": {"url": f"data:image/jpeg;base64,{image}"},
                     }
                     )
-                self.customer_agent.conv_history.append(conv)
+               # self.customer_agent.conv_history.append(conv)
                 self.code_agent.conv_history.append(conv)
+               # self.database.save_image(image, project_id, user_id)
             
             return jsonify({'message': 'File uploaded successfully'})
         
@@ -166,3 +190,8 @@ class PreviewPDFRoute:
         
             except Exception as e:
                 return {'error': str(e)}, 500
+            
+class SaveImgsRoute:
+    def __init__(self):
+        self.blueprint = Blueprint("preview_pdf", __name__)
+        self.setup_routes()

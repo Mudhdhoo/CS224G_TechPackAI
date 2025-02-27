@@ -1,6 +1,8 @@
 from utils.prompts import SYSTEM_PROMPT_CUSTOMER_AGENT, SYSTEM_PROMPT_CODE_AGENT
 from loguru import logger
 import json
+import base64
+import os
 
 class CustomerAgent:
     def __init__(self, client, code_agent, database, model="gpt-4o"):
@@ -24,32 +26,56 @@ class CustomerAgent:
         }]
         
         self.project_id = None
-
-    def chat(self, user_message, project_id, user_id):
+    
+    def chat_stream(self, user_message, project_id, user_id):
         try:
             # Load history from database when restarting or switching to another project
             if self.project_id == None or self.project_id != project_id:
                 self.load_conversation_history(project_id, user_id, self.database)
                 self.project_id = project_id
-
-            self.database.save_message(user_message, "user", project_id, user_id)    # Save user message to database
+            
+            # Add user message to conversation history
             self.conv_history.append({"role":"user", "content": f"{user_message}"})
+            
+            # Check for template generation first
+            function_completion = self.get_completion()
+            message = function_completion.choices[0].message
 
-            # Get completion
-            completion = self.get_completion()
-            # Get response
-            response, code = self.get_response(completion.choices[0].message)
+            if message.function_call and message.function_call.name == "generate_template":
+                # Non-streaming path for function calls
+                response, code = self.get_response(message)
+                if code:
+                    with open("code.txt", "w") as file:
+                        file.write(code)
+                
+                self.conv_history.append({"role":"assistant", "content":f"{response}"})
+                yield response
+            else:
+                # For regular messages, use streaming
+                streaming_completion = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=self.conv_history,
+                    temperature=0.7,
+                    stream=True
+                )
+                
+                # Collect the full response to add to history later
+                full_response = ""
+                
+                # Process the streaming response
+                for chunk in streaming_completion:
+                    if hasattr(chunk.choices[0], 'delta') and hasattr(chunk.choices[0].delta, 'content'):
+                        content = chunk.choices[0].delta.content
+                        if content:
+                            full_response += content
+                            yield content
 
-            if code != None:
-                with open("code.txt", "w") as file:
-                    file.write(code)
-
-            self.conv_history.append({"role":"assistant", "content":f"{response}"})
-            self.database.save_message(response, "assistant", project_id, user_id)   # Save response to database
+                # Save the complete response to conversation history
+                self.conv_history.append({"role":"assistant", "content":f"{full_response}"})
+                
         except Exception as e:
-            print(e)
-
-        return response
+            print(f"Error in chat_stream: {e}")
+            yield f"Error: {str(e)}"
     
     def get_completion(self):
         completion = self.client.chat.completions.create(
@@ -67,15 +93,20 @@ class CustomerAgent:
         """Load previous messages from the database"""
         try:
             logger.info(f"Loading conversation history for project {project_id} and user {user_id}")
+
             messages = db.get_project_messages(project_id, user_id)
 
             # Reset conversation history
             self.reset_conv_history()
+            self.load_image("illustration", project_id)
+            self.load_image("reference", project_id)
 
             # Add messages in chronological order 
             for msg in messages[1:]:
-                role = "assistant" if msg["type"] == "assistant" else "user"
-                self.conv_history.append({"role": role, "content": msg["content"]})
+                if msg["type"] == "assistant":
+                    self.conv_history.append({"role": "assistant", "content": msg["content"]})
+                elif msg["type"] == "user":
+                    self.conv_history.append({"role": "user", "content": msg["content"]})
                 
         except Exception as e:
             logger.error(f"Error loading conversation history: {str(e)}")
@@ -110,6 +141,30 @@ class CustomerAgent:
         self.conv_history =[
                 {"role": "developer", "content": self.__SYSTEM_PROMPT}, 
                 ]
+        
+    def load_image(self, type, project_id):
+        assert type in ["illustration", "reference"], "type must be illustration or reference"
+        images_path = os.path.join(os.getcwd(), "uploads", project_id, type)
+        images = [os.path.join(images_path, file) for file in os.listdir(images_path)]
+
+        conv = {
+                "role": "user",
+                "content": [{
+                        "type": "text",
+                        "text": f"Here are the {type} image(s).",
+                    }]
+                    }
+        
+        for image in images:
+            with open(image, "rb") as image_file:
+                image = base64.b64encode(image_file.read()).decode("utf-8")
+            conv["content"].append(
+                {
+                    "type": "image_url",
+                    "image_url": {"url": f"data:image/jpeg;base64,{image}"},
+                }
+                )
+        self.conv_history.append(conv)
 
 class CodeAgent:
     def __init__(self, client, model="gpt-4o"):
@@ -134,4 +189,3 @@ class CodeAgent:
         self.conv_history.append({"role":"assistant", "content":f"{response}"})
         
         return response.choices[0].message.content
-        

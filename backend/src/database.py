@@ -1,7 +1,10 @@
-
 from supabase import create_client, Client
 from typing import Optional, List, Dict, Any
 import logging
+from datetime import datetime
+import base64
+import uuid
+import os
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -90,6 +93,7 @@ class DatabaseManager:
             
             # Handle both list and .data responses
             messages = response.data if hasattr(response, 'data') else response
+            print(response)
             if messages:
                 logger.info(f"Found {len(messages)} messages")
                 return messages
@@ -114,4 +118,3 @@ class DatabaseManager:
         except Exception as e:
             logger.error(f"Error getting project prompts: {str(e)}")
             raise
-
