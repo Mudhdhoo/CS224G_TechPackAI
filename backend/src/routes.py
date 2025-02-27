@@ -71,13 +71,24 @@ class UploadIllustrationRoute:
             project_id = request.form.get('projectId')  # Get project ID
             images = request.files.getlist("images")  # Get all uploaded files
 
+            conv = {
+                    "role": "user",
+                    "content": [{
+                            "type": "text",
+                            "text": f"Here are the illustration image(s).\n\
+                                <REMEMBER>\n\
+                                    The names of these illustration images are {[image.filename for image in images]}. These come in the same order as the images.\n\
+                                </REMEMBER> ",
+                        }]
+                        }
+            
             for image in images:
                 if image.filename == '':
                     return jsonify({'error': 'No selected file'}), 400
                 
                 # Secure the filename and save it in a local "uploads" folder (create this folder)
                 filename = werkzeug.utils.secure_filename(image.filename)
-                upload_folder = os.path.join(os.getcwd(), f'uploads/{project_id}/illustration')
+                upload_folder = os.path.join(os.getcwd(), f'projects/{project_id}/illustration')
                 os.makedirs(upload_folder, exist_ok=True)
                 file_path = os.path.join(upload_folder, filename)
                 image.save(file_path)
@@ -86,13 +97,6 @@ class UploadIllustrationRoute:
                 with open(file_path, "rb") as image_file:
                     image = base64.b64encode(image_file.read()).decode("utf-8")
 
-                conv = {
-                        "role": "user",
-                        "content": [{
-                                "type": "text",
-                                "text": f"Here are the illustration image(s).",
-                            }]
-                            }
                 conv["content"].append(
                     {
                         "type": "image_url",
@@ -124,13 +128,24 @@ class UploadReferenceRoute:
             project_id = request.form.get('projectId')  # Get project ID
             images = request.files.getlist("images")  # Get all uploaded files
 
+            conv = {
+                    "role": "user",
+                    "content": [{
+                            "type": "text",
+                            "text": f"Here are the illustration image(s).\n\
+                                <REMEMBER>\n\
+                                    The names of these reference images are {[image.filename for image in images]}. These come in the same order as the images.\n\
+                                </REMEMBER> ",
+                        }]
+                        }
+
             for image in images:
                 if image.filename == '':
                     return jsonify({'error': 'No selected file'}), 400
                 
                 # Secure the filename and save it in a local "uploads" folder (create this folder)
                 filename = werkzeug.utils.secure_filename(image.filename)
-                upload_folder = os.path.join(os.getcwd(), f'uploads/{project_id}/reference')
+                upload_folder = os.path.join(os.getcwd(), f'projects/{project_id}/reference')
                 os.makedirs(upload_folder, exist_ok=True)
                 file_path = os.path.join(upload_folder, filename)
                 image.save(file_path)
@@ -138,14 +153,7 @@ class UploadReferenceRoute:
                 # # Encode image to base64
                 with open(file_path, "rb") as image_file:
                     image = base64.b64encode(image_file.read()).decode("utf-8")
-            
-                conv = {
-                        "role": "user",
-                        "content": [{
-                                "type": "text",
-                                "text": f"Here are the reference image(s).",
-                            }]
-                            }
+
                 conv["content"].append(
                     {
                         "type": "image_url",
@@ -198,12 +206,13 @@ class BeginConversationRoute:
     def setup_routes(self):
         @self.blueprint.route('/begin_conversation', methods=['POST'])
         def begin_conversation():
+            logger.info("Conversation Initialized")
             user_id = request.form.get('userId')    # Get user ID
             project_id = request.form.get('projectId')  # Get project ID
-            # self.database.save_message("Thank you for uploading you illustration and reference images! To get started, please prove your brand name and designer name.", 
-            #                            "assistant", 
-            #                            project_id, 
-            #                            user_id)
+            self.database.save_message("Thank you for uploading you illustration and reference images! To get started, please prove your brand name and designer name.", 
+                                       "assistant", 
+                                       project_id, 
+                                       user_id)
             
             return jsonify({'message': 'Conversation initialized'})
 

@@ -36,9 +36,9 @@
 \hline
 \rowcolor{headerblue}\multicolumn{4}{|c|}{\textcolor{white}{\textbf{PRODUCT DETAILS}}} \\
 \hline
-Brand Name: yoyo & Designer: yoyo & Season: Autumn/Winter & Category: Blazer \\
+Brand Name: J.Lindeberg & Designer: John Cao & Season: Fall/Winter & Category: Blazer \\
 \hline
-Date: \today & Style Name: Classic Blazer & Style Number: YB-001 & Main Fabric: Wool Blend \\
+Date: \today & Style Name: Classic Blazer & Style Number: JL2023B01 & Main Fabric: Wool Blend \\
 \hline
 \end{tabularx}
 
@@ -49,7 +49,7 @@ Date: \today & Style Name: Classic Blazer & Style Number: YB-001 & Main Fabric: 
 \hline
 \rowcolor{headerblue}\multicolumn{1}{|c|}{\textcolor{white}{\textbf{STYLE DESCRIPTION}}} \\
 \hline
-This classic blazer features a two-button front closure with notched lapels and flap pockets, crafted in a wool blend fabric. The design presents a sleek and timeless silhouette inspired by contemporary styles.
+This tailored blazer features a single-breasted silhouette with notched lapels and a two-button closure. It includes flap pockets and a chest welt pocket, with a back vent for ease of movement. Constructed from a luxurious wool blend for comfort and style.
 \end{tabularx}
 \hline
 
@@ -63,9 +63,9 @@ This classic blazer features a two-button front closure with notched lapels and 
 \begin{center}
 % First row of drawings
 \begin{tabular}{ccc}
-\graphicspath{{illustration/}{reference/}}
-\includegraphics[width=0.4\textwidth,height=8cm,keepaspectratio]{illustration1.png} &
-\includegraphics[width=0.4\textwidth,height=8cm,keepaspectratio]{reference1.png} &
+\includegraphics[width=0.3\textwidth,height=8cm,keepaspectratio]{blazer_illustration_front.png} &
+\includegraphics[width=0.3\textwidth,height=8cm,keepaspectratio]{blazer_illustration_back.png} &
+\includegraphics[width=0.3\textwidth,height=8cm,keepaspectratio]{reference_blazer.png} \\
 \end{tabular}
 \end{center}
 \end{tabularx}
@@ -81,15 +81,13 @@ This classic blazer features a two-button front closure with notched lapels and 
 \hline
 \textbf{Item} & \textbf{Description} & \textbf{XS} & \textbf{S} & \textbf{M} & \textbf{L} & \textbf{XL}\\
 \hline
-Chest & Across front from underarm to underarm & 90 cm & 95 cm & 100 cm & 105 cm & 110 cm \\
+Shoulder Width & Across back, seam to seam & 38 cm & 40 cm & 42 cm & 44 cm & 46 cm \\
 \hline
-Waist & Measured at narrowest point & 80 cm & 85 cm & 90 cm & 95 cm & 100 cm \\
+Chest Width & Underarm to underarm & 92 cm & 96 cm & 100 cm & 104 cm & 108 cm \\
 \hline
-Sleeve Length & From shoulder seam to cuff & 60 cm & 61 cm & 62 cm & 63 cm & 64 cm \\
+Sleeve Length & From shoulder seam to cuff & 62 cm & 63 cm & 64 cm & 65 cm & 66 cm \\
 \hline
-Back Length & From base of neck to hem & 70 cm & 72 cm & 74 cm & 76 cm & 78 cm \\
-\hline
-Shoulder Width & From shoulder seam to seam & 44 cm & 46 cm & 48 cm & 50 cm & 52 cm \\
+Back Length & From base of collar to hem & 70 cm & 72 cm & 74 cm & 76 cm & 78 cm \\
 \hline
 \end{tabularx}
 
@@ -101,11 +99,11 @@ Shoulder Width & From shoulder seam to seam & 44 cm & 46 cm & 48 cm & 50 cm & 52
 \rowcolor{headerblue}\multicolumn{1}{|c|}{\textcolor{white}{\textbf{CARE INSTRUCTIONS}}} \\
 \hline
 \begin{itemize}
-    \item Dry clean only to maintain fabric quality.
-    \item Use a cool iron if necessary, avoiding direct contact with the fabric.
-    \item Store on a hanger to maintain shape.
-    \item Avoid prolonged exposure to direct sunlight to prevent fading.
-    \item Avoid washing in water to maintain the integrity of the wool blend.
+\item Dry clean only.
+\item Do not bleach.
+\item Iron on low heat if necessary.
+\item Store in a cool, dry place, ideally in a garment bag.
+\item Avoid exposure to direct sunlight for extended periods.
 \end{itemize}
 \end{tabularx}
 \hline

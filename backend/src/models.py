@@ -3,6 +3,7 @@ from loguru import logger
 import json
 import base64
 import os
+from utils.compile import compile_latex_from_txt
 
 class CustomerAgent:
     def __init__(self, client, code_agent, database, model="gpt-4o"):
@@ -36,7 +37,6 @@ class CustomerAgent:
             
             # Add user message to conversation history
             self.conv_history.append({"role":"user", "content": f"{user_message}"})
-            
             # Check for template generation first
             function_completion = self.get_completion()
             message = function_completion.choices[0].message
@@ -45,8 +45,10 @@ class CustomerAgent:
                 # Non-streaming path for function calls
                 response, code = self.get_response(message)
                 if code:
-                    with open("code.txt", "w") as file:
+                    with open(f"projects/{project_id}/code.txt", "w") as file:
                         file.write(code)
+                        logger.info(f"Compiling latex code at projects/{project_id}/code.txt")
+                        self.compile_latex(os.path.join(os.getcwd(), "projects"), project_id)
                 
                 self.conv_history.append({"role":"assistant", "content":f"{response}"})
                 yield response
@@ -102,7 +104,7 @@ class CustomerAgent:
             self.load_image("reference", project_id)
 
             # Add messages in chronological order 
-            for msg in messages[2:]:
+            for msg in messages[:]:
                 if msg["type"] == "assistant":
                     self.conv_history.append({"role": "assistant", "content": msg["content"]})
                 elif msg["type"] == "user":
@@ -144,14 +146,18 @@ class CustomerAgent:
         
     def load_image(self, type, project_id):
         assert type in ["illustration", "reference"], "type must be illustration or reference"
-        images_path = os.path.join(os.getcwd(), "uploads", project_id, type)
-        images = [os.path.join(images_path, file) for file in os.listdir(images_path)]
+        images_path = os.path.join(os.getcwd(), "projects", project_id, type)
+        image_names = os.listdir(images_path)
+        images = [os.path.join(images_path, file) for file in image_names]
 
         conv = {
                 "role": "user",
                 "content": [{
                         "type": "text",
-                        "text": f"Here are the {type} image(s).",
+                        "text": f"Here are the {type} image(s).\n\
+                            <REMEMBER THESE FILE NAMES EXACTLY>\n\
+                                The names of these {type} images are {[name for name in image_names]}. These come in the same order as the images.\n\
+                            </REMEMBER THESE FILE NAMES EXACTLY> ",
                     }]
                     }
         
@@ -165,6 +171,17 @@ class CustomerAgent:
                 }
                 )
         self.conv_history.append(conv)
+
+    def compile_latex(self, project_path, project_id):
+        code_path = os.path.join(os.getcwd(), project_path, project_id)
+        assert os.path.exists(code_path), f"The path {code_path} does not exitst."
+        try:
+            compile_latex_from_txt(code_path)
+            return True
+        except Exception as e:
+            print(e)
+
+
 
 class CodeAgent:
     def __init__(self, client, model="gpt-4o"):

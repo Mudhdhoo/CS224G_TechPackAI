@@ -36,9 +36,11 @@
 \hline
 \rowcolor{headerblue}\multicolumn{4}{|c|}{\textcolor{white}{\textbf{PRODUCT DETAILS}}} \\
 \hline
-Brand Name: yoyo & Designer: yoyo & Season: Autumn/Winter & Category: Blazer \\
+Brand Name: & Designer: & Season: & Category: \\
+J.Lineberg & John Cao & Autumn/Winter & Outerwear \\
 \hline
-Date: \today & Style Name: Classic Blazer & Style Number: YB-001 & Main Fabric: Wool Blend \\
+Date: & Style Name: & Style Number: & Main Fabric: \\
+\today & Classic Blazer & JL2023 & Wool Blend \\
 \hline
 \end{tabularx}
 
@@ -49,9 +51,10 @@ Date: \today & Style Name: Classic Blazer & Style Number: YB-001 & Main Fabric: 
 \hline
 \rowcolor{headerblue}\multicolumn{1}{|c|}{\textcolor{white}{\textbf{STYLE DESCRIPTION}}} \\
 \hline
-This classic blazer features a two-button front closure with notched lapels and flap pockets, crafted in a wool blend fabric. The design presents a sleek and timeless silhouette inspired by contemporary styles.
-\end{tabularx}
+This classic blazer features a tailored fit with a single button closure and sleek pocket outlines. The design incorporates traditional blazer elements like lapels and a structured back, inspired by the sleek appearance of the black reference blazer.
+\\
 \hline
+\end{tabularx}
 
 \vspace{0.5cm}
 
@@ -63,13 +66,15 @@ This classic blazer features a two-button front closure with notched lapels and 
 \begin{center}
 % First row of drawings
 \begin{tabular}{ccc}
-\graphicspath{{illustration/}{reference/}}
-\includegraphics[width=0.4\textwidth,height=8cm,keepaspectratio]{illustration1.png} &
-\includegraphics[width=0.4\textwidth,height=8cm,keepaspectratio]{reference1.png} &
+% INSERT FIGURES HERE, ONLY INSERT THE NUMBER OF FIGURES YOU WERE GIVEN
+\graphicspath{{illustration/}{reference/}}  % DO NOT CHANGE THIS LINE
+\includegraphics[width=0.4\textwidth,height=8cm,keepaspectratio]{blazer_illustration_front.png} &
+\includegraphics[width=0.4\textwidth,height=8cm,keepaspectratio]{blazer_illustration_back.png} \\
+\includegraphics[width=0.4\textwidth,height=8cm,keepaspectratio]{reference_blazer.png} & \\
 \end{tabular}
 \end{center}
-\end{tabularx}
 \hline
+\end{tabularx}
 
 \vspace{0.5cm}
 
@@ -81,15 +86,15 @@ This classic blazer features a two-button front closure with notched lapels and 
 \hline
 \textbf{Item} & \textbf{Description} & \textbf{XS} & \textbf{S} & \textbf{M} & \textbf{L} & \textbf{XL}\\
 \hline
-Chest & Across front from underarm to underarm & 90 cm & 95 cm & 100 cm & 105 cm & 110 cm \\
+Chest & Across the chest under arm & 86 cm & 90 cm & 94 cm & 100 cm & 106 cm \\
 \hline
-Waist & Measured at narrowest point & 80 cm & 85 cm & 90 cm & 95 cm & 100 cm \\
+Waist & Narrowest part of waist & 78 cm & 82 cm & 86 cm & 92 cm & 98 cm \\
+\hline
+Length & From shoulder to hem & 65 cm & 67 cm & 69 cm & 71 cm & 73 cm \\
 \hline
 Sleeve Length & From shoulder seam to cuff & 60 cm & 61 cm & 62 cm & 63 cm & 64 cm \\
 \hline
-Back Length & From base of neck to hem & 70 cm & 72 cm & 74 cm & 76 cm & 78 cm \\
-\hline
-Shoulder Width & From shoulder seam to seam & 44 cm & 46 cm & 48 cm & 50 cm & 52 cm \\
+Shoulder Width & From shoulder seam to seam & 40 cm & 42 cm & 44 cm & 46 cm & 48 cm \\
 \hline
 \end{tabularx}
 
@@ -101,14 +106,14 @@ Shoulder Width & From shoulder seam to seam & 44 cm & 46 cm & 48 cm & 50 cm & 52
 \rowcolor{headerblue}\multicolumn{1}{|c|}{\textcolor{white}{\textbf{CARE INSTRUCTIONS}}} \\
 \hline
 \begin{itemize}
-    \item Dry clean only to maintain fabric quality.
-    \item Use a cool iron if necessary, avoiding direct contact with the fabric.
-    \item Store on a hanger to maintain shape.
-    \item Avoid prolonged exposure to direct sunlight to prevent fading.
-    \item Avoid washing in water to maintain the integrity of the wool blend.
+\item Dry clean only to maintain fabric integrity.
+\item Iron on low heat.
+\item Avoid direct sunlight to prevent fading.
+\item Store on a hanger to retain shape.
 \end{itemize}
-\end{tabularx}
+\\
 \hline
+\end{tabularx}
 
 \vspace{0.5cm}
 
@@ -118,7 +123,8 @@ Shoulder Width & From shoulder seam to seam & 44 cm & 46 cm & 48 cm & 50 cm & 52
 \rowcolor{headerblue}\multicolumn{1}{|c|}{\textcolor{white}{\textbf{ADDITIONAL COMMENTS}}} \\
 \hline
 % INSERT ADDITIONAL COMMENTS HERE
-\end{tabularx}
+\\
 \hline
+\end{tabularx}
 
 \end{document}

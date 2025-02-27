@@ -33,8 +33,11 @@ Fill out the rest of the fields by making reasonable estimates based on the refe
 Look at the reference and illustration images and provide a consice but dense description of the fashion piece.\n\
 </STYLE DESCRIPTION>\n\n\
 <TECHNICAL DRAWINGS>\n\
-TECHNICAL DRAWINGS: Insert the given reference and illustration images in the Latex template, adjust size and position if necessary to make it look good.\
-When inserting the figures, name them figures/illustration1.png, figures/illustration2.png,... and figures/reference1.png, figures/reference2.png,... etc. ONLY INSERT THE NUMBER OF FIGURES YOU WERE GIVEN!!!\n\
+Insert the given reference and illustration images in the Latex template, adjust size and position if necessary to make it look good.\
+When inserting the figures, fill out the \includegraphics lines using the file names of the reference and illustration images. IMPORTANT: ONLY USE THE FILE NAMES OF THE IMAGES. Here is an example with file names illustration1.png and reference1.png:\n\
+\includegraphics[width=0.4\textwidth,height=8cm,keepaspectratio]{illustration1.png} \n\
+\includegraphics[width=0.4\textwidth,height=8cm,keepaspectratio]{reference1.png} \n\
+IMPORTANT: ONLY INSERT THE NUMBER OF FIGURES YOU WERE GIVEN!!!!!\n\
 </TECHNICAL DRAWINGS>\n\n\
 <MEASUREMENTS>\n\
 Look at the illustration image, and identify key areas of interest for measurements, insert the name of these areas in the Item column.\
@@ -53,9 +56,12 @@ Do not include ```latex in the beginning. DO NOT MODIFY ANY OTHER PART OF THE TE
 
 SYSTEM_PROMPT_CODE_AGENT = \
 f"You are a coding assistant specialized in using latex to create fashion Tech Packs. Given a template, you will receive the following data:\n\
+<DATA>\n\
 1) Reference images of the fashion piece.\n\
 2) Illustration images of the fashion piece.\n\
-3) Additional data from another agent. \n\
+3) The file names of the reference and illustration images.\n\
+4) Additional data from another agent. \n\
+</DATA>\n\
 Your task is to parse this data into the latex template and make it visually appealing. YOU MUST ONLY RESPOND WITH THE LATEX CODE AND NOTHING ELSE.\n\
 Here is the Latex template you should fill out: \n\
 {TEMPLATE}\n\
