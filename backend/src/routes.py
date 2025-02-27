@@ -3,6 +3,7 @@ import werkzeug
 import base64
 import os
 import json
+from loguru import logger
 
 class ChatRoutes:
     def __init__(self, model, database):
@@ -171,12 +172,9 @@ class PreviewPDFRoute:
                 pdf_folder = "/Users/johncao/Documents/Programming/Stanford/CS224G/backend/src/tech_packs"
                 if self.increment == 0:
                     pdf_filename = f"tech_pack1.pdf"  # assuming PDFs are named by project ID
-                elif self.increment == 1:
-                    pdf_filename = f"tech_pack2.pdf"  # assuming PDFs are named by project ID
                 else:
                     pdf_filename = f"tech_pack3.pdf"  # assuming PDFs are named by project ID
                 pdf_path = os.path.join(pdf_folder, pdf_filename)
-                print(pdf_path)
                 self.increment += 1 
                 # Check if file exists
                 if not os.path.exists(pdf_path):
@@ -191,7 +189,22 @@ class PreviewPDFRoute:
             except Exception as e:
                 return {'error': str(e)}, 500
             
-class SaveImgsRoute:
-    def __init__(self):
-        self.blueprint = Blueprint("preview_pdf", __name__)
+class BeginConversationRoute:
+    def __init__(self, database):
+        self.blueprint = Blueprint("begin_conversation", __name__)
         self.setup_routes()
+        self.database = database
+
+    def setup_routes(self):
+        @self.blueprint.route('/begin_conversation', methods=['POST'])
+        def begin_conversation():
+            user_id = request.form.get('userId')    # Get user ID
+            project_id = request.form.get('projectId')  # Get project ID
+            # self.database.save_message("Thank you for uploading you illustration and reference images! To get started, please prove your brand name and designer name.", 
+            #                            "assistant", 
+            #                            project_id, 
+            #                            user_id)
+            
+            return jsonify({'message': 'Conversation initialized'})
+
+

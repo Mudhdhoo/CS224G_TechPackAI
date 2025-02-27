@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
-from routes import ChatRoutes, UploadIllustrationRoute, UploadReferenceRoute, PreviewPDFRoute
+from routes import ChatRoutes, UploadIllustrationRoute, UploadReferenceRoute, PreviewPDFRoute, BeginConversationRoute
 from models import CustomerAgent, CodeAgent
 from database import DatabaseManager
 from openai import OpenAI
@@ -20,6 +20,7 @@ class FlaskApp:
         self.app.register_blueprint(UploadIllustrationRoute(self.customer_agent, self.code_agent, self.database).blueprint)
         self.app.register_blueprint(UploadReferenceRoute(self.customer_agent, self.code_agent, self.database).blueprint)
         self.app.register_blueprint(PreviewPDFRoute().blueprint)
+        self.app.register_blueprint(BeginConversationRoute(self.database).blueprint)
 
     def run(self):
         self.app.run(debug=True)

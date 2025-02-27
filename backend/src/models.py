@@ -102,7 +102,7 @@ class CustomerAgent:
             self.load_image("reference", project_id)
 
             # Add messages in chronological order 
-            for msg in messages[1:]:
+            for msg in messages[2:]:
                 if msg["type"] == "assistant":
                     self.conv_history.append({"role": "assistant", "content": msg["content"]})
                 elif msg["type"] == "user":
