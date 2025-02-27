@@ -15,6 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { isErrored } from "stream";
 
 type Message = {
   id: string;
@@ -46,6 +47,13 @@ const Chat = () => {
       const uniqueMessages = Array.from(
         new Map(response.map(msg => [msg.id, msg])).values()
       );
+      // Insert beginning message
+      uniqueMessages.unshift({id:"0", 
+                              type:'assistant', 
+                              content:"Thank you for uploading you illustration and reference images! To get started, please prove your brand name and designer name.", 
+                              created_at:"0", 
+                              user_id:user.id, 
+                              project_id:projectId});
       return uniqueMessages;
     },
     enabled: !!projectId

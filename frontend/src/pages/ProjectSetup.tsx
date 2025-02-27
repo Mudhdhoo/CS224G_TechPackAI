@@ -130,6 +130,7 @@ const ProjectSetup = () => {
       // Upload design files
       const uploadIllustration = await handleSubmit(e, "upload_illustration", user.id, project.id)
       const uploadReference = await handleSubmit(e, "upload_reference", user.id, project.id)
+      const conv_init_status = beginConversation(e, project.id)
 
       // Navigate to the chat page using the Supabase-generated project ID
       navigate(`/project/${project.id}/chat`);
@@ -140,6 +141,24 @@ const ProjectSetup = () => {
         description: "Please try again",
         variant: "destructive"
       });
+    }
+  };
+
+  const beginConversation = async (e, projectId) => {
+    const formData = new FormData();
+
+    formData.append("userId", user.id);
+    formData.append("projectId", projectId);
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/begin_conversation`, {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+      console.log("Success:", data);
+    } catch (error) {
+      console.error("Error starting conversation:", error);
     }
   };
 
