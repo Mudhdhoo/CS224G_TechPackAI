@@ -47,13 +47,27 @@ const Chat = () => {
       const uniqueMessages = Array.from(
         new Map(response.map(msg => [msg.id, msg])).values()
       );
-      // Insert beginning message
-      uniqueMessages.unshift({id:"0", 
-                              type:'assistant', 
-                              content:"Thank you for uploading you illustration and reference images! To get started, please prove your brand name and designer name.", 
-                              created_at:"0", 
-                              user_id:user.id, 
-                              project_id:projectId});
+      
+      // Create the welcome message
+      const welcomeMessage = {
+        id: "0", 
+        type: 'assistant', 
+        content: "Thank you for uploading you illustration and reference images! To get started, please prove your brand name and designer name.", 
+        created_at: "0", 
+        user_id: user.id, 
+        project_id: projectId
+      };
+      
+      // Check if this content already exists in any message
+      const welcomeContentExists = uniqueMessages.some(msg => 
+        msg.content === welcomeMessage.content
+      );
+      
+      // Only insert the welcome message if its content doesn't already exist
+      if (!welcomeContentExists) {
+        uniqueMessages.unshift(welcomeMessage);
+      }
+      
       return uniqueMessages;
     },
     enabled: !!projectId
@@ -219,6 +233,14 @@ const Chat = () => {
         <Dialog onOpenChange={(open) => !open && handleDialogClose()}>
           <DialogTrigger asChild>
             <Button
+              style={{ 
+              backgroundColor:'green',
+              color: 'white',
+              padding: '10px 20px',
+              borderRadius: '5px',
+              border: 'none',
+              cursor: 'pointer'
+            }}
               variant="outline"
               className="flex items-center gap-2"
               onClick={handlePreviewClick}

@@ -144,6 +144,7 @@ export const techpackAI = {
       .order('created_at', { ascending: true });
 
     if (error) throw error;
+    console.log(data)
     return data;
   }
 };
