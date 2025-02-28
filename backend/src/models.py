@@ -45,10 +45,12 @@ class CustomerAgent:
                 # Non-streaming path for function calls
                 response, code = self.get_response(message)
                 if code:
-                    with open(f"projects/{project_id}/code.txt", "w") as file:
+                    proj_dir = os.path.join(os.getcwd(), 'projects', project_id)
+                    with open(f"{proj_dir}/code.txt", "w") as file:
                         file.write(code)
                         logger.info(f"Compiling latex code at projects/{project_id}/code.txt")
-                        self.compile_latex(os.path.join(os.getcwd(), "projects"), project_id)
+                        current_dir = os.path.dirname(os.path.abspath(__file__))
+                        self.compile_latex(os.path.join(current_dir, "projects"), project_id)
                 
                 self.conv_history.append({"role":"assistant", "content":f"{response}"})
                 yield response

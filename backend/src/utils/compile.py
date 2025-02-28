@@ -66,8 +66,8 @@ def compile_latex_from_txt(project_dir):
     return output_pdf_path
 
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-project_folder = os.path.join(current_dir, "project")
+#current_dir = os.path.dirname(os.path.abspath(__file__))
+#project_folder = os.path.join(current_dir, "project")
 
 # Compile LaTeX document
-pdf_path = compile_latex_from_txt(project_folder)
+#pdf_path = compile_latex_from_txt(project_folder)
