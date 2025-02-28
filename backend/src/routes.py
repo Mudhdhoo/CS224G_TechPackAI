@@ -170,18 +170,14 @@ class PreviewPDFRoute:
     def __init__(self):
         self.blueprint = Blueprint("preview_pdf", __name__)
         self.setup_routes()
-        self.increment = 0
 
     def setup_routes(self):
         @self.blueprint.route('/preview_pdf', methods=['GET'])
         def preview_pdf():
             try:
                 # Specify your PDF folder path
-                pdf_folder = "/Users/johncao/Documents/Programming/Stanford/CS224G/backend/src/tech_packs"
-                if self.increment == 0:
-                    pdf_filename = f"tech_pack1.pdf"  # assuming PDFs are named by project ID
-                else:
-                    pdf_filename = f"tech_pack3.pdf"  # assuming PDFs are named by project ID
+                pdf_folder = os.path.join(os.getcwd(), 'project')
+                pdf_filename = f"tech_pack1.pdf"  # assuming PDFs are named by project ID
                 pdf_path = os.path.join(pdf_folder, pdf_filename)
                 self.increment += 1 
                 # Check if file exists
