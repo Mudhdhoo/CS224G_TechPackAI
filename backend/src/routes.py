@@ -172,14 +172,14 @@ class PreviewPDFRoute:
         self.setup_routes()
 
     def setup_routes(self):
-        @self.blueprint.route('/preview_pdf', methods=['GET'])
+        @self.blueprint.route('/preview_pdf', methods=['GET', 'POST'])
         def preview_pdf():
             try:
                 # Specify your PDF folder path
-                pdf_folder = os.path.join(os.getcwd(), 'project')
-                pdf_filename = f"tech_pack1.pdf"  # assuming PDFs are named by project ID
+                project_id = request.form.get('projectId')  # Get project ID
+                pdf_folder = os.path.join(os.getcwd(), f'projects/{project_id}')
+                pdf_filename = f"tech_pack.pdf"  # assuming PDFs are named by project ID
                 pdf_path = os.path.join(pdf_folder, pdf_filename)
-                self.increment += 1 
                 # Check if file exists
                 if not os.path.exists(pdf_path):
                     return {'error': 'PDF not found'}, 404
