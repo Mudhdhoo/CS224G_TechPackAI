@@ -56,3 +56,11 @@ John (Mudhdhoo) - Improved the code for the LLM in the backend to display more a
 William (WilliamEkberg) - Polished the frontend design and set up database integration.
 
 Nico (nicohenning) - Assisted in planning the backend and frontend system architecture. Created and planned the Spring 2 presentation.
+
+## Team Contributions - Sprint 3
+
+John (Mudhdhoo) - Implemented user-agent feedback functionality when designing the tech pack. Fixed several bugs in the backend that caused conversation histories between projects to get mixed up.
+
+William (WilliamEkberg) - Worked on migrating from Latex template for the Tech Pack to Google Sheets. Implemented preliminary interactive verison of the template. 
+
+Nico (nicohenning) - Worked on improving the design of the landing and login page.
