@@ -59,3 +59,8 @@ ENV/
 # Vite
 .vite/
 *.local
+
+# Ignore upload folder
+backend/src/uploads/*
+
+backend/src/test_yolo.ipynb
