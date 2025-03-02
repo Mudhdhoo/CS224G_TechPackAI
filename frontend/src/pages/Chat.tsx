@@ -77,7 +77,13 @@ const Chat = () => {
     queryKey: ['pdf', projectId],
     queryFn: async () => {
       if (!projectId) return null;
-      const response = await fetch(`http://127.0.0.1:5000/preview_pdf`);
+      const formData = new FormData();
+      formData.append('projectId', projectId)
+      const response = await fetch(`http://127.0.0.1:5000/preview_pdf`, {
+        method: "POST",
+        body: formData
+      });
+
       if (!response.ok) throw new Error('Failed to fetch PDF');
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
