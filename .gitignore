@@ -64,3 +64,5 @@ ENV/
 backend/src/uploads/*
 
 backend/src/test_yolo.ipynb
+
+deepfashion/*
