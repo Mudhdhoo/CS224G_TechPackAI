@@ -9,11 +9,12 @@ from loguru import logger
 from utils.keypoints import get_gaussian_scoremap
 
 class Deepfashion_Dataset(Dataset):
-    def __init__(self, dataset_path, img_size = (256, 192)):
+    def __init__(self, dataset_path, img_size = (256, 192), scale_factor=4):
         super().__init__()
         self.dataset_path = dataset_path
         assert os.path.isdir(self.dataset_path), f"{dataset_path} is not a valid directory."
         self.img_size = img_size
+        self.scale_factor = scale_factor
         self.images = sorted(os.listdir(f"{dataset_path}/img"), key=extract_number)
         self.annotations = self.load_annotations()
         self.transforms = transforms.Compose([
@@ -56,6 +57,11 @@ class Deepfashion_Dataset(Dataset):
 
         return padded_kpts
             
+    def collate_fn(self, batch):
+        names, imgs, kpts, score_maps = batch
+
+        return torch.stack(imgs), torch.stack(score_maps)
+
     def __len__(self):
         return len(self.images)
 
@@ -72,15 +78,18 @@ class Deepfashion_Dataset(Dataset):
         parts = annotation.strip().split()
         clothing_type = int(parts[1])
         kpts = torch.tensor([int(x) for x in parts[3:]])
-        kpts = self.pad_kpts(kpts, clothing_type)
-        kpts = kpts.reshape([8,3])
-        kpts=  kpts[:,1:]
+        kpts = self.pad_kpts(kpts, clothing_type).reshape([8,3])
+        visibility_ind = kpts[:,0]
+        kpts =  kpts[:,1:]
         kpts[:,0] = kpts[:,0]*(self.img_size[1]/W)
         kpts[:,1] = kpts[:,1]*(self.img_size[0]/H)
 
         score_maps = []
-        for kp in kpts:
-            score_map = get_gaussian_scoremap(self.img_size, np.array(kp), sigma=3)
+        for idx, kp in enumerate(kpts):
+            if visibility_ind[idx] == 2:
+                score_map = np.zeros([self.img_size[0]//self.scale_factor, self.img_size[1]//self.scale_factor])
+            else:
+                score_map = get_gaussian_scoremap((self.img_size[0]//self.scale_factor, self.img_size[1]//self.scale_factor), np.array(kp)/4, sigma=2)
             score_maps.append(torch.from_numpy(score_map))
         score_maps = torch.stack(score_maps, dim=0)
 
