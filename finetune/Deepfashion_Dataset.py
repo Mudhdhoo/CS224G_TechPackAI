@@ -6,31 +6,49 @@ from torch.utils.data import Dataset
 from utils.utils import extract_number
 from torchvision import transforms
 from loguru import logger
-from utils.keypoints import get_gaussian_scoremap
-
+from utils.keypoints import get_gaussian_scoremap, kp2ind, reflect_point_across_line
+    
 class Deepfashion_Dataset(Dataset):
-    def __init__(self, dataset_path, img_size = (256, 192), scale_factor=4):
+    def __init__(self, dataset_path, img_size = (256, 192), scale_factor=4, clothing_type='upper_body'):
         super().__init__()
+        assert os.path.isdir(dataset_path), f"{dataset_path} is not a valid directory."
+        assert clothing_type in ['upper_body', 'lower_body', 'full_body']
+
         self.dataset_path = dataset_path
-        assert os.path.isdir(self.dataset_path), f"{dataset_path} is not a valid directory."
         self.img_size = img_size
         self.scale_factor = scale_factor
-        self.images = sorted(os.listdir(f"{dataset_path}/img"), key=extract_number)
-        self.annotations = self.load_annotations()
+        self.clothing_type = clothing_type
+        self.annotations, self.images = self.load_data(clothing_type)
+        self.kp2ind = kp2ind[clothing_type]
         self.transforms = transforms.Compose([
             transforms.Resize(self.img_size),
             transforms.ToTensor(),  # Convert image to tensor (scales to [0,1])
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # Normalize
         ])
 
-        logger.info(f"Created Deep Fashion Dataset with {len(self.images)} images.")
+        logger.info(f"Created Deep Fashion Dataset with {len(self.images)} {clothing_type} images.")
 
 
-    def load_annotations(self):
+    def load_data(self, clothing_type):
+        images = []
+        ann_list = []
         with open(f"{self.dataset_path}/list_landmarks.txt",'r') as file:
             annotations = file.readlines()[2:]
 
-        return annotations
+        for anno in annotations:
+            attributes = anno.split()
+            if clothing_type == "upper_body" and attributes[1] == '1':
+                ann_list.append(attributes)
+                images.append(attributes[0])
+            elif clothing_type == "lower_body" and attributes[1] == '2':
+                ann_list.append(attributes)
+                images.append(attributes[0])
+            elif clothing_type == "full_body" and attributes[1] == '3':
+                ann_list.append(attributes)
+                images.append(attributes[0])
+            
+
+        return ann_list, images
     
     def load_img(self, img_name):
         img_path = os.path.join(self.dataset_path, 'img', img_name)  
@@ -56,6 +74,59 @@ class Deepfashion_Dataset(Dataset):
             padded_kpts = kpts
 
         return padded_kpts
+    
+    def augment_kpts(self, kpts, visibility_ind):
+        H, W = self.img_size
+        if self.clothing_type == 'upper_body':
+            center = torch.mean(torch.stack([
+                kpts[self.kp2ind['left_collar']],
+                kpts[self.kp2ind['right_collar']],
+                kpts[self.kp2ind['left_hem']],
+                kpts[self.kp2ind['right_hem']]
+            ]).float(),dim=0)
+
+            center_up = torch.mean(torch.stack([
+                kpts[self.kp2ind['left_collar']],
+                kpts[self.kp2ind['right_collar']],
+                center
+            ]).float(),dim=0)
+            
+            center_down = torch.mean(torch.stack([
+                kpts[self.kp2ind['left_hem']],
+                kpts[self.kp2ind['right_hem']],
+                center
+            ]).float(),dim=0)
+
+            left_breast = torch.from_numpy(reflect_point_across_line(
+                kpts[self.kp2ind['right_collar']],
+                kpts[self.kp2ind['left_collar']],
+                center_up
+                ))
+            
+            right_breast = torch.from_numpy(reflect_point_across_line(
+                kpts[self.kp2ind['left_collar']],
+                kpts[self.kp2ind['right_collar']],
+                center_up
+                ))
+            
+            left_pocket = torch.from_numpy(reflect_point_across_line(
+                center_down,
+                center,
+                kpts[self.kp2ind['left_hem']]
+                ))
+            
+            right_pocket = torch.from_numpy(reflect_point_across_line(
+                center_down,
+                center,
+                kpts[self.kp2ind['right_hem']]
+                ))
+            
+
+            kpts = torch.vstack([kpts, center, center_up, center_down, left_breast, right_breast, left_pocket, right_pocket])
+            visibility_ind.extend([1,1,1,1,1,1,1])
+
+        return kpts, visibility_ind
+
             
     def collate_fn(self, batch):
         names, imgs, kpts, score_maps = batch
@@ -68,23 +139,22 @@ class Deepfashion_Dataset(Dataset):
     def __getitem__(self, idx):
         # Load image
         img_name = self.images[idx]  
-        img_path = os.path.join(self.dataset_path, 'img', img_name)  
+        img_path = os.path.join(self.dataset_path, img_name)  
         img = Image.open(img_path)
         W, H = img.size
         img = self.transforms(img)
 
         # Load keypoints
-        annotation = self.annotations[idx]
-        parts = annotation.strip().split()
-        clothing_type = int(parts[1])
-        kpts = torch.tensor([int(x) for x in parts[3:]])
-        kpts = self.pad_kpts(kpts, clothing_type).reshape([8,3])
-        visibility_ind = kpts[:,0]
+        parts = self.annotations[idx]
+        kpts = torch.tensor([int(x) for x in parts[3:]]).reshape([len(parts[3:])//3,3])
+        visibility_ind = list(kpts[:,0])
         kpts =  kpts[:,1:]
         kpts[:,0] = kpts[:,0]*(self.img_size[1]/W)
         kpts[:,1] = kpts[:,1]*(self.img_size[0]/H)
 
-        score_maps = []
+        kpts, visibility_ind = self.augment_kpts(kpts, visibility_ind)
+
+        score_maps = []         
         for idx, kp in enumerate(kpts):
             if visibility_ind[idx] == 2:
                 score_map = np.zeros([self.img_size[0]//self.scale_factor, self.img_size[1]//self.scale_factor])
@@ -93,7 +163,13 @@ class Deepfashion_Dataset(Dataset):
             score_maps.append(torch.from_numpy(score_map))
         score_maps = torch.stack(score_maps, dim=0)
 
-        return img_name, img, kpts, score_maps
+        return img_name, img.float(), kpts, score_maps.float()
+    
+if __name__ == "__main__":
+    dataset_path = "../deepfashion"
+    dataset = Deepfashion_Dataset(dataset_path,clothing_type='upper_body')
+    print(dataset[0][3].shape)
+
 
 
 
