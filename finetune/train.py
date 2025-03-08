@@ -40,7 +40,7 @@ def main():
     dataset = Deepfashion_Dataset(args.data_dir, img_size=(256, 192), scale_factor=4)
     dataloader = DataLoader(dataset, args.batch_size, shuffle=True, collate_fn=None, num_workers=args.num_workers)
 
-    model = ViTFashionDetector(num_labels=8).to(device)
+    model = ViTFashionDetector(num_labels=13).to(device)
     optimizer = optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=args.scheduler_step_size, gamma=args.scheduler_gamma)
     #criterion = JointsMSELoss() #nn.BCEWithLogitsLoss()
