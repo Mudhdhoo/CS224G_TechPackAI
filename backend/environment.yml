@@ -15,5 +15,12 @@ dependencies:
       - flask_cors
       - loguru
       - werkzeug
+      - uvicorn
+      - gspread
+      - google-auth
+      - google-auth-oauthlib
+      - google-auth-httplib2
+      - openpyxl
+      - pandas
       - transformers
       - opencv-python

@@ -11,7 +11,7 @@ import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import ProjectSetup from "./pages/ProjectSetup";
 import Chat from "./pages/Chat";
-import Editor from "./pages/Editor";
+import Editor from "./pages/Editor_old";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Layout from "./components/layout/Layout";
