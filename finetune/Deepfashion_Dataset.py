@@ -6,10 +6,10 @@ from torch.utils.data import Dataset
 from utils.utils import extract_number
 from torchvision import transforms
 from loguru import logger
-from utils.keypoints import get_gaussian_scoremap, kp2ind, reflect_point_across_line
+from utils.keypoints import get_gaussian_scoremap, kp2ind, reflect_point_across_line, augment_upper_body_kpts
     
 class Deepfashion_Dataset(Dataset):
-    def __init__(self, dataset_path, img_size = (256, 192), scale_factor=4, clothing_type='upper_body'):
+    def __init__(self, dataset_path, img_size = (256, 192), scale_factor=4, clothing_type='upper_body', augment=False):
         super().__init__()
         assert os.path.isdir(dataset_path), f"{dataset_path} is not a valid directory."
         assert clothing_type in ['upper_body', 'lower_body', 'full_body']
@@ -17,6 +17,7 @@ class Deepfashion_Dataset(Dataset):
         self.dataset_path = dataset_path
         self.img_size = img_size
         self.scale_factor = scale_factor
+        self.augment = augment
         self.clothing_type = clothing_type
         self.annotations, self.images = self.load_data(clothing_type)
         self.kp2ind = kp2ind[clothing_type]
@@ -78,52 +79,8 @@ class Deepfashion_Dataset(Dataset):
     def augment_kpts(self, kpts, visibility_ind):
         H, W = self.img_size
         if self.clothing_type == 'upper_body':
-            center = torch.mean(torch.stack([
-                kpts[self.kp2ind['left_collar']],
-                kpts[self.kp2ind['right_collar']],
-                kpts[self.kp2ind['left_hem']],
-                kpts[self.kp2ind['right_hem']]
-            ]).float(),dim=0)
-
-            center_up = torch.mean(torch.stack([
-                kpts[self.kp2ind['left_collar']],
-                kpts[self.kp2ind['right_collar']],
-                center
-            ]).float(),dim=0)
-            
-            center_down = torch.mean(torch.stack([
-                kpts[self.kp2ind['left_hem']],
-                kpts[self.kp2ind['right_hem']],
-                center
-            ]).float(),dim=0)
-
-            left_breast = torch.from_numpy(reflect_point_across_line(
-                kpts[self.kp2ind['right_collar']],
-                kpts[self.kp2ind['left_collar']],
-                center_up
-                ))
-            
-            right_breast = torch.from_numpy(reflect_point_across_line(
-                kpts[self.kp2ind['left_collar']],
-                kpts[self.kp2ind['right_collar']],
-                center_up
-                ))
-            
-            left_pocket = torch.from_numpy(reflect_point_across_line(
-                center_down,
-                center,
-                kpts[self.kp2ind['left_hem']]
-                ))
-            
-            right_pocket = torch.from_numpy(reflect_point_across_line(
-                center_down,
-                center,
-                kpts[self.kp2ind['right_hem']]
-                ))
-            
-
-            kpts = torch.vstack([kpts, center, center_up, center_down, left_breast, right_breast, left_pocket, right_pocket])
-            visibility_ind.extend([1,1,1,1,1,1,1])
+            kpts = augment_upper_body_kpts(kpts)
+            visibility_ind.extend([1,1,1,1,1,1,1,1,1])
 
         return kpts, visibility_ind
 
@@ -151,8 +108,8 @@ class Deepfashion_Dataset(Dataset):
         kpts =  kpts[:,1:]
         kpts[:,0] = kpts[:,0]*(self.img_size[1]/W)
         kpts[:,1] = kpts[:,1]*(self.img_size[0]/H)
-
-        kpts, visibility_ind = self.augment_kpts(kpts, visibility_ind)
+        if self.augment:
+            kpts, visibility_ind = self.augment_kpts(kpts, visibility_ind)
 
         score_maps = []         
         for idx, kp in enumerate(kpts):

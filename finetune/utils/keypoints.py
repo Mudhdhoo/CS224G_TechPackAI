@@ -92,3 +92,64 @@ def reflect_point_across_line(P, A, B):
     y_reflected = y0 - 2 * b * d
     
     return np.array([x_reflected, y_reflected])
+
+def augment_upper_body_kpts(kpts): 
+        center = torch.mean(torch.stack([
+            kpts[kp2ind['upper_body']['left_collar']],
+            kpts[kp2ind['upper_body']['right_collar']],
+            kpts[kp2ind['upper_body']['left_hem']],
+            kpts[kp2ind['upper_body']['right_hem']]
+        ]).float(),dim=0)
+
+        center_up = torch.mean(torch.stack([
+            kpts[kp2ind['upper_body']['left_collar']],
+            kpts[kp2ind['upper_body']['right_collar']],
+            center
+        ]).float(),dim=0)
+        
+        center_down = torch.mean(torch.stack([
+            kpts[kp2ind['upper_body']['left_hem']],
+            kpts[kp2ind['upper_body']['right_hem']],
+            center
+        ]).float(),dim=0)
+
+        left_breast = torch.from_numpy(reflect_point_across_line(
+            kpts[kp2ind['upper_body']['right_collar']],
+            kpts[kp2ind['upper_body']['left_collar']],
+            center_up
+            ))
+        
+        right_breast = torch.from_numpy(reflect_point_across_line(
+            kpts[kp2ind['upper_body']['left_collar']],
+            kpts[kp2ind['upper_body']['right_collar']],
+            center_up
+            ))
+        
+        left_pocket = torch.from_numpy(reflect_point_across_line(
+            center_down,
+            center,
+            kpts[kp2ind['upper_body']['left_hem']]
+            ))
+        
+        right_pocket = torch.from_numpy(reflect_point_across_line(
+            center_down,
+            center,
+            kpts[kp2ind['upper_body']['right_hem']]
+            ))
+        
+        left_shoulder= torch.from_numpy(reflect_point_across_line(
+            center_up,
+            left_breast,
+            kpts[kp2ind['upper_body']['left_collar']]
+            ))
+        
+        right_shoulder= torch.from_numpy(reflect_point_across_line(
+            center_up,
+            right_breast,
+            kpts[kp2ind['upper_body']['right_collar']]
+            ))
+        
+
+        kpts = torch.vstack([kpts, center, center_up, center_down, left_breast, right_breast, left_pocket, right_pocket, left_shoulder, right_shoulder])
+
+        return kpts

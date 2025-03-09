@@ -32,15 +32,18 @@ def extract_number(filename):
 def normalize_image(image: Image.Image):
     """
     Normalizes a PIL image using the given mean and standard deviation.
-
+    
     Args:
         image (PIL.Image.Image): The input image.
-
+    
     Returns:
         np.ndarray: The normalized image as a NumPy array.
     """
     # Convert image to NumPy array (scale to [0,1])
     image_array = np.array(image).astype(np.float32) / 255.0
+
+    if image_array.ndim < 3:
+        image_array = np.stack([image_array, image_array, image_array],axis=-1)
 
     # Define mean and standard deviation
     mean = np.array([0.485, 0.456, 0.406])
@@ -50,6 +53,7 @@ def normalize_image(image: Image.Image):
     normalized_image = (image_array - mean) / std
 
     return normalized_image
+
 
 def save_learning_curve(epochs, train_losses, output_dir):
     """

@@ -18,9 +18,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", type=str, default="../deepfashion/", help="Directory where your data files are located")
-    parser.add_argument("--batch_size", type=int, default=64, help="Batch size for training")
+    parser.add_argument("--batch_size", type=int, default=256, help="Batch size for training")
     parser.add_argument("--epochs", type=int, default=30, help="Number of training epochs")
-    parser.add_argument("--scheduler_step_size", type=int, default=20, help="LR scheduler step size.")
+    parser.add_argument("--scheduler_step_size", type=int, default=15, help="LR scheduler step size.")
     parser.add_argument("--scheduler_gamma", type=float, default=0.1, help="LR scheduler decay factor.")
     parser.add_argument("--lr", type=float, default=5e-4, help="Learning Rate")
     parser.add_argument("--weight_decay", type=float, default=0.01, help="Weight Decay")
@@ -37,10 +37,10 @@ def main():
     # Ensure output directory exists
     os.makedirs(args.output_dir, exist_ok=True)
     
-    dataset = Deepfashion_Dataset(args.data_dir, img_size=(256, 192), scale_factor=4)
+    dataset = Deepfashion_Dataset(args.data_dir, img_size=(256, 192), scale_factor=4, clothing_type="upper_body")
     dataloader = DataLoader(dataset, args.batch_size, shuffle=True, collate_fn=None, num_workers=args.num_workers)
 
-    model = ViTFashionDetector(num_labels=13).to(device)
+    model = ViTFashionDetector(num_labels=6).to(device)
     optimizer = optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=args.scheduler_step_size, gamma=args.scheduler_gamma)
     #criterion = JointsMSELoss() #nn.BCEWithLogitsLoss()
@@ -73,25 +73,21 @@ def main():
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            scheduler.step()
-            
             epoch_losses.append(loss.item())
             if ((idx+1) % 100) == 0:
                 logger.info(f"Loss: {loss.item()}")
-        
-        # Calculate and log mean epoch loss
+
+        scheduler.step()
+        lr = optimizer.param_groups[0]['lr']
         mean_epoch_loss = np.mean(epoch_losses)
-        logger.info(f"Epoch {epoch+1}: Mean Loss = {mean_epoch_loss}")
-        
+        logger.info(f"Epoch {epoch+1}: Mean Loss={mean_epoch_loss}, Learning Rate={lr}")
         # Store for learning curve
         epochs.append(epoch + 1)
         train_losses.append(mean_epoch_loss)
         
-        # Save learning curve plot after each epoch
-        save_learning_curve(epochs, train_losses, args.output_dir)
-        
-        # Save model checkpoint after each epoch
+        # Save model checkpoint and learning curve
         if ((epoch+1) % args.save_every) == 0:
+            save_learning_curve(epochs, train_losses, args.output_dir)
             save_checkpoint(model, optimizer, scheduler, epoch, train_losses, args.output_dir)
     
     # Save final learning curve data as numpy arrays for future reference
