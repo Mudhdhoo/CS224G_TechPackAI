@@ -5,10 +5,15 @@ channels:
 dependencies:
   - python=3.10  
   - pip
+  - matplotlib
   - pip:
+      - torch
+      - torchvision
       - openai
       - flask
       - supabase
       - flask_cors
       - loguru
       - werkzeug
+      - transformers
+      - opencv-python
