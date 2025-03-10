@@ -177,8 +177,26 @@ class PreviewPDFRoute:
             pdf_folder = os.path.join(os.getcwd(), f'projects/{project_id}')
             pdf_filename = "tech_pack.pdf"
             pdf_path = os.path.join(pdf_folder, pdf_filename)
+            
             if not os.path.exists(pdf_path):
-                return JSONResponse({"error": "PDF not found"}, status_code=404)
+                # Try alternative filenames if tech_pack.pdf doesn't exist
+                alternative_filenames = ["code.pdf"]
+                for alt_filename in alternative_filenames:
+                    alt_path = os.path.join(pdf_folder, alt_filename)
+                    if os.path.exists(alt_path):
+                        # Rename the file to tech_pack.pdf for consistency
+                        try:
+                            os.rename(alt_path, pdf_path)
+                            break
+                        except:
+                            # If rename fails, use the original file
+                            pdf_filename = alt_filename
+                            pdf_path = alt_path
+                            break
+                else:
+                    # No PDF files found
+                    return JSONResponse({"error": "PDF not found. Try regenerating your tech pack."}, status_code=404)
+            
             return FileResponse(pdf_path, media_type="application/pdf", filename=pdf_filename)
 
 class BeginConversationRoute:

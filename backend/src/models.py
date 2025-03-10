@@ -44,13 +44,34 @@ class CustomerAgent:
             if message.function_call and message.function_call.name == "generate_template":
                 # Non-streaming path for function calls
                 response, code = self.get_response(message)
+                
+                compilation_result = None
                 if code:
+                    # Ensure project directory exists
                     proj_dir = os.path.join(os.getcwd(), 'projects', project_id)
-                    with open(f"{proj_dir}/code.txt", "w") as file:
+                    os.makedirs(proj_dir, exist_ok=True)
+                    
+                    # Write LaTeX code to file
+                    code_txt_path = os.path.join(proj_dir, "code.txt")
+                    logger.info(f"Writing LaTeX code to {code_txt_path}")
+                    
+                    with open(code_txt_path, "w") as file:
                         file.write(code)
-                        logger.info(f"Compiling latex code at projects/{project_id}/code.txt")
+                    
+                    # Verify the file was written correctly
+                    if not os.path.exists(code_txt_path) or os.path.getsize(code_txt_path) == 0:
+                        logger.error(f"Failed to write LaTeX code to {code_txt_path}")
+                        response += "\n\nThere was an issue generating your tech pack. The system couldn't save the LaTeX code properly."
+                    else:
+                        logger.info(f"Compiling LaTeX code at {code_txt_path}")
                         current_dir = os.path.dirname(os.path.abspath(__file__))
-                        self.compile_latex(os.path.join(current_dir, "projects"), project_id)
+                        compilation_result = self.compile_latex(os.path.join(current_dir, "projects"), project_id)
+                        
+                        # Add compilation result feedback to response
+                        if compilation_result:
+                            response += "\n\nYour tech pack has been updated and a new PDF has been generated. You can view it using the 'Tech Pack Preview' button."
+                        else:
+                            response += "\n\nThere was an issue generating your tech pack PDF. The system team has been notified."
                 
                 self.conv_history.append({"role":"assistant", "content":f"{response}"})
                 yield response
@@ -78,7 +99,7 @@ class CustomerAgent:
                 self.conv_history.append({"role":"assistant", "content":f"{full_response}"})
                 
         except Exception as e:
-            print(f"Error in chat_stream: {e}")
+            logger.error(f"Error in chat_stream: {str(e)}")
             yield f"Error: {str(e)}"
     
     def get_completion(self):
@@ -102,8 +123,21 @@ class CustomerAgent:
 
             # Reset conversation history
             self.reset_conv_history()
-            self.load_image("illustration", project_id)
-            self.load_image("reference", project_id)
+            
+            # Try to load images if they exist
+            try:
+                illustration_dir = os.path.join(os.getcwd(), "projects", project_id, "illustration")
+                if os.path.exists(illustration_dir) and os.listdir(illustration_dir):
+                    self.load_image("illustration", project_id)
+            except Exception as e:
+                logger.error(f"Error loading illustration images: {str(e)}")
+                
+            try:
+                reference_dir = os.path.join(os.getcwd(), "projects", project_id, "reference")
+                if os.path.exists(reference_dir) and os.listdir(reference_dir):
+                    self.load_image("reference", project_id)
+            except Exception as e:
+                logger.error(f"Error loading reference images: {str(e)}")
 
             # Add messages in chronological order 
             for msg in messages[:]:
@@ -149,7 +183,16 @@ class CustomerAgent:
     def load_image(self, type, project_id):
         assert type in ["illustration", "reference"], "type must be illustration or reference"
         images_path = os.path.join(os.getcwd(), "projects", project_id, type)
+        
+        if not os.path.exists(images_path):
+            logger.warning(f"{type} directory does not exist: {images_path}")
+            return
+            
         image_names = os.listdir(images_path)
+        if not image_names:
+            logger.warning(f"No {type} images found in {images_path}")
+            return
+            
         images = [os.path.join(images_path, file) for file in image_names]
 
         conv = {
@@ -164,24 +207,48 @@ class CustomerAgent:
                     }
         
         for image in images:
-            with open(image, "rb") as image_file:
-                image = base64.b64encode(image_file.read()).decode("utf-8")
-            conv["content"].append(
-                {
-                    "type": "image_url",
-                    "image_url": {"url": f"data:image/jpeg;base64,{image}"},
-                }
-                )
+            try:
+                with open(image, "rb") as image_file:
+                    image_data = base64.b64encode(image_file.read()).decode("utf-8")
+                conv["content"].append(
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{image_data}"},
+                    }
+                    )
+            except Exception as e:
+                logger.error(f"Error loading image {image}: {str(e)}")
+        
         self.conv_history.append(conv)
 
     def compile_latex(self, project_path, project_id):
-        code_path = os.path.join(os.getcwd(), project_path, project_id)
-        assert os.path.exists(code_path), f"The path {code_path} does not exitst."
+        """
+        Compile the LaTeX document for the specified project.
+        
+        Returns:
+            bool: True if compilation succeeded, False otherwise
+        """
         try:
-            compile_latex_from_txt(code_path)
-            return True
+            # Validate project directory
+            project_dir = os.path.join(project_path, project_id)
+            if not os.path.exists(project_dir):
+                logger.error(f"Project directory does not exist: {project_dir}")
+                return False
+                
+            # Compile the LaTeX document
+            logger.info(f"Compiling LaTeX for project: {project_id}")
+            pdf_path = compile_latex_from_txt(project_dir)
+            
+            if pdf_path and os.path.exists(pdf_path):
+                logger.info(f"Successfully compiled PDF: {pdf_path}")
+                return True
+            else:
+                logger.error(f"Failed to compile PDF for project: {project_id}")
+                return False
+                
         except Exception as e:
-            print(e)
+            logger.error(f"Error compiling LaTeX: {str(e)}")
+            return False
 
 
 

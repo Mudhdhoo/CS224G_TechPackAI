@@ -16,6 +16,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { isErrored } from "stream";
+import React from "react";
 
 type Message = {
   id: string;
@@ -30,6 +31,7 @@ const Chat = () => {
   const [inputMessage, setInputMessage] = useState("");
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [pdfNeedsRefresh, setPdfNeedsRefresh] = useState(false);
   const { id: projectId } = useParams();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -72,32 +74,74 @@ const Chat = () => {
       
       return uniqueMessages;
     },
-    enabled: !!projectId
+    enabled: !!projectId,
+    onSuccess: (newMessages) => {
+      // Check if any new assistant messages mention PDF generation
+      const latestAssistantMessage = newMessages
+        .filter(msg => msg.type === 'assistant')
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+      
+      if (latestAssistantMessage && (
+          latestAssistantMessage.content.includes("tech pack has been updated") ||
+          latestAssistantMessage.content.includes("PDF has been generated")
+      )) {
+        setPdfNeedsRefresh(true);
+      }
+    }
   });
+
+  // Effect to refresh PDF when needed
+  React.useEffect(() => {
+    if (pdfNeedsRefresh) {
+      refetchPdf();
+      setPdfNeedsRefresh(false);
+    }
+  }, [pdfNeedsRefresh]);
 
   const { isLoading: isPdfLoading, refetch: refetchPdf } = useQuery({
     queryKey: ['pdf', projectId],
     queryFn: async () => {
       if (!projectId) return null;
+      
+      // Add a timestamp to bust cache
+      const timestamp = new Date().getTime();
       const formData = new FormData();
-      formData.append('projectId', projectId)
-      const response = await fetch(`http://127.0.0.1:8000/preview_pdf`, {
+      formData.append('projectId', projectId);
+      formData.append('timestamp', timestamp.toString());
+      
+      const response = await fetch(`http://127.0.0.1:8000/preview_pdf?t=${timestamp}`, {
         method: "POST",
         body: formData
       });
 
-      if (!response.ok) throw new Error('Failed to fetch PDF');
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to fetch PDF: ${errorText}`);
+      }
+      
       const blob = await response.blob();
+      
+      // Revoke old URL if it exists
+      if (pdfUrl) {
+        URL.revokeObjectURL(pdfUrl);
+      }
+      
       const url = URL.createObjectURL(blob);
       setPdfUrl(url);
       return url;
     },
     enabled: false,
+    retry: 2,
+    retryDelay: 1000,
   });
 
   const handlePreviewClick = async () => {
     try {
       await refetchPdf();
+      toast({
+        title: "PDF Preview",
+        description: "Loading your Tech Pack PDF...",
+      });
     } catch (error) {
       toast({
         title: "Failed to load PDF preview",
@@ -162,6 +206,14 @@ const Chat = () => {
         // Update the content ref with new chunk
         streamedContentRef.current += chunk;
         
+        // Check if the chunk mentions PDF generation
+        if (
+          chunk.includes("tech pack has been updated") ||
+          chunk.includes("PDF has been generated")
+        ) {
+          setPdfNeedsRefresh(true);
+        }
+        
         // Update the assistant's message with the current streamed content
         queryClient.setQueryData(['messages', projectId], (oldData: Message[] = []) => {
           return oldData.map(msg => 
@@ -186,7 +238,6 @@ const Chat = () => {
       setInputMessage("");
     }
   };
-
 
   const handleSendMessage = () => {
     if (!inputMessage.trim()) {
