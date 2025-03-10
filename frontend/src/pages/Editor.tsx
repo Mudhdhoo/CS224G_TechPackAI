@@ -60,7 +60,7 @@ const PdfEmbed = ({ projectId }: { projectId: string | undefined }) => {
         <iframe
           src={pdfUrl}
           width="100%"
-          height="1000"
+          height="600"
           style={{ border: "none" }}
           title="PDF Preview"
         />
@@ -106,7 +106,7 @@ function Editor() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // For user’s input in the text box
+  // For user's input in the text box
   const [inputMessage, setInputMessage] = useState("");
 
   // Track streaming state
@@ -291,10 +291,10 @@ function Editor() {
         </Card>
 
         {/* Chat Column */}
-        <Card className="p-6 flex flex-col">
+        <Card className="p-6 flex flex-col h-[700px]">
           <h2 className="heading-md mb-4">AI Assistant</h2>
           {/* Render messages */}
-          <div className="flex-1 space-y-4 overflow-y-auto mb-4">
+          <div className="flex-1 space-y-4 overflow-y-auto mb-4" style={{ height: "450px" }}>
             {messages.map((msg) => (
               <div
                 key={msg.id}

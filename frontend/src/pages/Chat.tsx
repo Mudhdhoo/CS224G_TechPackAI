@@ -326,8 +326,8 @@ const Chat = () => {
       
       <p className="text-muted-foreground">Enter your brand and designer names to begin.</p>
 
-      <Card className="p-6 min-h-[500px] flex flex-col">
-        <div className="flex-1 space-y-4 overflow-y-auto">
+      <Card className="p-6 min-h-[500px] h-[600px] flex flex-col">
+        <div className="flex-1 space-y-4 overflow-y-auto" style={{ height: "450px" }}>
           {messages.map((message) => (
             <div
               key={message.id}
