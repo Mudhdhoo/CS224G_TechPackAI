@@ -22,6 +22,55 @@ type Message = {
   created_at: string;
 };
 
+// New PdfEmbed component to fetch and display the PDF
+const PdfEmbed = ({ projectId }: { projectId: string | undefined }) => {
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+
+  // Automatically fetch the PDF as soon as projectId is available
+  const { isLoading: isPdfLoading } = useQuery({
+    queryKey: ["pdf", projectId],
+    queryFn: async () => {
+      if (!projectId) return null;
+      const formData = new FormData();
+      formData.append("projectId", projectId);
+
+      // Update to the correct port (e.g., 8000)
+      const response = await fetch("http://127.0.0.1:8000/preview_pdf", {
+        method: "POST",
+        body: formData,
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch PDF");
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      setPdfUrl(url);
+      return url;
+    },
+    enabled: !!projectId, // fetch as soon as we have a projectId
+  });
+
+  return (
+    <div style={{ width: "100%", height: "100%" }}>
+      <h2>PDF Preview</h2>
+      {isPdfLoading ? (
+        <p>Loading PDF...</p>
+      ) : pdfUrl ? (
+        <iframe
+          src={pdfUrl}
+          width="100%"
+          height="800"
+          style={{ border: "none" }}
+          title="PDF Preview"
+        />
+      ) : (
+        <p>No PDF available.</p>
+      )}
+    </div>
+  );
+};
+
 function Editor() {
   const navigate = useNavigate();
   const { id: projectId } = useParams();
@@ -37,10 +86,7 @@ function Editor() {
   // Holds the incremental streamed content for the assistant
   const streamedContentRef = useRef("");
 
-  // ---- 1) Fetch existing messages (like Chat page) ----
-  // You can replace this with your own “techpackAI.getProjectMessages(projectId)” 
-  // if you want to unify retrieval with the Chat page logic. 
-  // Right now, this example fetches from Supabase directly.
+  // 1) Fetch existing messages
   const {
     data: messages = [],
     isLoading: isLoadingMessages,
@@ -60,7 +106,7 @@ function Editor() {
     enabled: !!projectId,
   });
 
-  // ---- 2) Streaming logic (copied from Chat page) ----
+  // 2) Streaming logic
   const sendStreamingMessage = async (content: string) => {
     if (!projectId || !user) {
       toast({
@@ -85,11 +131,11 @@ function Editor() {
         created_at: new Date().toISOString(),
       };
 
-      // Create a temporary assistant message to hold streaming text
+      // Create a temporary assistant message for streaming content
       const tempAssistantId = `temp-assistant-${Date.now()}`;
       const tempAssistantMessage: Message = {
         id: tempAssistantId,
-        content: "", // updated chunk-by-chunk
+        content: "",
         type: "assistant",
         project_id: projectId,
         user_id: user.id,
@@ -105,19 +151,18 @@ function Editor() {
 
       // Start streaming from the backend
       await techpackAI.sendMessageStream(content, projectId, (chunk: string) => {
-        streamedContentRef.current += chunk; // accumulate streamed text
-
+        streamedContentRef.current += chunk;
         // Update the assistant's message in local state
-        queryClient.setQueryData(["messages", projectId], (oldMsgs: Message[] = []) => {
-          return oldMsgs.map((msg) =>
+        queryClient.setQueryData(["messages", projectId], (oldMsgs: Message[] = []) =>
+          oldMsgs.map((msg) =>
             msg.id === tempAssistantId
               ? { ...msg, content: streamedContentRef.current }
               : msg
-          );
-        });
+          )
+        );
       });
 
-      // When streaming finishes, re-fetch to get proper message IDs from DB
+      // When streaming finishes, re-fetch to get proper message IDs from the DB
       queryClient.invalidateQueries({ queryKey: ["messages", projectId] });
     } catch (error) {
       toast({
@@ -131,7 +176,7 @@ function Editor() {
     }
   };
 
-  // ---- 3) Single entry point for sending messages (streaming) ----
+  // 3) Sending messages
   const handleSendMessage = () => {
     if (!inputMessage.trim()) {
       toast({
@@ -151,8 +196,7 @@ function Editor() {
     }
   };
 
-  // ---- 4) "Apply ChatGPT Edits to Sheet" button logic ----
-  // This calls your Flask or FastAPI endpoint to manipulate Google Sheet
+  // 4) "Apply ChatGPT Edits to Sheet"
   const editViaChatGPT = useMutation({
     mutationFn: async (instructions: string) => {
       const response = await fetch("http://127.0.0.1:8001/sheet/chat-edit-excel", {
@@ -169,9 +213,8 @@ function Editor() {
     onSuccess: () => {
       toast({
         title: "Sheet updated!",
-        description: "The Google Sheet was edited via ChatGPT instructions.",
+        description: "The sheet was updated via ChatGPT instructions.",
       });
-      // Optionally: Force a reload in your <iframe> or refresh the data
     },
     onError: (error) => {
       toast({
@@ -190,26 +233,7 @@ function Editor() {
       });
       return;
     }
-    // Use the same inputMessage as instructions, or separate if you prefer
     editViaChatGPT.mutate(inputMessage);
-  };
-
-  // ---- 5) Google Sheet Embed for live editing ----
-  const GoogleSheetEmbed = () => {
-    const embedUrl =
-      "https://docs.google.com/spreadsheets/d/1jfPQ6k-8A-dD-8X6Mu5SwQsoKtQOWGDEoZalidI6Wec/edit?usp=sharing";
-    return (
-      <div style={{ width: "100%", height: "100%" }}>
-        <h2>Live Google Sheet</h2>
-        <iframe
-          src={embedUrl}
-          width="100%"
-          height="800"
-          style={{ border: "none" }}
-          title="Live Google Sheet"
-        />
-      </div>
-    );
   };
 
   if (isLoadingMessages) {
@@ -228,21 +252,19 @@ function Editor() {
             <ArrowLeft className="h-4 w-4" />
             Back to Dashboard
           </Button>
-          <h1 className="heading-lg">Document Editor (Google Sheet)</h1>
         </div>
       </div>
 
-      {/* Main layout: left Google Sheet, right chat */}
+      {/* Main layout: left PDF embed, right chat */}
       <div className="grid grid-cols-4 gap-6">
-        {/* Google Sheet Column */}
+        {/* PDF Embed Column */}
         <Card className="col-span-3 p-6 min-h-[600px] overflow-hidden">
-          <GoogleSheetEmbed />
+          <PdfEmbed projectId={projectId} />
         </Card>
 
         {/* Chat Column */}
         <Card className="p-6 flex flex-col">
           <h2 className="heading-md mb-4">AI Assistant</h2>
-
           {/* Render messages */}
           <div className="flex-1 space-y-4 overflow-y-auto mb-4">
             {messages.map((msg) => (
@@ -258,8 +280,7 @@ function Editor() {
               </div>
             ))}
           </div>
-
-          {/* Input + Buttons */}
+          {/* Input and Buttons */}
           <div className="border-t pt-4">
             <div className="flex gap-2">
               <Input
@@ -274,8 +295,6 @@ function Editor() {
                 <Send className="h-4 w-4" />
               </Button>
             </div>
-
-            {/* Apply ChatGPT instructions to the Google Sheet */}
             <div className="mt-3 text-right">
               <Button variant="outline" onClick={handleApplyEdits}>
                 Apply ChatGPT Edits to Sheet
