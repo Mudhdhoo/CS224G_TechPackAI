@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -60,13 +60,41 @@ const PdfEmbed = ({ projectId }: { projectId: string | undefined }) => {
         <iframe
           src={pdfUrl}
           width="100%"
-          height="800"
+          height="1000"
           style={{ border: "none" }}
           title="PDF Preview"
         />
       ) : (
         <p>No PDF available.</p>
       )}
+    </div>
+  );
+};
+
+// Add this new Animation component
+const ThinkingAnimation = () => {
+  const [text, setText] = useState("thinking...");
+  
+  useEffect(() => {
+    const messages = ["thinking...", "evaluating...", "creating..."];
+    let index = 0;
+    
+    const interval = setInterval(() => {
+      index = (index + 1);
+      setText(messages[index]);
+      
+      // Stop the interval when we reach "creating..."
+      if (index === messages.length - 1) {
+        clearInterval(interval);
+      }
+    }, 2000);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  return (
+    <div className="p-4 rounded-lg bg-muted animate-pulse">
+      <p className="text-sm font-medium text-muted-foreground">{text}</p>
     </div>
   );
 };
@@ -279,6 +307,7 @@ function Editor() {
                 <p>{msg.content}</p>
               </div>
             ))}
+            {isStreaming && <ThinkingAnimation />}
           </div>
           {/* Input and Buttons */}
           <div className="border-t pt-4">
