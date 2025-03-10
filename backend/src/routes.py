@@ -5,6 +5,7 @@ import os
 import base64
 import werkzeug
 from loguru import logger
+import torch
 
 class ChatRoutes:
     def __init__(self, model, database):
@@ -46,10 +47,11 @@ class ChatRoutes:
             })
 
 class UploadIllustrationRoute:
-    def __init__(self, customer_agent, code_agent, database):
+    def __init__(self, customer_agent, code_agent, image_agent, database):
         self.router = APIRouter()
         self.customer_agent = customer_agent
         self.code_agent = code_agent
+        self.image_agent = image_agent
         self.database = database
         self.setup_routes()
 
@@ -88,6 +90,10 @@ class UploadIllustrationRoute:
                 with open(file_path, "wb") as buffer:
                     content = await image.read()
                     buffer.write(content)
+
+                # Analyze the images
+                logger.info("Detecting Keypoints...")
+                self.image_agent.analyze_images(upload_folder)
                 
                 with open(file_path, "rb") as image_file:
                     encoded_image = base64.b64encode(image_file.read()).decode("utf-8")
@@ -215,15 +221,17 @@ class PreviewPDFRoute:
             return FileResponse(newest_pdf_path, media_type="application/pdf", filename=filename)
 
 class BeginConversationRoute:
-    def __init__(self, database):
+    def __init__(self, database, customer_agent):
         self.router = APIRouter()
         self.database = database
+        self.customer_agent = customer_agent
         self.setup_routes()
 
     def setup_routes(self):
         @self.router.post("/begin_conversation")
         async def begin_conversation(userId: str = Form(...), projectId: str = Form(...)):
             logger.info("Conversation Initialized")
+
             self.database.save_message(
                 "Thank you for uploading your illustration and reference images! To get started, please provide your brand name and designer name.",
                 "assistant", projectId, userId

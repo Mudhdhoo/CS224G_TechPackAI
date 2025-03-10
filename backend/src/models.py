@@ -1,9 +1,18 @@
-from utils.prompts import SYSTEM_PROMPT_CUSTOMER_AGENT, SYSTEM_PROMPT_CODE_AGENT
+from utils.prompts import (SYSTEM_PROMPT_CUSTOMER_AGENT, 
+                           SYSTEM_PROMPT_CODE_AGENT,
+                           SYSTEM_PROMPT_IMAGE_ANALYSIS_AGENT)
 from loguru import logger
 import json
 import base64
 import os
 from utils.compile import compile_latex_from_txt
+from utils.utils import load_checkpoint, draw_keypoints, normalize_image, DEVICE
+from detector.FashionDetector import ViTFashionDetector
+from utils.keypoints import augment_upper_body_kpts, extract_keypoints_from_heatmap
+import torch
+import numpy as np
+from PIL import Image
+from utils.json_templates import ImageNamesTemplate
 
 class CustomerAgent:
     def __init__(self, client, code_agent, database, model="gpt-4o"):
@@ -260,8 +269,6 @@ class CodeAgent:
         self.conv_history =[
             {"role": "developer", "content": self.__SYSTEM_PROMPT},     # Provide general instructions and tasks
             ]
-        
-        self.history_loaded = False
     
     def generate_template(self, context):
         self.conv_history.append({"role":"user", "content": f"{context}"})
@@ -275,3 +282,80 @@ class CodeAgent:
         self.conv_history.append({"role":"assistant", "content":f"{response}"})
         
         return response.choices[0].message.content
+    
+class ImageAnalysisAgent:
+    def __init__(self, client, model="gpt-4o-2024-08-06"):
+        self.__SYSTEM_PROMPT = SYSTEM_PROMPT_IMAGE_ANALYSIS_AGENT
+        self.model = model
+        self.kpt_detector = ViTFashionDetector(num_labels=6).to(DEVICE)
+        load_checkpoint("/Users/johncao/Documents/Programming/Stanford/CS224G/finetune/outputs/checkpoint_epoch_30.pth", self.kpt_detector)
+        self.client = client
+        self.conv_history =[
+            {"role": "developer", "content": self.__SYSTEM_PROMPT},     # Provide general instructions and tasks
+            ]
+
+    
+    def analyze_images(self, img_folder_path):
+        img_names = os.listdir(img_folder_path)
+        imgs = [os.path.join(img_folder_path,name) for name in img_names]
+
+        conv = {
+        "role": "user",''
+        "content": [{
+            "type": "text",
+            "text": (
+                "Here are the illustration image(s).\n"
+                "<REMEMBER>\n"
+                f"The names of these illustration images are {[name for name in img_names]}. These come in the same order as the images.\n"
+                "</REMEMBER>"
+                )
+            }]
+        }
+            
+        for img in imgs:
+            with open(img, "rb") as image_file:
+                encoded_image = base64.b64encode(image_file.read()).decode("utf-8")
+            
+            conv["content"].append({
+                "type": "image_url",
+                "image_url": {"url": f"data:image/jpeg;base64,{encoded_image}"},
+            })
+
+        self.conv_history.append(conv)
+
+        response = self.client.beta.chat.completions.parse(
+            model=self.model,
+            messages=self.conv_history,
+            temperature=0.5,
+            response_format=ImageNamesTemplate,
+        )
+
+        image_names = response.choices[0].message.parsed.image_names
+        self.detect_keypoints(img_folder_path, image_names)
+    
+    def detect_keypoints(self, img_folder_path, img_names):
+        img_paths = [os.path.join(img_folder_path, name) for name in img_names]  
+        images = [Image.open(img_path) for img_path in img_paths]
+
+        for idx, image in enumerate(images):
+            W, H = image.size
+            normalized_image = normalize_image(image.resize([192,256]))
+            x = torch.tensor(normalized_image).permute(2,0,1).unsqueeze(0).float()
+            with torch.no_grad():
+                out = self.kpt_detector(x)
+            kpts = extract_keypoints_from_heatmap(out['heatmaps'][0])
+            kpts_list = []
+            for kp in kpts:
+                kpts_list.append([kp[0], kp[1]])
+
+            kpts = torch.tensor(kpts_list)*4
+            kpts = augment_upper_body_kpts(kpts)
+            kpts[:,0] = kpts[:,0]*(W/192)
+            kpts[:,1] = kpts[:,1]*(H/256)
+
+            new_image = draw_keypoints(np.array(image), kpts)
+
+            # Save image
+            logger.info(f"Saved Illustration with Keypoints to {img_paths[idx]}")
+            image = Image.fromarray(new_image)
+            image.save(img_paths[idx])

@@ -1,7 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import ChatRoutes, UploadIllustrationRoute, UploadReferenceRoute, PreviewPDFRoute, BeginConversationRoute
-from models import CustomerAgent, CodeAgent
+from routes import (
+    ChatRoutes, 
+    UploadIllustrationRoute, 
+    UploadReferenceRoute, 
+    PreviewPDFRoute, 
+    BeginConversationRoute)
+from models import CustomerAgent, CodeAgent, ImageAnalysisAgent
 from database import DatabaseManager
 from openai import OpenAI
 
@@ -20,13 +25,14 @@ client = OpenAI()
 database = DatabaseManager()
 code_agent = CodeAgent(client, model="gpt-4o")
 customer_agent = CustomerAgent(client, code_agent, database, model="gpt-4o")
+image_analysis_agent = ImageAnalysisAgent(client, model='gpt-4o-mini-2024-07-18')
 
 # Instantiate route classes and include their routers
 chat_routes_instance = ChatRoutes(customer_agent, database)
-upload_illustration_instance = UploadIllustrationRoute(customer_agent, code_agent, database)
+upload_illustration_instance = UploadIllustrationRoute(customer_agent, code_agent, image_analysis_agent, database)
 upload_reference_instance = UploadReferenceRoute(customer_agent, code_agent, database)
 preview_pdf_instance = PreviewPDFRoute()
-begin_conversation_instance = BeginConversationRoute(database)
+begin_conversation_instance = BeginConversationRoute(database, customer_agent)
 
 app.include_router(chat_routes_instance.router)
 app.include_router(upload_illustration_instance.router)

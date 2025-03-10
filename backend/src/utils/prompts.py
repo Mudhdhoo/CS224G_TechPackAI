@@ -68,3 +68,8 @@ Here is the Latex template you should fill out: \n\
 <TEMPLATE_INSTRUCTIONS>\n\
 {TEMPLATE_INSTRUCTION_PROMPT}\n\
 </TEMPLATE_INSTRUCTIONS>"
+
+# IMAGE ANALYSIS AGENT
+SYSTEM_PROMPT_IMAGE_ANALYSIS_AGENT = \
+f"You are an assistant who is going to look at images of clothes, and give the names of all the images that depict front facing clothes.\n\
+If you do not see any front facing clothes, do not return any names."
