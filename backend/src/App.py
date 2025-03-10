@@ -1,30 +1,39 @@
-from flask import Flask
-from flask_cors import CORS
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from routes import ChatRoutes, UploadIllustrationRoute, UploadReferenceRoute, PreviewPDFRoute, BeginConversationRoute
 from models import CustomerAgent, CodeAgent
 from database import DatabaseManager
 from openai import OpenAI
 
-class FlaskApp:
-    def __init__(self):
-        self.app = Flask(__name__)
-        CORS(self.app)
-        self.client = OpenAI()
-        self.database = DatabaseManager()
-        self.code_agent = CodeAgent(self.client, model="gpt-4o")
-        self.customer_agent = CustomerAgent(self.client, self.code_agent, self.database, model="gpt-4o")
-        self.register_routes()
+app = FastAPI()
 
-    def register_routes(self):
-        self.app.register_blueprint(ChatRoutes(self.customer_agent, self.database).blueprint)
-        self.app.register_blueprint(UploadIllustrationRoute(self.customer_agent, self.code_agent, self.database).blueprint)
-        self.app.register_blueprint(UploadReferenceRoute(self.customer_agent, self.code_agent, self.database).blueprint)
-        self.app.register_blueprint(PreviewPDFRoute().blueprint)
-        self.app.register_blueprint(BeginConversationRoute(self.database).blueprint)
+# Setup CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
-    def run(self):
-        self.app.run(debug=True)
+# Initialize shared components
+client = OpenAI()
+database = DatabaseManager()
+code_agent = CodeAgent(client, model="gpt-4o")
+customer_agent = CustomerAgent(client, code_agent, database, model="gpt-4o")
+
+# Instantiate route classes and include their routers
+chat_routes_instance = ChatRoutes(customer_agent, database)
+upload_illustration_instance = UploadIllustrationRoute(customer_agent, code_agent, database)
+upload_reference_instance = UploadReferenceRoute(customer_agent, code_agent, database)
+preview_pdf_instance = PreviewPDFRoute()
+begin_conversation_instance = BeginConversationRoute(database)
+
+app.include_router(chat_routes_instance.router)
+app.include_router(upload_illustration_instance.router)
+app.include_router(upload_reference_instance.router)
+app.include_router(preview_pdf_instance.router)
+app.include_router(begin_conversation_instance.router)
 
 if __name__ == "__main__":
-    app = FlaskApp()
-    app.run()
+    import uvicorn
+    uvicorn.run("App:app", host="127.0.0.1", port=8000, reload=True)

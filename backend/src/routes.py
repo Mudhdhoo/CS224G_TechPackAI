@@ -1,215 +1,199 @@
-from flask import Blueprint, request, jsonify, send_file, Response, stream_with_context
-import werkzeug
-import base64
-import os
+from fastapi import APIRouter, Request, HTTPException, UploadFile, File, Form
+from fastapi.responses import StreamingResponse, JSONResponse, FileResponse
 import json
+import os
+import base64
+import werkzeug
 from loguru import logger
 
 class ChatRoutes:
     def __init__(self, model, database):
-        self.blueprint = Blueprint("chat", __name__)
+        self.router = APIRouter()
         self.model = model
         self.database = database
         self.setup_routes()
 
     def setup_routes(self):
-        @self.blueprint.route('/chat', methods=['POST'])
-        def chat():
-            data = request.get_json()
-
+        @self.router.post("/chat")
+        async def chat(request: Request):
+            data = await request.json()
             message = data.get("content", "")
             project_id = data.get("projectId", "")
             user_id = data.get("userId", "")
-            
-            # Return SSE stream
-            def generate():
+
+            async def generate():
                 try:
                     # Save user message to database first
                     self.database.save_message(message, "user", project_id, user_id)
                     
-                    # Stream the response
                     response_content = ""
+                    # Assuming chat_stream is synchronous; if async, await appropriately
                     for chunk in self.model.chat_stream(message, project_id, user_id):
                         response_content += chunk
                         yield f"data: {json.dumps({'content': chunk})}\n\n"
                     
                     # Save the complete response to database after streaming
                     self.database.save_message(response_content, "assistant", project_id, user_id)
-                    
-                    # Send done signal
                     yield f"data: {json.dumps({'done': True})}\n\n"
-                    
                 except Exception as e:
-                    print(e)
                     yield f"data: {json.dumps({'error': str(e)})}\n\n"
-            
-            return Response(stream_with_context(generate()), 
-                            mimetype='text/event-stream',
-                            headers={
-                                'Cache-Control': 'no-cache',
-                                'Access-Control-Allow-Origin': '*',
-                                'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-                                'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-                            })
+
+            return StreamingResponse(generate(), media_type="text/event-stream", headers={
+                "Cache-Control": "no-cache",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type, Authorization"
+            })
 
 class UploadIllustrationRoute:
     def __init__(self, customer_agent, code_agent, database):
-        self.blueprint = Blueprint("upload_illustration", __name__)
+        self.router = APIRouter()
         self.customer_agent = customer_agent
         self.code_agent = code_agent
         self.database = database
         self.setup_routes()
 
     def setup_routes(self):
-        @self.blueprint.route('/upload_illustration', methods=['POST'])
-        def upload():
+        @self.router.post("/upload_illustration")
+        async def upload_illustration(
+            userId: str = Form(...),
+            projectId: str = Form(...),
+            images: list[UploadFile] = File(...)
+        ):
             print("ILLU")
-            if 'images' not in request.files:
-                return jsonify({'error': 'No image part in the request'}), 400
+            if not images:
+                return JSONResponse({"error": "No image part in the request"}, status_code=400)
             
-            user_id = request.form.get('userId')    # Get user ID
-            project_id = request.form.get('projectId')  # Get project ID
-            images = request.files.getlist("images")  # Get all uploaded files
-
             conv = {
-                    "role": "user",
-                    "content": [{
-                            "type": "text",
-                            "text": f"Here are the illustration image(s).\n\
-                                <REMEMBER>\n\
-                                    The names of these illustration images are {[image.filename for image in images]}. These come in the same order as the images.\n\
-                                </REMEMBER> ",
-                        }]
-                        }
+                "role": "user",
+                "content": [{
+                    "type": "text",
+                    "text": (
+                        "Here are the illustration image(s).\n"
+                        "<REMEMBER>\n"
+                        f"The names of these illustration images are {[image.filename for image in images]}. These come in the same order as the images.\n"
+                        "</REMEMBER>"
+                    )
+                }]
+            }
             
             for image in images:
                 if image.filename == '':
-                    return jsonify({'error': 'No selected file'}), 400
+                    return JSONResponse({"error": "No selected file"}, status_code=400)
                 
-                # Secure the filename and save it in a local "uploads" folder (create this folder)
                 filename = werkzeug.utils.secure_filename(image.filename)
-                upload_folder = os.path.join(os.getcwd(), f'projects/{project_id}/illustration')
+                upload_folder = os.path.join(os.getcwd(), f'projects/{projectId}/illustration')
                 os.makedirs(upload_folder, exist_ok=True)
                 file_path = os.path.join(upload_folder, filename)
-                image.save(file_path)
-
-                # Encode image to base64
+                with open(file_path, "wb") as buffer:
+                    content = await image.read()
+                    buffer.write(content)
+                
                 with open(file_path, "rb") as image_file:
-                    image = base64.b64encode(image_file.read()).decode("utf-8")
-
-                conv["content"].append(
-                    {
-                        "type": "image_url",
-                        "image_url": {"url": f"data:image/jpeg;base64,{image}"},
-                    }
-                    )
+                    encoded_image = base64.b64encode(image_file.read()).decode("utf-8")
+                
+                conv["content"].append({
+                    "type": "image_url",
+                    "image_url": {"url": f"data:image/jpeg;base64,{encoded_image}"},
+                })
                 self.customer_agent.conv_history.append(conv)
                 self.code_agent.conv_history.append(conv)
-              #  self.database.save_image(image, project_id, user_id)
             
-            return jsonify({'message': 'File uploaded successfully'})
-        
+            return {"message": "File uploaded successfully"}
+
 class UploadReferenceRoute:
     def __init__(self, customer_agent, code_agent, database):
-        self.blueprint = Blueprint("upload_reference", __name__)
+        self.router = APIRouter()
         self.customer_agent = customer_agent
         self.code_agent = code_agent
         self.database = database
         self.setup_routes()
 
     def setup_routes(self):
-        @self.blueprint.route('/upload_reference', methods=['POST'])
-        def upload():
-            print('REFERENCE')
-            if 'images' not in request.files:
-                return jsonify({'error': 'No image part in the request'}), 400
+        @self.router.post("/upload_reference")
+        async def upload_reference(
+            userId: str = Form(...),
+            projectId: str = Form(...),
+            images: list[UploadFile] = File(...)
+        ):
+            print("REFERENCE")
+            if not images:
+                return JSONResponse({"error": "No image part in the request"}, status_code=400)
             
-            user_id = request.form.get('userId')    # Get user ID
-            project_id = request.form.get('projectId')  # Get project ID
-            images = request.files.getlist("images")  # Get all uploaded files
-
             conv = {
-                    "role": "user",
-                    "content": [{
-                            "type": "text",
-                            "text": f"Here are the illustration image(s).\n\
-                                <REMEMBER>\n\
-                                    The names of these reference images are {[image.filename for image in images]}. These come in the same order as the images.\n\
-                                </REMEMBER> ",
-                        }]
-                        }
-
+                "role": "user",
+                "content": [{
+                    "type": "text",
+                    "text": (
+                        "Here are the reference image(s).\n"
+                        "<REMEMBER>\n"
+                        f"The names of these reference images are {[image.filename for image in images]}. These come in the same order as the images.\n"
+                        "</REMEMBER>"
+                    )
+                }]
+            }
+            
             for image in images:
                 if image.filename == '':
-                    return jsonify({'error': 'No selected file'}), 400
+                    return JSONResponse({"error": "No selected file"}, status_code=400)
                 
-                # Secure the filename and save it in a local "uploads" folder (create this folder)
                 filename = werkzeug.utils.secure_filename(image.filename)
-                upload_folder = os.path.join(os.getcwd(), f'projects/{project_id}/reference')
+                upload_folder = os.path.join(os.getcwd(), f'projects/{projectId}/reference')
                 os.makedirs(upload_folder, exist_ok=True)
                 file_path = os.path.join(upload_folder, filename)
-                image.save(file_path)
-
-                # # Encode image to base64
+                with open(file_path, "wb") as buffer:
+                    content = await image.read()
+                    buffer.write(content)
+                
                 with open(file_path, "rb") as image_file:
-                    image = base64.b64encode(image_file.read()).decode("utf-8")
-
-                conv["content"].append(
-                    {
-                        "type": "image_url",
-                        "image_url": {"url": f"data:image/jpeg;base64,{image}"},
-                    }
-                    )
-               # self.customer_agent.conv_history.append(conv)
+                    encoded_image = base64.b64encode(image_file.read()).decode("utf-8")
+                
+                conv["content"].append({
+                    "type": "image_url",
+                    "image_url": {"url": f"data:image/jpeg;base64,{encoded_image}"},
+                })
                 self.code_agent.conv_history.append(conv)
-               # self.database.save_image(image, project_id, user_id)
             
-            return jsonify({'message': 'File uploaded successfully'})
-        
+            return {"message": "File uploaded successfully"}
+
 class PreviewPDFRoute:
     def __init__(self):
-        self.blueprint = Blueprint("preview_pdf", __name__)
+        self.router = APIRouter()
         self.setup_routes()
 
     def setup_routes(self):
-        @self.blueprint.route('/preview_pdf', methods=['GET', 'POST'])
-        def preview_pdf():
-            try:
-                # Specify your PDF folder path
-                project_id = request.form.get('projectId')  # Get project ID
-                pdf_folder = os.path.join(os.getcwd(), f'projects/{project_id}')
-                pdf_filename = f"tech_pack.pdf"  # assuming PDFs are named by project ID
-                pdf_path = os.path.join(pdf_folder, pdf_filename)
-                # Check if file exists
-                if not os.path.exists(pdf_path):
-                    return {'error': 'PDF not found'}, 404
-                    
-                return send_file(
-                    pdf_path,
-                    mimetype='application/pdf',
-                    as_attachment=False
-                )
-        
-            except Exception as e:
-                return {'error': str(e)}, 500
+        @self.router.api_route("/preview_pdf", methods=["GET", "POST"])
+        async def preview_pdf(request: Request):
+            project_id = None
+            if request.method == "POST":
+                form = await request.form()
+                project_id = form.get('projectId')
+            else:
+                project_id = request.query_params.get('projectId')
             
+            if not project_id:
+                return JSONResponse({"error": "projectId is required"}, status_code=400)
+            
+            pdf_folder = os.path.join(os.getcwd(), f'projects/{project_id}')
+            pdf_filename = "tech_pack.pdf"
+            pdf_path = os.path.join(pdf_folder, pdf_filename)
+            if not os.path.exists(pdf_path):
+                return JSONResponse({"error": "PDF not found"}, status_code=404)
+            return FileResponse(pdf_path, media_type="application/pdf", filename=pdf_filename)
+
 class BeginConversationRoute:
     def __init__(self, database):
-        self.blueprint = Blueprint("begin_conversation", __name__)
-        self.setup_routes()
+        self.router = APIRouter()
         self.database = database
+        self.setup_routes()
 
     def setup_routes(self):
-        @self.blueprint.route('/begin_conversation', methods=['POST'])
-        def begin_conversation():
+        @self.router.post("/begin_conversation")
+        async def begin_conversation(userId: str = Form(...), projectId: str = Form(...)):
             logger.info("Conversation Initialized")
-            user_id = request.form.get('userId')    # Get user ID
-            project_id = request.form.get('projectId')  # Get project ID
-            self.database.save_message("Thank you for uploading you illustration and reference images! To get started, please prove your brand name and designer name.", 
-                                       "assistant", 
-                                       project_id, 
-                                       user_id)
-            
-            return jsonify({'message': 'Conversation initialized'})
-
-
+            self.database.save_message(
+                "Thank you for uploading your illustration and reference images! To get started, please provide your brand name and designer name.",
+                "assistant", projectId, userId
+            )
+            return {"message": "Conversation initialized"}
+        

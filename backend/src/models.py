@@ -34,7 +34,7 @@ class CustomerAgent:
             if self.project_id == None or self.project_id != project_id:
                 self.load_conversation_history(project_id, user_id, self.database)
                 self.project_id = project_id
-            
+
             # Add user message to conversation history
             self.conv_history.append({"role":"user", "content": f"{user_message}"})
             # Check for template generation first
