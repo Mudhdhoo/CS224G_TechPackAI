@@ -1,12 +1,12 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2025.2.18)  9 MAR 2025 18:49
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2025.2.18)  9 MAR 2025 18:54
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **"/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/
-backend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.tex"
+backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.tex"
 
 (/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.tex
+ckend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
 (/usr/local/texlive/2024/texmf-dist/tex/latex/base/article.cls
@@ -482,7 +482,7 @@ File: l3backend-pdftex.def 2024-02-20 L3 backend support: PDF output (pdfTeX)
 \l__pdf_internal_box=\box64
 )
 (/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.aux)
+ckend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.aux)
 \openout1 = `code.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 28.
@@ -591,7 +591,7 @@ an alignment. Proceed, and I'll ignore this case.
 
 {/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 [2 </Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI
-/backend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/illustration/Screens
+/backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/illustration/Screens
 hot_2025-03-09_at_15.26.02.png>]
 Underfull \hbox (badness 10000) in paragraph at lines 93--93
 []|\OT1/cmr/m/n/10 Distance be-tween
@@ -625,7 +625,7 @@ an alignment. Proceed, and I'll ignore this case.
 
 [4]
 (/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.aux)
+ckend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
@@ -633,19 +633,19 @@ L3 programming layer <2024-02-20>
  ) 
 Here is how much of TeX's memory you used:
  14655 strings out of 474116
- 300096 string characters out of 5743682
+ 300097 string characters out of 5743682
  1938187 words of memory out of 5000000
  36784 multiletter control sequences out of 15000+600000
  559612 words of font info for 41 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,21n,87p,2403b,422s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,21n,87p,1500b,422s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 ></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><
 /usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb>
 </usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
 Output written on "/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS
-224G_TechPackAI/backend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.
-pdf" (4 pages, 188722 bytes).
+224G_TechPackAI/backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.
+pdf" (4 pages, 189923 bytes).
 PDF statistics:
  44 PDF objects out of 1000 (max. 8388607)
  27 compressed objects within 1 object stream

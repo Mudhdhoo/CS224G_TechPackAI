@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -23,23 +22,15 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: {
-          DEFAULT: "hsl(var(--background))",
-          dark: "#1a1a1a",
-        },
-        foreground: {
-          DEFAULT: "hsl(var(--foreground))",
-          dark: "#ffffff",
-        },
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          dark: "#2563eb",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
-          dark: "#374151",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -48,22 +39,32 @@ export default {
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
-          dark: "#374151",
         },
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
-          dark: "#374151",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
-          dark: "#1a1a1a",
         },
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
-          dark: "#1a1a1a",
+        },
+        purple: {
+          DEFAULT: "#8B5CF6",
+          50: "#FAF5FF",
+          100: "#F3E8FF",
+          200: "#E9D5FF",
+          300: "#D8B4FE",
+          400: "#C084FC",
+          500: "#A855F7",
+          600: "#9333EA",
+          700: "#7E22CE",
+          800: "#6B21A8",
+          900: "#581C87",
+          950: "#3B0764",
         },
         neutral: {
           100: "#FFFFFF",

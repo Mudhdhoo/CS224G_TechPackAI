@@ -285,7 +285,7 @@ const Chat = () => {
           <DialogTrigger asChild>
             <Button
               style={{ 
-              backgroundColor:'green',
+              backgroundColor:'#8B5CF6',
               color: 'white',
               padding: '10px 20px',
               borderRadius: '5px',

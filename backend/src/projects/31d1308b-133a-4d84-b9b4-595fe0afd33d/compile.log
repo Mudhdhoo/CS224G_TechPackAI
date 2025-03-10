@@ -4,7 +4,7 @@ This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded forma
 entering extended mode
 
 (/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.tex
+ckend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
 (/usr/local/texlive/2024/texmf-dist/tex/latex/base/article.cls
@@ -144,8 +144,7 @@ s/tikzlibrarytopaths.code.tex)))
 (/usr/local/texlive/2024/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty)
 (/usr/local/texlive/2024/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty)))
 (/usr/local/texlive/2024/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def)
-(/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.aux)
+No file code.aux.
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 (/usr/local/texlive/2024/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
@@ -162,10 +161,10 @@ l.56 \hline
                   {\ifnum 0=`}\fi \let \hskip \vskip \let \vrule \hrule \let...
 l.73 \hline
            
-[1{/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map} </User
-s/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/backend/
-src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/illustration/Screenshot_2025-
-03-09_at_15.26.02.png>]
+[1{/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+[2 </Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI
+/backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/illustration/Screens
+hot_2025-03-09_at_15.26.02.png>]
 Underfull \hbox (badness 10000) in paragraph at lines 93--93
 []|\OT1/cmr/m/n/10 Distance be-tween
 ! Misplaced \noalign.
@@ -178,20 +177,41 @@ l.110 \hline
                   {\ifnum 0=`}\fi \let \hskip \vskip \let \vrule \hrule \let...
 l.121 \hline
             
-[2{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc
+[3{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc
 }]
+! Undefined control sequence.
+<inserted text> ...lously planned and executed.\n 
+                                                  
+l.130 \end{tabularx}
+                    
+! Undefined control sequence.
+<inserted text> ...lously planned and executed.\n 
+                                                  
+l.130 \end{tabularx}
+                    
+! Undefined control sequence.
+<inserted text> ...lously planned and executed.\n 
+                                                  
+l.130 \end{tabularx}
+                    
+! Misplaced \noalign.
+\hline ->\noalign 
+                  {\ifnum 0=`}\fi \let \hskip \vskip \let \vrule \hrule \let...
+l.131 \hline
+            
+[4]
 (/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.aux) )
+ckend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.aux) )
 (see the transcript file for additional information)</usr/local/texlive/2024/te
 xmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2024/tex
 mf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf
 -dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/local/texlive/2024/texm
 f-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
 Output written on "/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS
-224G_TechPackAI/backend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.
-pdf" (2 pages, 184546 bytes).
+224G_TechPackAI/backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.
+pdf" (4 pages, 188577 bytes).
 Transcript written on "/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Rep
-o/CS224G_TechPackAI/backend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/c
+o/CS224G_TechPackAI/backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/c
 ode.log".
 === Compilation Pass 2 ===
 This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex)
@@ -199,7 +219,7 @@ This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded forma
 entering extended mode
 
 (/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.tex
+ckend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
 (/usr/local/texlive/2024/texmf-dist/tex/latex/base/article.cls
@@ -340,7 +360,7 @@ s/tikzlibrarytopaths.code.tex)))
 (/usr/local/texlive/2024/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty)))
 (/usr/local/texlive/2024/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def)
 (/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.aux)
+ckend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.aux)
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 (/usr/local/texlive/2024/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
@@ -357,10 +377,10 @@ l.56 \hline
                   {\ifnum 0=`}\fi \let \hskip \vskip \let \vrule \hrule \let...
 l.73 \hline
            
-[1{/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map} </User
-s/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/backend/
-src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/illustration/Screenshot_2025-
-03-09_at_15.26.02.png>]
+[1{/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+[2 </Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI
+/backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/illustration/Screens
+hot_2025-03-09_at_15.26.02.png>]
 Underfull \hbox (badness 10000) in paragraph at lines 93--93
 []|\OT1/cmr/m/n/10 Distance be-tween
 ! Misplaced \noalign.
@@ -373,20 +393,41 @@ l.110 \hline
                   {\ifnum 0=`}\fi \let \hskip \vskip \let \vrule \hrule \let...
 l.121 \hline
             
-[2{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc
+[3{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc
 }]
+! Undefined control sequence.
+<inserted text> ...lously planned and executed.\n 
+                                                  
+l.130 \end{tabularx}
+                    
+! Undefined control sequence.
+<inserted text> ...lously planned and executed.\n 
+                                                  
+l.130 \end{tabularx}
+                    
+! Undefined control sequence.
+<inserted text> ...lously planned and executed.\n 
+                                                  
+l.130 \end{tabularx}
+                    
+! Misplaced \noalign.
+\hline ->\noalign 
+                  {\ifnum 0=`}\fi \let \hskip \vskip \let \vrule \hrule \let...
+l.131 \hline
+            
+[4]
 (/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.aux) )
+ckend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.aux) )
 (see the transcript file for additional information)</usr/local/texlive/2024/te
 xmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2024/tex
 mf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf
 -dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/local/texlive/2024/texm
 f-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
 Output written on "/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS
-224G_TechPackAI/backend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.
-pdf" (2 pages, 184546 bytes).
+224G_TechPackAI/backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.
+pdf" (4 pages, 188577 bytes).
 Transcript written on "/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Rep
-o/CS224G_TechPackAI/backend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/c
+o/CS224G_TechPackAI/backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/c
 ode.log".
 === Compilation Pass 1 ===
 This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex)
@@ -394,7 +435,7 @@ This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded forma
 entering extended mode
 
 (/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.tex
+ckend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
 (/usr/local/texlive/2024/texmf-dist/tex/latex/base/article.cls
@@ -535,7 +576,7 @@ s/tikzlibrarytopaths.code.tex)))
 (/usr/local/texlive/2024/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty)))
 (/usr/local/texlive/2024/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def)
 (/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.aux)
+ckend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.aux)
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 (/usr/local/texlive/2024/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
@@ -554,7 +595,7 @@ l.73 \hline
            
 [1{/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 [2 </Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI
-/backend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/illustration/Screens
+/backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/illustration/Screens
 hot_2025-03-09_at_15.26.02.png>]
 Underfull \hbox (badness 10000) in paragraph at lines 93--93
 []|\OT1/cmr/m/n/10 Distance be-tween
@@ -577,17 +618,17 @@ l.131 \hline
             
 [4]
 (/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.aux) )
+ckend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.aux) )
 (see the transcript file for additional information)</usr/local/texlive/2024/te
 xmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2024/tex
 mf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf
 -dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/local/texlive/2024/texm
 f-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
 Output written on "/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS
-224G_TechPackAI/backend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.
-pdf" (4 pages, 186900 bytes).
+224G_TechPackAI/backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.
+pdf" (4 pages, 188857 bytes).
 Transcript written on "/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Rep
-o/CS224G_TechPackAI/backend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/c
+o/CS224G_TechPackAI/backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/c
 ode.log".
 === Compilation Pass 2 ===
 This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex)
@@ -595,7 +636,7 @@ This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded forma
 entering extended mode
 
 (/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.tex
+ckend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
 (/usr/local/texlive/2024/texmf-dist/tex/latex/base/article.cls
@@ -736,7 +777,7 @@ s/tikzlibrarytopaths.code.tex)))
 (/usr/local/texlive/2024/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty)))
 (/usr/local/texlive/2024/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def)
 (/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.aux)
+ckend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.aux)
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 (/usr/local/texlive/2024/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
@@ -755,7 +796,7 @@ l.73 \hline
            
 [1{/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 [2 </Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI
-/backend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/illustration/Screens
+/backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/illustration/Screens
 hot_2025-03-09_at_15.26.02.png>]
 Underfull \hbox (badness 10000) in paragraph at lines 93--93
 []|\OT1/cmr/m/n/10 Distance be-tween
@@ -778,17 +819,17 @@ l.131 \hline
             
 [4]
 (/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.aux) )
+ckend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.aux) )
 (see the transcript file for additional information)</usr/local/texlive/2024/te
 xmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2024/tex
 mf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf
 -dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/local/texlive/2024/texm
 f-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
 Output written on "/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS
-224G_TechPackAI/backend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.
-pdf" (4 pages, 186900 bytes).
+224G_TechPackAI/backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.
+pdf" (4 pages, 188857 bytes).
 Transcript written on "/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Rep
-o/CS224G_TechPackAI/backend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/c
+o/CS224G_TechPackAI/backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/c
 ode.log".
 === Compilation Pass 1 ===
 This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex)
@@ -796,7 +837,7 @@ This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded forma
 entering extended mode
 
 (/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.tex
+ckend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
 (/usr/local/texlive/2024/texmf-dist/tex/latex/base/article.cls
@@ -937,7 +978,7 @@ s/tikzlibrarytopaths.code.tex)))
 (/usr/local/texlive/2024/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty)))
 (/usr/local/texlive/2024/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def)
 (/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.aux)
+ckend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.aux)
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 (/usr/local/texlive/2024/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
@@ -956,7 +997,7 @@ l.73 \hline
            
 [1{/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 [2 </Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI
-/backend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/illustration/Screens
+/backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/illustration/Screens
 hot_2025-03-09_at_15.26.02.png>]
 Underfull \hbox (badness 10000) in paragraph at lines 93--93
 []|\OT1/cmr/m/n/10 Distance be-tween
@@ -979,17 +1020,17 @@ l.131 \hline
             
 [4]
 (/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.aux) )
+ckend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.aux) )
 (see the transcript file for additional information)</usr/local/texlive/2024/te
 xmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2024/tex
 mf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf
 -dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/local/texlive/2024/texm
 f-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
 Output written on "/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS
-224G_TechPackAI/backend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.
-pdf" (4 pages, 188722 bytes).
+224G_TechPackAI/backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.
+pdf" (4 pages, 189923 bytes).
 Transcript written on "/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Rep
-o/CS224G_TechPackAI/backend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/c
+o/CS224G_TechPackAI/backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/c
 ode.log".
 === Compilation Pass 2 ===
 This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex)
@@ -997,7 +1038,7 @@ This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded forma
 entering extended mode
 
 (/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.tex
+ckend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
 (/usr/local/texlive/2024/texmf-dist/tex/latex/base/article.cls
@@ -1138,7 +1179,7 @@ s/tikzlibrarytopaths.code.tex)))
 (/usr/local/texlive/2024/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty)))
 (/usr/local/texlive/2024/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def)
 (/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.aux)
+ckend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.aux)
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 (/usr/local/texlive/2024/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
@@ -1157,7 +1198,7 @@ l.73 \hline
            
 [1{/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 [2 </Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI
-/backend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/illustration/Screens
+/backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/illustration/Screens
 hot_2025-03-09_at_15.26.02.png>]
 Underfull \hbox (badness 10000) in paragraph at lines 93--93
 []|\OT1/cmr/m/n/10 Distance be-tween
@@ -1180,15 +1221,15 @@ l.131 \hline
             
 [4]
 (/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS224G_TechPackAI/ba
-ckend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.aux) )
+ckend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.aux) )
 (see the transcript file for additional information)</usr/local/texlive/2024/te
 xmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2024/tex
 mf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf
 -dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/local/texlive/2024/texm
 f-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
 Output written on "/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Repo/CS
-224G_TechPackAI/backend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/code.
-pdf" (4 pages, 188722 bytes).
+224G_TechPackAI/backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/code.
+pdf" (4 pages, 189923 bytes).
 Transcript written on "/Users/williamekberg/Desktop/Stanford kurser/CS 224G/Rep
-o/CS224G_TechPackAI/backend/src/projects/82d73e5d-6397-4fa6-9b77-92db5d62fc3c/c
+o/CS224G_TechPackAI/backend/src/projects/31d1308b-133a-4d84-b9b4-595fe0afd33d/c
 ode.log".
