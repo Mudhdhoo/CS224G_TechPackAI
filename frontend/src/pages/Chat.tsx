@@ -111,7 +111,9 @@ const Chat = () => {
       
       const response = await fetch(`http://127.0.0.1:8000/preview_pdf?t=${timestamp}`, {
         method: "POST",
-        body: formData
+        body: formData,
+        // Disable cache to ensure we always get the latest PDF
+        cache: "no-store"
       });
 
       if (!response.ok) {
@@ -121,17 +123,25 @@ const Chat = () => {
       
       const blob = await response.blob();
       
-      // Revoke old URL if it exists
+      // Revoke old URL if it exists to prevent memory leaks
       if (pdfUrl) {
         URL.revokeObjectURL(pdfUrl);
       }
       
       const url = URL.createObjectURL(blob);
       setPdfUrl(url);
+      
+      // Show success message when PDF is successfully loaded
+      toast({
+        title: "PDF Loaded",
+        description: "The latest version of your tech pack is ready to view.",
+        duration: 3000,
+      });
+      
       return url;
     },
     enabled: false,
-    retry: 2,
+    retry: 3,
     retryDelay: 1000,
   });
 

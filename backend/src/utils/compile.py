@@ -67,7 +67,7 @@ def compile_latex_from_txt(project_dir):
                 result = subprocess.run(
                     ["pdflatex", "-interaction=nonstopmode", "-output-directory", project_dir, tex_file_path],
                     cwd=project_dir,
-                    check=True,
+                    check=False,
                     capture_output=True,
                     text=True
                 )
@@ -81,47 +81,22 @@ def compile_latex_from_txt(project_dir):
                 # Check for biber references on first pass
                 bib_files = [f for f in os.listdir(project_dir) if f.endswith(".bib")]
                 if i == 0 and bib_files:
-                    subprocess.run(["biber", base_name], cwd=project_dir, check=True)
+                    subprocess.run(["biber", base_name], cwd=project_dir, check=False)
 
-            # Check if PDF was successfully generated
+            # Check if PDF was created, regardless of compilation errors
             if os.path.exists(output_pdf_path):
-                logger.info(f"PDF successfully compiled: {output_pdf_path}")
-                
-                # Create a copy with the standard name (tech_pack.pdf)
-                try:
-                    # If the target file already exists, remove it first
-                    if os.path.exists(final_pdf_path):
-                        os.remove(final_pdf_path)
-                    
-                    # Copy the file instead of renaming to keep the original as a backup
-                    shutil.copy2(output_pdf_path, final_pdf_path)
-                    logger.info(f"PDF copied to standard name: {final_pdf_path}")
-                    
-                    # Make a symlink from code.pdf to tech_pack.pdf to ensure both files are the same
-                    # This is a safety measure in case some part of the code is still looking for code.pdf
-                    try:
-                        if os.path.exists(output_pdf_path) and os.path.exists(final_pdf_path):
-                            # On Windows, you need special privileges for symlinks, so we use copy as fallback
-                            os.replace(output_pdf_path, final_pdf_path)
-                            shutil.copy2(final_pdf_path, output_pdf_path)
-                            logger.info(f"Created duplicate file for compatibility")
-                    except Exception as e:
-                        logger.warning(f"Could not create duplicate file: {str(e)}")
-                
-                except Exception as e:
-                    logger.error(f"Failed to copy PDF to standard name: {str(e)}")
-                    # If copying fails, at least return the original PDF path
-                    return output_pdf_path
-                
+                logger.info(f"✅ PDF generated (with warnings): {output_pdf_path}")
+                # Rename the PDF to tech_pack.pdf for consistency
+                if os.path.exists(final_pdf_path):
+                    os.remove(final_pdf_path)
+                os.rename(output_pdf_path, final_pdf_path)
                 return final_pdf_path
             else:
                 logger.error(f"❌ Expected PDF not found: {output_pdf_path}")
                 return None
 
-        except subprocess.CalledProcessError as e:
-            logger.error(f"❌ LaTeX compilation failed: {str(e)}")
-            logger.error(f"Command output: {e.stdout}")
-            logger.error(f"Command error: {e.stderr}")
+        except Exception as e:
+            logger.error(f"❌ Exception during compilation: {str(e)}")
             return None
 
     except Exception as e:

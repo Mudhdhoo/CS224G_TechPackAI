@@ -175,29 +175,44 @@ class PreviewPDFRoute:
                 return JSONResponse({"error": "projectId is required"}, status_code=400)
             
             pdf_folder = os.path.join(os.getcwd(), f'projects/{project_id}')
-            pdf_filename = "tech_pack.pdf"
-            pdf_path = os.path.join(pdf_folder, pdf_filename)
+            if not os.path.exists(pdf_folder):
+                return JSONResponse({"error": f"Project folder not found: {pdf_folder}"}, status_code=404)
             
-            if not os.path.exists(pdf_path):
-                # Try alternative filenames if tech_pack.pdf doesn't exist
-                alternative_filenames = ["code.pdf"]
-                for alt_filename in alternative_filenames:
-                    alt_path = os.path.join(pdf_folder, alt_filename)
-                    if os.path.exists(alt_path):
-                        # Rename the file to tech_pack.pdf for consistency
-                        try:
-                            os.rename(alt_path, pdf_path)
-                            break
-                        except:
-                            # If rename fails, use the original file
-                            pdf_filename = alt_filename
-                            pdf_path = alt_path
-                            break
-                else:
-                    # No PDF files found
-                    return JSONResponse({"error": "PDF not found. Try regenerating your tech pack."}, status_code=404)
+            # List of possible PDF filenames in order of preference
+            possible_filenames = ["tech_pack.pdf", "code.pdf"]
             
-            return FileResponse(pdf_path, media_type="application/pdf", filename=pdf_filename)
+            # Check modification times to get the most recent PDF
+            pdf_files = []
+            for filename in possible_filenames:
+                path = os.path.join(pdf_folder, filename)
+                if os.path.exists(path):
+                    pdf_files.append((path, os.path.getmtime(path), filename))
+            
+            if not pdf_files:
+                return JSONResponse({"error": "No PDF files found. Try regenerating your tech pack."}, status_code=404)
+            
+            # Sort by modification time (newest first)
+            pdf_files.sort(key=lambda x: x[1], reverse=True)
+            
+            # Get the newest PDF file
+            newest_pdf_path, _, filename = pdf_files[0]
+            
+            # If the newest PDF is not named tech_pack.pdf, try to copy it
+            if filename != "tech_pack.pdf":
+                try:
+                    tech_pack_path = os.path.join(pdf_folder, "tech_pack.pdf")
+                    import shutil
+                    # Make a copy with the standard name
+                    if os.path.exists(tech_pack_path):
+                        os.remove(tech_pack_path)
+                    shutil.copy2(newest_pdf_path, tech_pack_path)
+                    logger.info(f"Copied {filename} to tech_pack.pdf for consistency")
+                    newest_pdf_path = tech_pack_path
+                    filename = "tech_pack.pdf"
+                except Exception as e:
+                    logger.error(f"Failed to copy newest PDF to tech_pack.pdf: {str(e)}")
+            
+            return FileResponse(newest_pdf_path, media_type="application/pdf", filename=filename)
 
 class BeginConversationRoute:
     def __init__(self, database):
