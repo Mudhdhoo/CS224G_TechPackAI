@@ -45,7 +45,7 @@ export const techpackAI = {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
  
-    const response = await fetch('http://127.0.0.1:5000/chat', {
+    const response = await fetch('http://127.0.0.1:8000/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ export const techpackAI = {
     if (!user) throw new Error('Not authenticated');
  
     // Add stream=true query parameter to indicate streaming mode to the backend
-    const response = await fetch('http://127.0.0.1:5000/chat?stream=true', {
+    const response = await fetch('http://127.0.0.1:8000/chat?stream=true', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

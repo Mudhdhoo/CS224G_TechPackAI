@@ -48,6 +48,7 @@ const Chat = () => {
         new Map(response.map(msg => [msg.id, msg])).values()
       );
       
+      /*
       // Create the welcome message
       const welcomeMessage = {
         id: "0", 
@@ -67,6 +68,7 @@ const Chat = () => {
       if (!welcomeContentExists) {
         uniqueMessages.unshift(welcomeMessage);
       }
+        */
       
       return uniqueMessages;
     },
@@ -79,7 +81,7 @@ const Chat = () => {
       if (!projectId) return null;
       const formData = new FormData();
       formData.append('projectId', projectId)
-      const response = await fetch(`http://127.0.0.1:5000/preview_pdf`, {
+      const response = await fetch(`http://127.0.0.1:8000/preview_pdf`, {
         method: "POST",
         body: formData
       });
@@ -185,24 +187,6 @@ const Chat = () => {
     }
   };
 
-  // Legacy non-streaming implementation (kept for fallback)
-  const { mutate: sendMessage, isPending: isSending } = useMutation({
-    mutationFn: async (content: string) => {
-      if (!projectId || !user) throw new Error('Missing project ID or user');
-      return techpackAI.sendMessage(content, projectId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['messages', projectId] });
-      setInputMessage("");
-    },
-    onError: (error) => {
-      toast({
-        title: "Failed to send message",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  });
 
   const handleSendMessage = () => {
     if (!inputMessage.trim()) {

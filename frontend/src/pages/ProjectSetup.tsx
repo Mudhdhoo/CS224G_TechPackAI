@@ -150,7 +150,7 @@ const ProjectSetup = () => {
     formData.append("userId", user.id);
     formData.append("projectId", projectId);
     try {
-      const response = await fetch(`http://127.0.0.1:5000/begin_conversation`, {
+      const response = await fetch(`http://127.0.0.1:8000/begin_conversation`, {
         method: "POST",
         body: formData
       });
@@ -181,7 +181,7 @@ const ProjectSetup = () => {
     }
 
     try {
-      const response = await fetch(`http://127.0.0.1:5000/${endpoint}`, {
+      const response = await fetch(`http://127.0.0.1:8000/${endpoint}`, {
         method: "POST",
         body: formData
       });
