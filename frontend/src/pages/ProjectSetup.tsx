@@ -124,13 +124,13 @@ const ProjectSetup = () => {
 
       toast({
         title: "Project created successfully",
-        description: "Redirecting to chat...",
+        description: "Initializing Environment...",
       });
 
       // Upload design files
+      const conv_init_status = beginConversation(e, project.id)
       const uploadIllustration = await handleSubmit(e, "upload_illustration", user.id, project.id)
       const uploadReference = await handleSubmit(e, "upload_reference", user.id, project.id)
-      const conv_init_status = beginConversation(e, project.id)
 
       // Navigate to the chat page using the Supabase-generated project ID
       navigate(`/project/${project.id}/chat`);
