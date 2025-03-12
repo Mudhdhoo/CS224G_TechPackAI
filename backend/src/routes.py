@@ -91,10 +91,14 @@ class UploadIllustrationRoute:
                     content = await image.read()
                     buffer.write(content)
 
-                # Analyze the images
-                logger.info("Detecting Keypoints...")
-                self.image_agent.analyze_images(upload_folder)
-                
+            # Analyze the images
+            self.image_agent.analyze_images(upload_folder)
+
+            # Append the filtred imaged
+            for image in images:
+                filename = werkzeug.utils.secure_filename(image.filename)
+                upload_folder = os.path.join(os.getcwd(), f'projects/{projectId}/illustration')
+                file_path = os.path.join(upload_folder, filename)
                 with open(file_path, "rb") as image_file:
                     encoded_image = base64.b64encode(image_file.read()).decode("utf-8")
                 
@@ -104,6 +108,7 @@ class UploadIllustrationRoute:
                 })
                 self.customer_agent.conv_history.append(conv)
                 self.code_agent.conv_history.append(conv)
+                self.code_agent.drawing_agent.conv_history.append(conv)
             
             return {"message": "File uploaded successfully"}
 

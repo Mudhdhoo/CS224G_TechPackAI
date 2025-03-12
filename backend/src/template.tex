@@ -1,616 +1,312 @@
-% Fashion Tech Pack LaTeX Template - Updated with TechPack.ai in Corner and Aligned Technical Specs
-\documentclass[11pt,a4paper]{article}
-
-% Required packages
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{lmodern}
-\usepackage[english]{babel}
-\usepackage{xcolor}
+\documentclass[landscape]{article}
+\usepackage[a4paper,landscape,margin=1.5cm]{geometry}
 \usepackage{graphicx}
-\usepackage{tabularx}
-\usepackage{booktabs}
 \usepackage{array}
+\usepackage{tabularx}
 \usepackage{colortbl}
-\usepackage{multirow}
-\usepackage{tikz}
-\usepackage{tcolorbox}
-\usepackage{enumitem}
+\usepackage{xcolor}
 \usepackage{fancyhdr}
-\usepackage[hidelinks]{hyperref}
-\usepackage{geometry}
-\usepackage{pifont}
-\usepackage{fontawesome5}
-\usepackage{float}
-\usepackage{pdflscape} % For landscape pages if needed
-\usepackage{lipsum}
+\usepackage{tikz}
+\usepackage{booktabs}
+\usepackage{subcaption}
+\usepackage{pagecolor}
+\usepackage{multirow}
+\usepackage{lastpage}
+\usepackage{tgheros} % Modern sans-serif font
+\usepackage{setspace}
+\usepackage[T1]{fontenc}
+\usepackage{makecell}
 
-\graphicspath{{illustration/}{reference/}}  % DO NOT CHANGE THIS LINE
+\graphicspath{{illustration/}{reference/}{figures/}}  % Paths for images
 
-% Page geometry
-\geometry{
-  a4paper,
-  top=1.5cm,
-  bottom=2cm,
-  left=1.5cm,
-  right=1.5cm,
-  footskip=1.5cm
-}
+% Define enhanced color palette
+\definecolor{primaryblue}{RGB}{41, 65, 94}   % Deeper blue for main headers
+\definecolor{secondaryblue}{RGB}{78, 112, 155} % Lighter blue for secondary elements
+\definecolor{lightblue}{RGB}{235, 242, 250} % Very light blue for table backgrounds
+\definecolor{mediumblue}{RGB}{120, 150, 180} % Medium blue for table headers
+\definecolor{accentgold}{RGB}{216, 181, 109} % Gold accent color
+\definecolor{backgroundbeige}{RGB}{252, 250, 245} % Light beige background
+\definecolor{tablehead}{RGB}{245, 245, 245} % Subtle gray for table headers
+\definecolor{bordercolor}{RGB}{220, 220, 220} % Subtle border color
 
-% New color definitions for a modern headline
-\definecolor{modernStart}{RGB}{30, 30, 70}  % dark blue
-\definecolor{modernEnd}{RGB}{70, 100, 200}   % lighter blue
+% Set background color
+\pagecolor{white}
 
-% Other color definitions
-\definecolor{tableheader}{RGB}{220, 230, 242}
-\definecolor{bordergray}{RGB}{180, 180, 180}
-\definecolor{lightblue}{RGB}{221, 235, 247}
-\definecolor{accentblue}{RGB}{0, 120, 200}
+% Set document font to sans-serif
+\renewcommand{\familydefault}{\sfdefault}
 
-% Style settings
+% Better spacing
+\setstretch{1.2}
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{0.5em}
-\renewcommand{\arraystretch}{1.5}
+\setlength{\parskip}{8pt}
+\renewcommand{\arraystretch}{1.5} % Improve table row height globally
 
-% Header and footer
+% Fix for table line alignment
+\setlength{\arrayrulewidth}{0.5pt}
+\setlength{\tabcolsep}{6pt}
+
+% Custom page style
 \pagestyle{fancy}
 \fancyhf{}
 \renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
 
-% 1) Tiny "TechPack.ai" in the upper left corner on every page
-\fancyhead[L]{\tiny \textbf{TechPack.ai}}
-
-% Footer
-\fancyfoot[C]{\textcopyright\
-  \ \textbf{\CompanyName} \the\year. All Rights Reserved.}
-\fancyfoot[R]{\thepage}
-
-% Custom commands for tech pack data
-\newcommand{\CompanyName}{H\&M}
-\newcommand{\StyleName}{Relaxed Fit Hoodie}
-\newcommand{\StyleNumber}{Jkt-03384}
-\newcommand{\Designer}{Nico Henning}
-\newcommand{\Season}{Spring 2025}
-\newcommand{\TechPackVersion}{V1}
-\newcommand{\TechPackDate}{03/03/2025}
-\newcommand{\Category}{Men's shirts}
-\newcommand{\Finalized}{No}
-\newcommand{\Approved}{No}
-
-% Custom section header command (used on most pages)
-\newcommand{\techsection}[1]{
-  \vspace{0.8cm}
-  \begin{tcolorbox}[
-    enhanced,
-    colback=accentblue!80,
-    colframe=accentblue,
-    coltext=white,
-    round corners,
-    boxrule=0pt,
-    width=\textwidth,
-    halign=left,
-    fontupper=\large\bfseries,
-    top=0.4cm,
-    bottom=0.4cm,
-    left=0.2cm,
-    right=0.2cm
-  ]
-    #1
-  \end{tcolorbox}
-  \vspace{0.3cm}
+% Header with brand bar
+\fancyhead[C]{%
+\begin{tikzpicture}[remember picture, overlay]
+    % Header bar
+    \fill[primaryblue] 
+        ([yshift=-1cm]current page.north west) rectangle 
+        ([yshift=0cm]current page.north east);
+    
+    % Gold accent line
+    \fill[accentgold] 
+        ([yshift=-1cm]current page.north west) rectangle 
+        ([yshift=-0.9cm]current page.north east);
+    
+    % Brand name
+    \node[anchor=center, text=white, font=\Large\bfseries] 
+        at ([yshift=-0.5cm]current page.north) 
+        {};
+\end{tikzpicture}%
 }
 
-% Custom command for image placeholders (replace {} with filename)
-\newcommand{\imagebox}[2][6cm]{%
-  \fbox{%
-    \begin{minipage}[c][#1][c]{0.95\linewidth}%
-      \centering%
-      \ifx\relax#2\relax%
-        \huge\textbf{Image\\Placeholder}%
-      \else%
-        \includegraphics[height=#1,width=\linewidth,keepaspectratio]{#2}%
-      \fi%
-    \end{minipage}%
-  }%
+% Create the custom footer with cleaner design
+\fancyfoot[C]{%
+\begin{tikzpicture}[remember picture, overlay]
+    % Blue footer bar
+    \fill[primaryblue] 
+        ([yshift=0.7cm]current page.south west) rectangle 
+        ([yshift=0cm]current page.south east);
+    
+    % Gold accent line
+    \fill[accentgold] 
+        ([yshift=0.7cm]current page.south west) rectangle 
+        ([yshift=0.65cm]current page.south east);
+    
+    % Copyright text
+    \node[anchor=west, text=white, font=\small] 
+        at ([xshift=1cm, yshift=0.35cm]current page.south west) 
+        {© COPYRIGHT 2025 BRAND NAME};
+    
+    % Page number
+    \node[anchor=east, text=white, font=\small] 
+        at ([xshift=-1cm, yshift=0.35cm]current page.south east) 
+        {PAGE \thepage\ OF \pageref{LastPage}};
+\end{tikzpicture}%
+}
+
+% Modified techsection command to remove the gold accent line and reduce spacing
+\newcommand{\techsection}[1]{%
+\noindent\begin{tabularx}{\textwidth}{|X|}
+\hline
+\cellcolor{primaryblue}\textcolor{white}{\large\textbf{#1}} \\
+\hline
+\end{tabularx}
+\vspace{0.1cm}
+}
+
+% Command for better-looking specification tables with improved colors
+\newcommand{\specificationtable}[1]{%
+\begin{center}
+\begin{tabular}{|>{\columncolor{lightblue}\bfseries}p{3.5cm}|p{7cm}|}
+\hline
+\rowcolor{mediumblue}\multicolumn{1}{|c|}{\textcolor{white}{\textbf{Component}}} & \multicolumn{1}{c|}{\textcolor{white}{\textbf{Specifications}}} \\
+\hline
+#1
+\hline
+\end{tabular}
+\end{center}
+}
+
+% Command for better-looking measurement tables with improved colors
+\newcommand{\measurementtable}[1]{%
+\noindent\begin{tabularx}{\textwidth}{|>{\columncolor{lightblue}\bfseries}X|X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|}
+\hline
+\rowcolor{primaryblue}\multicolumn{6}{|c|}{\textcolor{white}{\large\textbf{MEASUREMENTS}}} \\
+\hline
+\rowcolor{mediumblue}\textcolor{white}{\textbf{Component}} & \textcolor{white}{\textbf{XS}} & \textcolor{white}{\textbf{S}} & \textcolor{white}{\textbf{M}} & \textcolor{white}{\textbf{L}} & \textcolor{white}{\textbf{XL}}
+\hline
+#1
+\hline
+\end{tabularx}
 }
 
 \begin{document}
 
-%% --- Title Page with Modern Gradient Headline ---
-\begin{tcolorbox}[
-  enhanced,
-  width=\textwidth,
-  halign=center,
-  valign=center,
-  height=1.2cm,
-  round corners,
-  boxrule=0pt,
-  interior style={left color=modernStart, right color=modernEnd}
-]
-  \textcolor{gray}{\Large\bfseries TechPack.ai - Create tech packs in minutes, not hours}
-\end{tcolorbox}
-
-\vspace{1cm}
+% Title with subtle decorative elements
 \begin{center}
-  {\Huge\bfseries Technical Specification Sheet}
+\begin{tikzpicture}
+\node[inner sep=12pt] (title) {\Huge\textbf{\textcolor{primaryblue}{Technical Specification Sheet}}};
+\draw[accentgold, line width=1.5pt] ([yshift=-5pt]title.south west) -- ([yshift=-5pt]title.south east);
+\draw[secondaryblue, line width=1pt] ([yshift=-9pt]title.south west) -- ([yshift=-9pt]title.south east);
+\end{tikzpicture}
 \end{center}
-\vspace{1cm}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Page 1: Basic Info, Sketches, and Revision History
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Re-designed Basic Information Table: 4 columns x 5 rows
-\begin{table}[H]
-  \centering
-  \resizebox{\linewidth}{!}{%
-  \begin{tabular}{|p{3cm}|p{3.5cm}|p{3cm}|p{3.5cm}|}
-    \hline
-    \textbf{Brand:} & \CompanyName & \textbf{Designer:} & \Designer \\
-    \hline
-    \textbf{Style Name:} & \StyleName & \textbf{Style Number:} & \StyleNumber \\
-    \hline
-    \textbf{Category:} & \Category & \textbf{Season:} & \Season \\
-    \hline
-    \textbf{Date:} & \TechPackDate & \textbf{Version:} & \TechPackVersion \\
-    \hline
-    \textbf{Finalized:} & \Finalized & \textbf{Approved:} & \Approved \\
-    \hline
-  \end{tabular}%
-  }
-\end{table}
 
 \vspace{0.5cm}
-% Directly beneath: Sketches (two images side by side; no headline)
-\begin{table}[H]
-  \centering
-  \begin{tabular}{cc}
-    \includegraphics[width=0.48\linewidth]{front_sketch.png} & \includegraphics[width=0.48\linewidth]{back_sketch.png} \\
-    \small Front View & \small Back View \\
-  \end{tabular}
-\end{table}
+
+% PRODUCT DETAILS
+\begin{center}
+\begin{tabular}{|>{\bfseries\raggedright\arraybackslash}p{3cm}|p{4cm}|>{\bfseries\raggedright\arraybackslash}p{3cm}|p{4cm}|}
+\hline
+\rowcolor{tablehead}Brand: & PLACEHOLDER & \rowcolor{tablehead}Designer: & PLACEHOLDER \\
+\hline
+Style Name: & PLACEHOLDER  & Style Number: & PLACEHOLDER  \\
+\hline
+\rowcolor{tablehead}Category: & PLACEHOLDER & \rowcolor{tablehead}Season: & PLACEHOLDER \\
+\hline
+Date: & PLACEHOLDER  & Version: & PLACEHOLDER \\
+\hline
+\end{tabular}
+\end{center}
 
 \vspace{0.5cm}
-% Revision History table on the same page
-\begin{table}[H]
-  \centering
-  \resizebox{\linewidth}{!}{%
-  \begin{tabular}{|p{2cm}|p{12cm}|}
-    \hline
-    \rowcolor{tableheader}
-    \textbf{Version} & \textbf{Description} \\
-    \hline
-    V1 & This is the first draft \\
-    \hline
-    V2 & \\
-    \hline
-    V3 & \\
-    \hline
-  \end{tabular}%
-  }
-\end{table}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Page 2: Design Description
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\newpage
-\techsection{General Design Description}
-\begin{tcolorbox}[
-  colback=white,
-  colframe=accentblue,
-  width=\textwidth,
-  height=10cm,  % Adjust as needed
-]
-% Designer can describe the piece of fashion here in free text.
-\end{tcolorbox}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Page 3: Technical Specification - Front
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\techsection{Technical Specification - Front}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{@{}l l@{}}
-\begin{minipage}[t]{0.5\linewidth}
-  \vspace{0pt} % ensure top alignment
-  \includegraphics[width=\linewidth]{tech_sketch_front.png}
-\end{minipage}
-&
-\begin{minipage}[t]{0.5\linewidth}
-  \vspace{0pt} % ensure top alignment
-  \begin{tabular}{|c|p{0.85\linewidth}|}
-    \hline
-    \textbf{1} & Description for point 1 \\ \hline
-    \textbf{2} & Description for point 2 \\ \hline
-    \textbf{3} & Description for point 3 \\ \hline
-    \textbf{4} & Description for point 4 \\ \hline
-    % Add or remove rows as needed
-  \end{tabular}
-\end{minipage}
+% PRODUCT DESCRIPTION
+\begin{center}
+\begin{tabular}{|p{14cm}|}
+\hline
+\rowcolor{tablehead}\multicolumn{1}{|c|}{\textbf{PRODUCT DESCRIPTION}} \\
+\hline
+\vspace{0.2cm}
+\large % Insert description here
+\vspace{0.3cm} \\
+\hline
 \end{tabular}
-\end{table}
+\end{center}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Page 4: Technical Specification - Back
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
 
-\techsection{Technical Specification - Back}
+% FRONT VIEW SECTION
+\techsection{FRONT VIEW}
+\vspace{-0.3cm}
 
-\begin{table}[H]
-\centering
-\begin{tabular}{@{}l l@{}}
-\begin{minipage}[t]{0.5\linewidth}
-  \vspace{0pt}
-  \includegraphics[width=\linewidth]{tech_sketch_back.png}
-\end{minipage}
+\begin{tabular}{p{0.49\textwidth}|p{0.49\textwidth}}
+% Left side - FRONT VIEW
+\begin{center}
+\begin{tikzpicture}
+\node[draw=bordercolor, line width=1pt, inner sep=4pt, fill=white, rounded corners=2pt] {
+    \includegraphics[width=0.35\textwidth,height=12cm,keepaspectratio]{}
+};
+\end{tikzpicture}
+\end{center}
 &
-\begin{minipage}[t]{0.5\linewidth}
-  \vspace{0pt}
-  \begin{tabular}{|c|p{0.85\linewidth}|}
-    \hline
-    \textbf{1} & Description for point 1 \\ \hline
-    \textbf{2} & Description for point 2 \\ \hline
-    \textbf{3} & Description for point 3 \\ \hline
-    \textbf{4} & Description for point 4 \\ \hline
-    % Add or remove rows as needed
-  \end{tabular}
-\end{minipage}
+% Right side - Attributes Table FRONT VIEW
+\specificationtable{
+& \\
+}
 \end{tabular}
-\end{table}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Page 5: Lookalike
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{0.5cm}
 
-\newpage
-\techsection{Lookalike}
-% Upper part: two images side by side for lookalike references
-\begin{table}[H]
-  \centering
-  \begin{tabular}{cc}
-    \includegraphics[width=0.45\linewidth]{lookalike_front.png} & \includegraphics[width=0.45\linewidth]{lookalike_back.png} \\
-    \small Front Look & \small Back Look \\
-  \end{tabular}
-\end{table}
-
-\vspace{1cm}
-% Lower part: two description textboxes for designer comments
-\begin{table}[H]
-  \centering
-  \begin{tabular}{cc}
-    \begin{tcolorbox}[colback=white, colframe=accentblue, width=0.45\linewidth, title=Description, height=10cm]
-      % Insert designer's comments for the front look here.
-    \end{tcolorbox}
-    &
-    \begin{tcolorbox}[colback=white, colframe=accentblue, width=0.45\linewidth, title=Description, height=10cm]
-      % Insert designer's comments for the back look here.
-    \end{tcolorbox}
-  \end{tabular}
-\end{table}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Page 6: Stitches
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MEASUREMENTS TABLE FRONT VIEW
+\measurementtable{
+& & & & & & \\
+}
 
 \newpage
-\techsection{Stitches}
-% Upper part: two images side by side for design references
-\begin{table}[H]
-  \centering
-  \begin{tabular}{cc}
-    \includegraphics[width=0.45\linewidth]{stitch_front.png} & \includegraphics[width=0.45\linewidth]{stitch_back.png} \\
-    \small Front Design & \small Back Design \\
-  \end{tabular}
-\end{table}
 
-\vspace{1cm}
-% Lower part: the existing stitches table (unchanged)
-\begin{table}[H]
-  \centering
-  \resizebox{\linewidth}{!}{%
-    \begin{tabular}{|p{1cm}|p{4cm}|p{3cm}|p{2.5cm}|p{2cm}|p{3.5cm}|}
-      \hline
-      \rowcolor{tableheader}
-      \textbf{\#} & \textbf{Operation} & \textbf{Stitches} & \textbf{Width} & \textbf{SPI} & \textbf{Seams} \\
-      \hline
-      A & & & & & \\
-      \hline
-      B & & & & & \\
-      \hline
-      C & & & & & \\
-      \hline
-      D & & & & & \\
-      \hline
-      E & & & & & \\
-      \hline
-      F & & & & & \\
-      \hline
-      G & & & & & \\
-      \hline
-    \end{tabular}%
-  }
-\end{table}
+% BACK VIEW SECTION
+\techsection{BACK VIEW}
+\vspace{-0.3cm}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Page 7: Fabrics, Threads & Other
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{tabular}{p{0.49\textwidth}|p{0.49\textwidth}}
+% Left side - BACK VIEW
+\begin{center}
+\begin{tikzpicture}
+\node[draw=bordercolor, line width=1pt, inner sep=4pt, fill=white, rounded corners=2pt] {
+    \includegraphics[width=0.35\textwidth,height=12cm,keepaspectratio]{}
+};
+\end{tikzpicture}
+\end{center}
+&
+% Right side - Attributes Table BACK VIEW
+\specificationtable{
+ & \\
+}
+\end{tabular}
+
+\vspace{0.5cm}
+
+% MEASUREMENTS TABLE BACK VIEW
+\measurementtable{
+ & & & & & & \\
+}
 
 \newpage
-\techsection{Fabrics}
-\begin{table}[H]
-  \centering
-  \resizebox{\linewidth}{!}{%
-  \begin{tabular}{|p{2.5cm}|p{4cm}|p{2.5cm}|p{2.5cm}|p{2.5cm}|p{2cm}|}
-    \hline
-    \rowcolor{tableheader}
-    \textbf{Item} & \textbf{Description} & \textbf{Image} & \textbf{Color} & \textbf{Color Code} & \textbf{Quantity} \\
-    \hline
-    Main Fabric & & & & & \\[0.8cm]
-    \hline
-    Lining Fabric & & & & & \\[0.8cm]
-    \hline
-    Neck band & & & & & \\[0.8cm]
-    \hline
-    Waist band & & & & & \\[0.8cm]
-    \hline
-  \end{tabular}%
-  }
-\end{table}
 
-\vspace{0.8cm}
-\techsection{Threads}
-\begin{table}[H]
-  \centering
-  \resizebox{\linewidth}{!}{%
-  \begin{tabular}{|p{2.5cm}|p{4cm}|p{2.5cm}|p{2.5cm}|p{2.5cm}|p{2cm}|}
-    \hline
-    \rowcolor{tableheader}
-    \textbf{Item} & \textbf{Description} & \textbf{Image} & \textbf{Color} & \textbf{Color Code} & \textbf{Quantity} \\
-    \hline
-    Top Threads & & & & & \\[0.8cm]
-    \hline
-    Bottom Threads & & & & & \\[0.8cm]
-    \hline
-  \end{tabular}%
-  }
-\end{table}
+% REFERENCE IMAGES SECTION
+\techsection{REFERENCE}
+\vspace{-0.3cm}
 
-\vspace{0.8cm}
-\techsection{Other}
-\begin{table}[H]
-  \centering
-  \resizebox{\linewidth}{!}{%
-  \begin{tabular}{|p{2.5cm}|p{4cm}|p{2.5cm}|p{2.5cm}|p{2.5cm}|p{2cm}|}
-    \hline
-    \rowcolor{tableheader}
-    \textbf{Item} & \textbf{Description} & \textbf{Image} & \textbf{Color} & \textbf{Color Code} & \textbf{Quantity} \\
-    \hline
-    Buttons & & & & & \\[0.8cm]
-    \hline
-    Zippers & & & & & \\[0.8cm]
-    \hline
-  \end{tabular}%
-  }
-\end{table}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Page 8: Measurement Specifications
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{tabular}{p{0.49\textwidth}|p{0.49\textwidth}}
+% Left side - Place reference images here
+\begin{center}
+\begin{tikzpicture}
+\node[draw=bordercolor, line width=1pt, inner sep=4pt, fill=white, rounded corners=2pt] {
+    \includegraphics[width=0.35\textwidth,height=12cm,keepaspectratio]{}
+};
+\end{tikzpicture}
+\end{center}
+&
+% Right side - Description of reference image
+\begin{center}
+\begin{tabular}{|p{10cm}|}
+\hline
+\rowcolor{mediumblue}\multicolumn{1}{|c|}{\textcolor{white}{\textbf{Description}}} \\
+\hline
+\large % INSERT DESCRIPTION HERE
+\\
+\hline
+\end{tabular}
+\end{center}
+\end{tabular}
 
 \newpage
-\techsection{Measurement Specifications}
-\begin{table}[H]
-  \centering
-  \resizebox{\linewidth}{!}{%
-    \begin{tabular}{|p{1.3cm}|p{5cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|}
-      \hline
-      \rowcolor{lightblue}
-      \textbf{POM} & \textbf{MEASUREMENT} & \textbf{XS} & \textbf{S} & \textbf{M} & \textbf{L} & \textbf{XL} & \textbf{TOL +/-} \\
-      \hline
-      A & BODY LENGTH FROM HPS & & & & & & \\
-      \hline
-      B & ACROSS SHOULDERS & & & & & & \\
-      \hline
-      C & ACROSS FRONT CENTER ARMHOLE & & & & & & \\
-      \hline
-      D & ACROSS BACK CENTER ARMHOLE & & & & & & \\
-      \hline
-      E & CHEST WIDTH (1" BELOW ARMHOLE) & & & & & & \\
-      \hline
-      F & BOTTOM SWEEP & & & & & & \\
-      \hline
-      G & SHOULDER DROP FROM HPS & & & & & & \\
-      \hline
-      H & SHOULDER LENGTH & & & & & & \\
-      \hline
-      I & SLEEVE LENGTH TOP OF ARMHOLE & & & & & & \\
-      \hline
-      J & ARMHOLE STRAIGHT & & & & & & \\
-      \hline
-      K & MUSCLE WIDTH (1" BELOW ARMHOLE) & & & & & & \\
-      \hline
-      L & SLEEVE OPENING WIDTH & & & & & & \\
-      \hline
-      M & NECK WIDTH & & & & & & \\
-      \hline
-      N & FRONT NECK DROP & & & & & & \\
-      \hline
-      O & BACK NECK DROP & & & & & & \\
-      \hline
-    \end{tabular}%
-  }
-\end{table}
 
-\begin{table}[H]
-  \centering
-  \resizebox{\linewidth}{!}{%
-    \begin{tabular}{|p{1.3cm}|p{5cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|}
-      \hline
-      \rowcolor{lightblue}
-      \textbf{POM} & \textbf{MEASUREMENT} & \textbf{XS} & \textbf{S} & \textbf{M} & \textbf{L} & \textbf{XL} & \textbf{TOL +/-} \\
-      \hline
-      P & NECK BINDING & & & & & & \\
-      \hline
-      Q & BACK NECK SEAM TAPE & & & & & & \\
-      \hline
-      R & SHOULDER SEAM FORWARD & & & & & & \\
-      \hline
-      S & APPLIED POCKET WIDTH & & & & & & \\
-      \hline
-      T & APPLIED POCKET HEIGHT & & & & & & \\
-      \hline
-      U & POCKET PLACEMENT FROM HPS & & & & & & \\
-      \hline
-      V & POCKET PLACEMENT FROM CF & & & & & & \\
-      \hline
-    \end{tabular}%
-  }
-\end{table}
+% BILL OF MATERIALS
+\techsection{BILL OF MATERIALS}
+\vspace{-0.3cm}
+% POPULATE THIS TABLE
+\noindent\begin{tabularx}{\textwidth}{|>{\columncolor{lightblue}\bfseries}X|X|>{\raggedleft\arraybackslash}X|}
+\hline
+\rowcolor{mediumblue}\textcolor{white}{\textbf{Material}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Estimated Price}} \\
+\hline
+ &  & \\
+\hline
+\end{tabularx}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Page 9: Colorways
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{0.7cm}
 
 \newpage
-\techsection{Colorways}
-\begin{table}[H]
-  \centering
-  \resizebox{\linewidth}{!}{%
-  \begin{tabular}{|p{3cm}|p{3.5cm}|p{2.5cm}|p{3cm}|p{2.5cm}|p{2.5cm}|}
-    \hline
-    \rowcolor{lightblue}
-    \multicolumn{6}{|c|}{\textbf{Outside}} \\
-    \hline
-    \rowcolor{tableheader}
-    \textbf{Area} & \textbf{Description} & \textbf{Color} & \textbf{Pantone Code} & \textbf{Image} & \textbf{Comments} \\
-    \hline
-    & & & & & \\[1cm]
-    \hline
-    & & & & & \\[1cm]
-    \hline
-    & & & & & \\[1cm]
-    \hline
-    & & & & & \\[1cm]
-    \hline
-  \end{tabular}%
-  }
-\end{table}
 
-\vspace{0.8cm}
-\begin{table}[H]
-  \centering
-  \resizebox{\linewidth}{!}{%
-  \begin{tabular}{|p{3cm}|p{3.5cm}|p{2.5cm}|p{3cm}|p{2.5cm}|p{2.5cm}|}
-    \hline
-    \rowcolor{lightblue}
-    \multicolumn{6}{|c|}{\textbf{Inside}} \\
-    \hline
-    \rowcolor{tableheader}
-    \textbf{Area} & \textbf{Description} & \textbf{Color} & \textbf{Pantone Code} & \textbf{Image} & \textbf{Comments} \\
-    \hline
-    & & & & & \\[1cm]
-    \hline
-    & & & & & \\[1cm]
-    \hline
-  \end{tabular}%
-  }
-\end{table}
+% CARE INSTRUCTIONS
+\techsection{CARE INSTRUCTIONS}
+\vspace{-0.3cm}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Page 10: Label & Packaging
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\newpage
-\techsection{Label}
-\begin{table}[H]
-  \centering
-  \resizebox{\linewidth}{!}{%
-  \begin{tabular}{|p{2.5cm}|p{4cm}|p{3cm}|p{2.5cm}|p{2cm}|p{2.5cm}|}
-    \hline
-    \rowcolor{tableheader}
-    \textbf{Item} & \textbf{Description} & \textbf{Image} & \textbf{Color} & \textbf{Code} & \textbf{Quantity} \\
-    \hline
-    Brand Label & & & & & \\[1cm]
-    \hline
-    Care Label & & & & & \\[1cm]
-    \hline
-    Size Label & & & & & \\[1cm]
-    \hline
-    Hang Tag & & & & & \\[1cm]
-    \hline
-  \end{tabular}%
-  }
-\end{table}
-
-\vspace{0.8cm}
-\techsection{Packaging}
-\begin{table}[H]
-  \centering
-  \resizebox{\linewidth}{!}{%
-  \begin{tabular}{|p{2.5cm}|p{4cm}|p{3cm}|p{2.5cm}|p{2cm}|p{2.5cm}|}
-    \hline
-    \rowcolor{tableheader}
-    \textbf{Item} & \textbf{Description} & \textbf{Image} & \textbf{Color} & \textbf{Code} & \textbf{Quantity} \\
-    \hline
-    Polybag & & & & & \\[1cm]
-    \hline
-    Folding Instructions & & & & & \\[1cm]
-    \hline
-  \end{tabular}%
-  }
-\end{table}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Page 11: Legal Disclaimers
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\newpage
-\techsection{CONFIDENTIALITY \& USAGE DISCLAIMER}
-\begin{tcolorbox}[
-  enhanced,
-  colback=white,
-  colframe=bordergray,
-  width=\textwidth,
-  arc=0mm,
-  boxrule=0.5mm
-]
-This Tech Pack is the exclusive intellectual property of \CompanyName\ and is intended strictly for internal use and its authorized manufacturing, production, and supply chain partners. The contents of this document—including, but not limited to, designs, specifications, measurements, materials, and construction details—are proprietary and confidential information owned solely by \CompanyName.
-
-Any unauthorized reproduction, distribution, modification, or disclosure of this document, whether in part or in full, is strictly prohibited and constitutes a violation of intellectual property rights. This Tech Pack must not be shared with any third parties, subcontractors, or competitors without prior written consent from \CompanyName. Any misuse or misrepresentation of this document, its contents, or its designs may result in immediate legal action and severe financial penalties.
-
-By accessing or utilizing this Tech Pack, the recipient explicitly agrees to:
-\begin{itemize}[itemsep=0.3cm]
-  \item Use this document exclusively for the production of goods for \CompanyName.
-  \item Not share, disclose, or replicate the information with any unauthorized entity or individual.
-  \item Return or destroy any copies of this document upon request by \CompanyName.
-  \item Ensure all employees, contractors, and affiliated personnel comply with the confidentiality requirements stated herein.
+\noindent\begin{tabularx}{\textwidth}{|X|}
+\hline
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3cm}
+\large
+\begin{itemize}
+  \item 
 \end{itemize}
+\vspace{0.3cm}
+\end{minipage} \\
+\hline
+\end{tabularx}
 
-Failure to adhere to these terms will be considered a breach of confidentiality and intellectual property laws, and \CompanyName\ reserves the right to seek legal remedies, financial compensation, and termination of any existing contracts or agreements.
+\vspace{0.7cm}
 
-For any clarifications, approvals, or permissions regarding this Tech Pack, please contact \CompanyName\ directly.
-\end{tcolorbox}
-
-\vspace{0.8cm}
-\techsection{LEGAL NOTICE}
-\begin{tcolorbox}[
-  enhanced,
-  colback=white,
-  colframe=bordergray,
-  width=\textwidth,
-  arc=0mm,
-  boxrule=0.5mm
-]
-This document and all information contained within are protected under applicable copyright,
-trademark, and intellectual property laws. Unauthorized use, replication, or distribution
-may result in civil and/or criminal prosecution under national and international laws.
-
-\textcopyright\
-\ \CompanyName\ \the\year. All Rights Reserved.
-Unauthorized use is punishable by law.
-\end{tcolorbox}
+% ADDITIONAL COMMENTS
+\techsection{ADDITIONAL COMMENTS}
+\vspace{-0.3cm}
+\noindent\begin{tabularx}{\textwidth}{|X|}
+\hline
+\large % WRITE ADDITIONAL COMMENTS HERE
+\\
+\hline
+\end{tabularx}
 
 \end{document}

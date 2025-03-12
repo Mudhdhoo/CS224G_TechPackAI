@@ -1,6 +1,9 @@
 from utils.prompts import (SYSTEM_PROMPT_CUSTOMER_AGENT, 
                            SYSTEM_PROMPT_CODE_AGENT,
-                           SYSTEM_PROMPT_IMAGE_ANALYSIS_AGENT)
+                           SYSTEM_PROMPT_DRAWING_AGENT,
+                           SYSTEM_PROMPT_IMAGE_ANALYSIS_AGENT_CLASSIFICATION,
+                           SYSTEM_PROMPT_IMAGE_ANALYSIS_AGENT_SELECTION,
+                           GENERATE_DRAWING_PROMPT)
 from loguru import logger
 import json
 import base64
@@ -12,13 +15,15 @@ from utils.keypoints import augment_upper_body_kpts, extract_keypoints_from_heat
 import torch
 import numpy as np
 from PIL import Image
-from utils.json_templates import ImageNamesTemplate
+from utils.json_templates import ImageNamesTemplate, FilteredKeypointsTemplate
+from io import BytesIO
 
 class CustomerAgent:
     def __init__(self, client, code_agent, database, model="gpt-4o"):
         self.__SYSTEM_PROMPT = SYSTEM_PROMPT_CUSTOMER_AGENT
         self.model = model
         self.code_agent = code_agent
+        self.drawing_agent = DrawingSectionAgent(client, model='o1-2024-12-17')
         self.client = client
         self.database = database
         self.reset_conv_history()
@@ -51,6 +56,7 @@ class CustomerAgent:
             message = function_completion.choices[0].message
 
             if message.function_call and message.function_call.name == "generate_template":
+                logger.info("Generating Template")
                 # Non-streaming path for function calls
                 response, code = self.get_response(message)
                 
@@ -259,16 +265,27 @@ class CustomerAgent:
             logger.error(f"Error compiling LaTeX: {str(e)}")
             return False
 
-
-
 class CodeAgent:
     def __init__(self, client, model="gpt-4o"):
         self.__SYSTEM_PROMPT = SYSTEM_PROMPT_CODE_AGENT
         self.model = model
+        self.drawing_agent = DrawingSectionAgent(client, model="o1-2024-12-17")
         self.client = client
         self.conv_history =[
             {"role": "developer", "content": self.__SYSTEM_PROMPT},     # Provide general instructions and tasks
             ]
+        
+        self.functions = [{
+        "name": "generate_drawing_section",
+        "description": "Generate a latex Tech Pack template based on user input.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "context": {"type": "string"},
+            },
+            "required": ["context"]
+        }
+         }]
     
     def generate_template(self, context):
         self.conv_history.append({"role":"user", "content": f"{context}"})
@@ -276,28 +293,39 @@ class CodeAgent:
         response = self.client.chat.completions.create(
             model=self.model,
             messages=self.conv_history,
-            temperature=0.7,
+            reasoning_effort="high",
+            functions=self.functions,
+            function_call="auto",
             stream=False)
         
-        self.conv_history.append({"role":"assistant", "content":f"{response}"})
+        message = response.choices[0].message
+        if message.function_call.name == "generate_drawing_section":
+            logger.info("Generating Drawing Section")
+            self.drawing_agent.generate_drawing_section()
+
+        self.conv_history.append({"role":"assistant", "content":f"{message.content}"})
         
         return response.choices[0].message.content
+
     
 class ImageAnalysisAgent:
     def __init__(self, client, model="gpt-4o-2024-08-06"):
-        self.__SYSTEM_PROMPT = SYSTEM_PROMPT_IMAGE_ANALYSIS_AGENT
+        self.__SYSTEM_PROMPT_CLASSIFICATION = SYSTEM_PROMPT_IMAGE_ANALYSIS_AGENT_CLASSIFICATION
+        self.__SYSTEM_PROMPT_SELECTION = SYSTEM_PROMPT_IMAGE_ANALYSIS_AGENT_SELECTION
         self.model = model
         self.kpt_detector = ViTFashionDetector(num_labels=6).to(DEVICE)
         load_checkpoint("/Users/johncao/Documents/Programming/Stanford/CS224G/finetune/outputs/checkpoint_epoch_30.pth", self.kpt_detector)
         self.client = client
-        self.conv_history =[
-            {"role": "developer", "content": self.__SYSTEM_PROMPT},     # Provide general instructions and tasks
+        self.conv_history_classification =[
+            {"role": "developer", "content": self.__SYSTEM_PROMPT_CLASSIFICATION},     # Provide general instructions and tasks
             ]
-
+        self.conv_history_selection =[
+        {"role": "developer", "content": self.__SYSTEM_PROMPT_SELECTION},     # Provide general instructions and tasks
+        ]
     
     def analyze_images(self, img_folder_path):
         img_names = os.listdir(img_folder_path)
-        imgs = [os.path.join(img_folder_path,name) for name in img_names]
+        imgs = [os.path.join(img_folder_path, name) for name in img_names]
 
         conv = {
         "role": "user",''
@@ -321,25 +349,30 @@ class ImageAnalysisAgent:
                 "image_url": {"url": f"data:image/jpeg;base64,{encoded_image}"},
             })
 
-        self.conv_history.append(conv)
+        self.conv_history_classification.append(conv)
 
         response = self.client.beta.chat.completions.parse(
             model=self.model,
-            messages=self.conv_history,
-            temperature=0.5,
+            messages=self.conv_history_classification,
             response_format=ImageNamesTemplate,
         )
 
         image_names = response.choices[0].message.parsed.image_names
-        self.detect_keypoints(img_folder_path, image_names)
+        logger.info("Detecting Keypoints...")
+        imgs_with_kpts, kpts = self.detect_keypoints(img_folder_path, image_names)
+        logger.info("Filtering Relevant Keypoints...")
+        self.filter_keypoints(imgs_with_kpts, img_folder_path, image_names, kpts)
+        self.reset_conv_history()   # Delete conversation history to start with a blank slate after detection.
     
-    def detect_keypoints(self, img_folder_path, img_names):
+    def detect_keypoints(self, img_folder_path, img_names, save=False):
         img_paths = [os.path.join(img_folder_path, name) for name in img_names]  
         images = [Image.open(img_path) for img_path in img_paths]
-
+        new_images = []
+        detected_kpts = []
         for idx, image in enumerate(images):
             W, H = image.size
-            normalized_image = normalize_image(image.resize([192,256]))
+            resized_img = image.resize([192,256])
+            normalized_image = normalize_image(resized_img)
             x = torch.tensor(normalized_image).permute(2,0,1).unsqueeze(0).float()
             with torch.no_grad():
                 out = self.kpt_detector(x)
@@ -354,8 +387,84 @@ class ImageAnalysisAgent:
             kpts[:,1] = kpts[:,1]*(H/256)
 
             new_image = draw_keypoints(np.array(image), kpts)
+            new_images.append(Image.fromarray(new_image))
+            detected_kpts.append(kpts)
 
-            # Save image
-            logger.info(f"Saved Illustration with Keypoints to {img_paths[idx]}")
-            image = Image.fromarray(new_image)
-            image.save(img_paths[idx])
+            if save:
+                Image.fromarray(new_image).save(img_paths[idx])
+
+        return new_images, detected_kpts
+
+    def filter_keypoints(self, imgs_with_kpts, img_folder_path, image_names, kpts):
+        img_paths = [os.path.join(img_folder_path, name) for name in image_names]
+        for idx, img in enumerate(imgs_with_kpts):
+            buffer = BytesIO()
+            img.save(buffer, format=img.format or "PNG")
+            encoded_image = base64.b64encode(buffer.getvalue()).decode("utf-8")
+
+            conv = {
+            "role": "user",''
+            "content": [{
+                "type": "text",
+                "text": (
+                    "Here is the image with green keypoints painted on it.\n"
+                    )
+                }]
+            }
+            conv["content"].append({
+                "type": "image_url",
+                "image_url": {"url": f"data:image/jpeg;base64,{encoded_image}"},
+            })
+            self.conv_history_selection.append(conv)
+
+            response = self.client.beta.chat.completions.parse(
+                model=self.model,
+                messages=self.conv_history_selection,
+                response_format=FilteredKeypointsTemplate,
+            )
+
+            filtered_kpt_inds = response.choices[0].message.parsed.filtered_kpts
+            filtered_kpt_inds = [ind-1 for ind in filtered_kpt_inds]
+            filtered_kpts = kpts[idx][filtered_kpt_inds]
+            
+            original_img = Image.open(img_paths[idx])
+            new_image = draw_keypoints(np.array(original_img), filtered_kpts)
+            Image.fromarray(new_image).save(img_paths[idx])
+            self.reset_selection_history()
+            logger.info(f"Filtered and saved {image_names[idx]} with {len(filtered_kpts)} keypoints.")
+            
+    def reset_classification_history(self):
+        self.conv_history_classification = [
+            {"role": "developer", "content": self.__SYSTEM_PROMPT_CLASSIFICATION},     # Provide general instructions and tasks
+            ]
+        
+    def reset_selection_history(self):
+        self.conv_history_selection = [
+        {"role": "developer", "content": self.__SYSTEM_PROMPT_SELECTION},     # Provide general instructions and tasks
+        ]
+
+    def reset_conv_history(self):
+        self.reset_classification_history()
+        self.reset_selection_history()
+
+
+class DrawingSectionAgent:
+    def __init__(self, client, model):
+        self.client = client
+        self.model = model
+        self.__SYSTEM_PROMPT = SYSTEM_PROMPT_DRAWING_AGENT
+        self.conv_history = [
+            {"role": "developer", "content": self.__SYSTEM_PROMPT},     # Provide general instructions and tasks
+            ]
+        
+    def generate_drawing_section(self):
+        self.conv_history.append({"role":"user", "content": f"{GENERATE_DRAWING_PROMPT}"})
+
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=self.conv_history,
+            reasoning_effort="high",
+            stream=False)
+        
+        print(response.choices[0].message.content)
+

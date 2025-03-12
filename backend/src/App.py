@@ -23,9 +23,9 @@ app.add_middleware(
 # Initialize shared components
 client = OpenAI()
 database = DatabaseManager()
-code_agent = CodeAgent(client, model="gpt-4o")
-customer_agent = CustomerAgent(client, code_agent, database, model="gpt-4o")
-image_analysis_agent = ImageAnalysisAgent(client, model='gpt-4o-mini-2024-07-18')
+code_agent = CodeAgent(client, model="o1-2024-12-17")       # Use o1 for quality in code generation
+customer_agent = CustomerAgent(client, code_agent, database, model="gpt-4o")    # Use 4o for general conversation
+image_analysis_agent = ImageAnalysisAgent(client, model='o1-2024-12-17') 
 
 # Instantiate route classes and include their routers
 chat_routes_instance = ChatRoutes(customer_agent, database)
