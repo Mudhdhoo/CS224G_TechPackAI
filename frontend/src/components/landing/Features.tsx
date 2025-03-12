@@ -1,4 +1,3 @@
-
 import { Check, ArrowRight, MessageSquare, Users, History, Factory, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
@@ -22,22 +21,23 @@ const Features = () => {
       image: "/images/features/ai-chat.svg"
     },
     {
-      icon: <Users className="w-6 h-6" />,
-      title: "Collaborative Workspace",
-      description: "Work seamlessly with your team and manufacturers.",
-      points: ["Real-time collaboration", "Version control & history tracking", "Instant feedback & approvals"],
-      image: "/images/features/collaboration.svg"
-    },
-    {
       icon: <History className="w-6 h-6" />,
       title: "Smart Version Control & Change Tracking",
       description: "Track every edit and keep your team on the same page.",
       points: ["View all historical changes", "Compare previous versions", "Prevent outdated tech packs from being used"],
       image: "/images/features/version-control.svg"
     },
+
+    {
+      icon: <Users className="w-6 h-6" />,
+      title: "(New comming feature) Collaborative Workspace ",
+      description: "Work seamlessly with your team and manufacturers.",
+      points: ["Real-time collaboration", "Version control & history tracking", "Instant feedback & approvals"],
+      image: "/images/features/collaboration.svg"
+    },
     {
       icon: <Factory className="w-6 h-6" />,
-      title: "Seamless Manufacturer Integration",
+      title: "(New comming feature) Seamless Manufacturer Integration",
       description: "Connect directly with manufacturers to speed up production.",
       points: ["Direct manufacturer comments & approvals", "Structured order-ready formats", "Reduce miscommunication & errors"],
       image: "/images/features/manufacturer.svg"
@@ -60,7 +60,7 @@ const Features = () => {
   };
 
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section id="features" className="py-24 relative overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-t from-white via-purple-50 to-purple-50/30 -z-10" />
       

@@ -10,6 +10,7 @@ dependencies:
       - torch
       - torchvision
       - openai
+      - fastapi
       - flask
       - supabase
       - flask_cors

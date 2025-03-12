@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Play, Sparkles } from "lucide-react";
+import { ArrowRight, Play, Sparkles, PlayCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import AnimatedDocument from "./AnimatedDocument";
@@ -100,30 +100,25 @@ const Hero = () => {
             Create detailed specifications <span className="text-[#8B5CF6]">faster</span> and with <span className="text-[#8B5CF6]">greater accuracy</span>.
           </motion.p>
 
-          <motion.div 
-            className="flex flex-wrap justify-center gap-4 mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-          >
-            <Link to={user ? "/dashboard" : "/signup"}>
-              <Button 
-                size="lg"
-                className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold px-12 py-8 text-xl rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
-              >
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/signup">
+              <Button className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-lg">
                 Try for free
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="border-2 border-neutral-300 hover:bg-neutral-100 font-semibold px-12 py-8 text-xl rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-110"
+            <a 
+              href="https://www.youtube.com/watch?v=xvFZjo5PgG0" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center"
             >
-              <Play className="mr-2 h-4 w-4" />
-              Watch demo
-            </Button>
-          </motion.div>
+              <Button variant="outline" className="px-8 py-6 rounded-xl text-lg font-medium border-2 hover:bg-neutral-100">
+                <PlayCircle className="mr-2 h-5 w-5" />
+                Watch Demo
+              </Button>
+            </a>
+          </div>
         </div>
 
         {/* Tech Pack Animation */}

@@ -13,7 +13,7 @@ const MetricsSection = () => {
     },
     {
       icon: <CheckCircle className="w-10 h-10 text-[#8B5CF6]" />,
-      title: "99% Accuracy",
+      title: "Higher Accuracy",
       subtitle: "Eliminate human errors",
     },
     {
