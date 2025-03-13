@@ -5,3 +5,10 @@ class ImageNamesTemplate(BaseModel):
 
 class FilteredKeypointsTemplate(BaseModel):
     filtered_kpts: list[int]
+
+class DrawingCodeTemplate(BaseModel):
+    front_code: str
+    back_code: str
+
+class FullTemplate(BaseModel):
+    template_code: str

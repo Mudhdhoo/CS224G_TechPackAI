@@ -3,7 +3,8 @@ from utils.prompts import (SYSTEM_PROMPT_CUSTOMER_AGENT,
                            SYSTEM_PROMPT_DRAWING_AGENT,
                            SYSTEM_PROMPT_IMAGE_ANALYSIS_AGENT_CLASSIFICATION,
                            SYSTEM_PROMPT_IMAGE_ANALYSIS_AGENT_SELECTION,
-                           GENERATE_DRAWING_PROMPT)
+                           GENERATE_DRAWING_PROMPT,
+                           SYSTEM_PROMPT_COMBINE_SECTIONS_AGENT)
 from loguru import logger
 import json
 import base64
@@ -15,8 +16,9 @@ from utils.keypoints import augment_upper_body_kpts, extract_keypoints_from_heat
 import torch
 import numpy as np
 from PIL import Image
-from utils.json_templates import ImageNamesTemplate, FilteredKeypointsTemplate
+from utils.json_templates import ImageNamesTemplate, FilteredKeypointsTemplate, DrawingCodeTemplate, FullTemplate
 from io import BytesIO
+from utils.prompts import TEMPLATE
 
 class CustomerAgent:
     def __init__(self, client, code_agent, database, model="gpt-4o"):
@@ -270,14 +272,19 @@ class CodeAgent:
         self.__SYSTEM_PROMPT = SYSTEM_PROMPT_CODE_AGENT
         self.model = model
         self.drawing_agent = DrawingSectionAgent(client, model="o1-2024-12-17")
+        self.combine_sections_agent = CombinedSectionsAgent(client, model="o1-2024-12-17")
         self.client = client
+        self.current_template = TEMPLATE
         self.conv_history =[
             {"role": "developer", "content": self.__SYSTEM_PROMPT},     # Provide general instructions and tasks
             ]
+        self.conv_history_analyze_context = [
+            {'role':"developer", "content": "You will be given some information about a user request for a tech pack. Based on this information, decide if it is necessary to create the FRONT VIEW or BACK VIEW sections. If yes, Call the generate_drawing_section function."}
+        ]
         
         self.functions = [{
         "name": "generate_drawing_section",
-        "description": "Generate a latex Tech Pack template based on user input.",
+        "description": "Generate the drawing section of a latex template.",
         "parameters": {
             "type": "object",
             "properties": {
@@ -289,23 +296,45 @@ class CodeAgent:
     
     def generate_template(self, context):
         self.conv_history.append({"role":"user", "content": f"{context}"})
+        self.conv_history_analyze_context.append({"role":"user", "content": f"{context}"})
 
         response = self.client.chat.completions.create(
             model=self.model,
-            messages=self.conv_history,
+            messages=self.conv_history_analyze_context,
             reasoning_effort="high",
             functions=self.functions,
             function_call="auto",
             stream=False)
         
+        self.reset_conv_history_analyze_context()
+
+        response_template = self.client.chat.completions.create(
+            model=self.model,
+            messages=self.conv_history,
+            reasoning_effort="high",
+            stream=False)
+        
         message = response.choices[0].message
         if message.function_call.name == "generate_drawing_section":
             logger.info("Generating Drawing Section")
-            self.drawing_agent.generate_drawing_section()
+            front_template_code, back_template_code = self.drawing_agent.generate_drawing_section()
+            logger.info("Generating Remaining Tech Pack")
+            logger.info("Combining sections")
+            new_template = self.combine_sections_agent.combine_sections(response_template.choices[0].message.content, front_template_code, back_template_code)
+            self.conv_history.append({"role":"assistant", "content":f"{new_template}"})
+        else:
+            logger.info("Editing template")
+            new_template = response_template.choices[0].message.content
+            self.conv_history.append({"role":"assistant", "content":f"{new_template}"})
 
-        self.conv_history.append({"role":"assistant", "content":f"{message.content}"})
-        
-        return response.choices[0].message.content
+        self.current_template = new_template
+
+        return new_template
+    
+    def reset_conv_history_analyze_context(self):
+            self.conv_history_analyze_context = [
+            {'role':"developer", "content": "You will be given some information about a user request for a tech pack. Based on this information, decide if it is necessary to create the FRONT VIEW or BACK VIEW sections. If yes, Call the generate_drawing_section function."}
+        ]
 
     
 class ImageAnalysisAgent:
@@ -425,7 +454,12 @@ class ImageAnalysisAgent:
 
             filtered_kpt_inds = response.choices[0].message.parsed.filtered_kpts
             filtered_kpt_inds = [ind-1 for ind in filtered_kpt_inds]
-            filtered_kpts = kpts[idx][filtered_kpt_inds]
+            logger.info(filtered_kpt_inds)
+            try:
+                filtered_kpts = kpts[idx][filtered_kpt_inds]
+            except Exception as e:
+                logger.info(e)
+                continue
             
             original_img = Image.open(img_paths[idx])
             new_image = draw_keypoints(np.array(original_img), filtered_kpts)
@@ -460,11 +494,39 @@ class DrawingSectionAgent:
     def generate_drawing_section(self):
         self.conv_history.append({"role":"user", "content": f"{GENERATE_DRAWING_PROMPT}"})
 
-        response = self.client.chat.completions.create(
+        response = self.client.beta.chat.completions.parse(
             model=self.model,
             messages=self.conv_history,
-            reasoning_effort="high",
-            stream=False)
-        
-        print(response.choices[0].message.content)
+            response_format=DrawingCodeTemplate,
+        )
+        front_code, back_code = response.choices[0].message.parsed.front_code, response.choices[0].message.parsed.back_code
+        self.conv_history.append({"role":"assistant", "content": f"Front Section Code:\n{front_code}\nBack Section Code\n {back_code}"})
 
+        return front_code, back_code
+
+class CombinedSectionsAgent:
+    def __init__(self, client, model):
+        self.__SYSTEM_PROMPT = SYSTEM_PROMPT_COMBINE_SECTIONS_AGENT
+        self.client = client
+        self.model = model
+        self.conv_history = [
+            {"role": "developer", "content": self.__SYSTEM_PROMPT},  
+            ]
+    
+    def combine_sections(self, current_template, front_code, back_code):
+        print(current_template)
+        self.conv_history.append({"role":"user", "content": f"Here is the current template: \n\ {current_template}"})
+        self.conv_history.append({"role":"user", "content": f"Here is the front section template, copy this over to the current template: \n\ {front_code}"})
+        self.conv_history.append({"role":"user", "content": f"Here is the back section template, copy this over to the current template: \n\ {back_code}"})
+
+        response = self.client.beta.chat.completions.parse(
+            model=self.model,
+            messages=self.conv_history,
+            response_format=FullTemplate,
+        )
+
+        self.conv_history = [
+            {"role": "developer", "content": self.__SYSTEM_PROMPT},  
+            ]
+
+        return response.choices[0].message.parsed.template_code

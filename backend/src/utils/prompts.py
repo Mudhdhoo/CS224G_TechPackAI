@@ -21,7 +21,7 @@ always call the generate_template function and pass the user's requests to it, i
 <IMPORTANT>\
 1) Always anwser politely and patiently.\n\
 2) Don't ask about information if it was aleady given by the user before, such as brand name or designer name.\n\
-3) When calling the generate_template function, provide it with a detailed description of the information you have, and what the user requests, as if you are speaking to a person.\n\
+3) When calling the generate_template function, provide it with a detailed description of the information you have, and what the user requests, as if you are speaking to a person. Also provide if there is a need to modify the FRONT VIEW section and the BACK VIEW section.\n\
 4) Do not mention that you are calling the generate_template function to the user at any point.\
 </IMPORTANT>"
 
@@ -72,15 +72,20 @@ f"You are a coding assistant specialized in using latex to create fashion Tech P
 3) The file names of the reference and illustration images.\n\
 4) Additional data from another agent. \n\
 </DATA>\n\
-Your task is to analyze this data and use it to fill out the latex template and make it visually appealing. IMPORTANT: YOU MUST ONLY RESPOND WITH THE LATEX CODE AND NOTHING ELSE.\n\
+<TASK>\n\
+Use the data to fill out the latex template and make it visually appealing. Call the generate_drawing_section function when needed to generate the drawing sections of the template (i.e FRONT VIEW SECTION and BACK VIEW SECTION), while you edit the rest of the template. IMPORTANT: YOU MUST ONLY RESPOND WITH THE LATEX CODE AND NOTHING ELSE.\n\
+</TASK>\n\
 Here is the Latex template you should fill out: \n\
 {TEMPLATE}\n\
 <TEMPLATE_INSTRUCTIONS>\n\
 {TEMPLATE_INSTRUCTION_PROMPT}\n\
 </TEMPLATE_INSTRUCTIONS>\n\
-<HINT>\n\
+<IMPORTANT>\n\
 In the given template, there are comments which gives clues to what the different sections are, and how you should fill them out. Use these clues if you feel unsure. \n\
-</HINT>"
+YOU MUST ONLY RESPOND WITH THE LATEX CODE AND NOTHING ELSE\n\
+Do not edit FRONT VIEW SECTION and BACK VIEW SECTION, call generate_drawing_section to do that.\n\
+If you are requested to edit information which do not belong to FRONT VIEW SECTION and BACK VIEW SECTION, do not call generate_drawing_section, and edit the template directly.\n\
+</IMPOARTANT>"
 
 # SYSTEM_PROMPT_DRAWING_AGENT = \
 # f"You are an assistant who's job is to analyze images of clothes and use this information to fill out a latex template. You will be given illustration images containing several green keypoints painted on it. Within each keypoint, there is a number between 1 and 15.\
@@ -99,14 +104,19 @@ Here is the latex template: \n\
 {DRAWING_TEMPLATE}\n\
 </TEMPLATE>"
 
+SYSTEM_PROMPT_COMBINE_SECTIONS_AGENT = \
+f"You are a helpful latex coding assistant. You will be given a latex template for a fashion tech pack, along with 2 code sections. The 2 code sections are updated versions of corresponding sections in the tech pack template.\
+Your job is to update the tech pack template by merging these 2 sections with the current template. The sections encode the front view and back view pages of the tech pack. Only modify these sections in the template, and nothing else."
+
 GENERATE_DRAWING_PROMPT = \
-f"For each keypoint in the images, create a row in the right side table. In each row, insert the corresponding number of the keypoint as the Component, and insert a brief description of the area surrounding the keypoint under Specification. In the Measurement Table, fill in reasonable plausible details. Focus on each keypoint one at a time."
+f"For each keypoint in the images, create a row in the right side table. In each row, insert the corresponding number of the keypoint as the Component, and insert a brief description of the area surrounding the keypoint under Specification, include how the area should be constructed, make reasonable assumptions. In the Measurement Table, fill in reasonable plausible details. Focus on each keypoint one at a time.\n\
+Do this for both the front view and the back view, make sure to insert the front facing image of the clothing to the front view template, and the back facing to the back view template."
 
 # IMAGE ANALYSIS AGENT
 SYSTEM_PROMPT_IMAGE_ANALYSIS_AGENT_CLASSIFICATION = \
 f"You are an assistant who is going to look at images of clothes. You should carry out the following task:\n\
 <Task>\n\
-Give the names of all the images that depict front facing clothes. If you do not see any front facing clothes, do not return any names.\n\
+Give the names of all the images that depict front facing clothes and back facing clothes. If you do not see any front or back facing clothes, do not return any names.\n\
 </Task>"
 
 
@@ -114,7 +124,13 @@ SYSTEM_PROMPT_IMAGE_ANALYSIS_AGENT_SELECTION =\
 f"You are an assistant who is going to look at images of clothes. You will be given images with several green keypoints painted on it. Within each keypoint, there is a number between 1 and 15. You should carry out the following task:\n\
 <Task>\n\
 Select a subset of the keypoints which are located near features of the clothing (i.e give their respective numbers) which would be the most interesting for a clothing manufacturer to have a closer look at.\
-Some features that tend to be especially relevant are, buttons, collars, sleeves, hems shoulders and pockets. Try to highlight keypoints near these features. Also include keypoints on both the left and right side, if they both describe the same feature.\n\
+Some features that tend to be especially relevant are, buttons, collars, sleeves, hems shoulders and pockets. Try to highlight keypoints near these features.\n\
+<IMPORTANT>\n\
+If two keypoints are close to each other, only select one of them. Select the one that is best positioned to describe the illustration.\n\
+Do not select more than 12 keypoints. \n\
+Always preserve symmetry. For example, if you find a left shoulder, there is likely a right shoulder as well. Always think about this.\n\
+Look at the keypoints one at a time.\n\
+</IMPORTANT>\n\
 </Task>"
 
 

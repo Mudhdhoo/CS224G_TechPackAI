@@ -106,9 +106,10 @@ class UploadIllustrationRoute:
                     "type": "image_url",
                     "image_url": {"url": f"data:image/jpeg;base64,{encoded_image}"},
                 })
-                self.customer_agent.conv_history.append(conv)
-                self.code_agent.conv_history.append(conv)
-                self.code_agent.drawing_agent.conv_history.append(conv)
+                
+            self.customer_agent.conv_history.append(conv)
+            self.code_agent.conv_history.append(conv)
+            self.code_agent.drawing_agent.conv_history.append(conv)
             
             return {"message": "File uploaded successfully"}
 
