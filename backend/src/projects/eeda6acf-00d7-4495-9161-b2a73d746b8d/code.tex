@@ -76,7 +76,7 @@
     % Brand name with logo placeholder
     \node[anchor=west, text=white, font=\Large\bfseries] 
         at ([xshift=1cm, yshift=-0.5cm]current page.north west) 
-        {FASHION BRAND};
+        {\faIcon{tshirt} J.LINDEBERG};
     
     % Document type indicator
     \node[anchor=east, text=white, font=\large] 
@@ -106,12 +106,12 @@
     % Copyright text with icon
     \node[anchor=west, text=white, font=\small] 
         at ([xshift=1cm, yshift=0.35cm]current page.south west) 
-        {\faIcon{copyright} FASHION BRAND 2025};
+        {\faIcon{copyright} J.LINDEBERG 2025};
     
     % Contact info in footer
     \node[anchor=center, text=white, font=\small] 
         at ([yshift=0.35cm]current page.south) 
-        { \quad };
+        {\faIcon{envelope} contact@jlindeberg.com \quad \faIcon{phone} +1 (800) 555-0199};
     
     % Page number with icon
     \node[anchor=east, text=white, font=\small] 
@@ -162,13 +162,13 @@
 \begin{center}
 \begin{tabular}{|>{\bfseries\raggedright\arraybackslash}p{3.2cm}|p{4cm}|>{\bfseries\raggedright\arraybackslash}p{3.2cm}|p{4cm}|}
 \hline
-\rowcolor{tablehead}\faIcon{tag} Brand: & PLACEHOLDER & \rowcolor{tablehead}\faIcon{user} Designer: & PLACEHOLDER \\
+\rowcolor{tablehead}\faIcon{tag} Brand: & J.Lindeberg & \rowcolor{tablehead}\faIcon{user} Designer: & John \\
 \hline
-\faIcon{tshirt} Style Name: & PLACEHOLDER  & \faIcon{hashtag} Style Number: & PLACEHOLDER  \\
+\faIcon{tshirt} Style Name: & Classic Leather Jacket & \faIcon{hashtag} Style Number: & JL-2023-45 \\
 \hline
-\rowcolor{tablehead}\faIcon{layer-group} Category: & PLACEHOLDER & \rowcolor{tablehead}\faIcon{calendar-alt} Season: & PLACEHOLDER \\
+\rowcolor{tablehead}\faIcon{layer-group} Category: & Outerwear & \rowcolor{tablehead}\faIcon{calendar-alt} Season: & Autumn/Winter \\
 \hline
-\faIcon{calendar-day} Date: & PLACEHOLDER  & \faIcon{code-branch} Version: & PLACEHOLDER \\
+\faIcon{calendar-day} Date: & 10/09/2023 & \faIcon{code-branch} Version: & V1 \\
 \hline
 \end{tabular}
 \end{center}
@@ -182,7 +182,7 @@
 \rowcolor{tablehead}\multicolumn{1}{|c|}{\textbf{\faIcon{info-circle} PRODUCT DESCRIPTION}} \\
 \hline
 \vspace{0.2cm}
-\large % INSERT PRODUCT DESCRIPTION HERE
+\large This jacket features a sleek, modern silhouette with a structured stand-up collar. The front design includes multiple pockets and a smooth zipper closure for easy wear. Constructed from mid-weight leather, it offers both durability and style. Subtle seam details along the shoulders and sleeves add a refined touch. The carefully fitted shape ensures a contemporary look suitable for various occasions.
 \vspace{0.3cm} \\
 \hline
 \end{tabular}
@@ -191,15 +191,14 @@
 \newpage
 
 % --------------------------------- FRONT VIEW SECTION ---------------------------------
-\techsection{FRONT VIEW}
-\vspace{-0.3cm}
+\techsection{FRONT VIEW}\vspace{-0.3cm}
 
 \begin{tabular}{p{0.49\textwidth}|p{0.49\textwidth}}
 % Left side - FRONT VIEW with better frame
 \begin{center}
 \begin{tikzpicture}
 \node[draw=bordercolor, line width=0.5pt, inner sep=4pt, fill=white, rounded corners=3pt] {
-    \includegraphics[width=0.35\textwidth,height=12cm,keepaspectratio]{}
+    \includegraphics[width=0.35\textwidth,height=12cm,keepaspectratio]{jacket_front.png}
 };
 % Add a small label on top
 \node[anchor=north, fill=accentgold, text=white, font=\small\bfseries, rounded corners=2pt, inner sep=2pt] 
@@ -209,12 +208,25 @@
 &
 % Right side - Attributes Table FRONT VIEW with improved formatting
 \begin{center}
-\begin{tabular}{|>{\columncolor{lightblue}\bfseries}p{3.5cm}|p{8cm}|}
+\begin{tabular}{|>{\columncolor{lightblue}\bfseries}p{3.5cm}|p{7cm}|}
 \hline
 \rowcolor{mediumblue}\multicolumn{1}{|c|}{\textcolor{white}{\textbf{\faIcon{list} Component}}} & \multicolumn{1}{c|}{\textcolor{white}{\textbf{\faIcon{info} Specifications}}} \\
 \hline
-PLACEHOLDER & PLACEHOLDER \\
-PLACEHOLDER & PLACEHOLDER \\
+Keypoint #1 -- Collar & This is a short, ribbed collar that offers both style and a snug fit around the neck. It is sewn with reinforced stitching to maintain its structure. \\
+\hline
+Keypoint #2 -- Right Hem & This bottom edge on the right side includes a ribbed band to keep the jacket snug. It is double-stitched to prevent fraying and ensure durability. \\
+\hline
+Keypoint #3 -- Left Hem & Mirroring the right hem, this side is also ribbed to hug the waist. Additionally, it has a slightly elastic quality that provides comfortable movement. \\
+\hline
+Keypoint #4 -- Waistband & Located at the bottom center front, the waistband is made of elastic ribbing. It is firmly secured with topstitching, preventing it from stretching out over time. \\
+\hline
+Keypoint #5 -- Left Pocket & A flap-style pocket placed on the left front panel. It has a hidden snap at the opening to keep belongings secure. \\
+\hline
+Keypoint #6 -- Right Pocket & Another flap pocket matching the left side, offering balanced aesthetics. Reinforced at stress points to handle frequent use. \\
+\hline
+Keypoint #7 -- Left Shoulder & The left shoulder seam is slightly curved to follow the body’s natural shape. It features additional interfacing for extra strength. \\
+\hline
+Keypoint #8 -- Right Shoulder & The right shoulder construction mirrors the left, maintaining symmetry. Seam reinforcement prevents stretching during wear. \\
 \hline
 \end{tabular}
 \end{center}
@@ -229,26 +241,31 @@ PLACEHOLDER & PLACEHOLDER \\
 \hline
 \rowcolor{mediumblue}\textcolor{white}{\textbf{Component}} & \textcolor{white}{\textbf{XS}} & \textcolor{white}{\textbf{S}} & \textcolor{white}{\textbf{M}} & \textcolor{white}{\textbf{L}} & \textcolor{white}{\textbf{XL}} \\
 \hline
-PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER \\
+Shoulder Width (#7, #8): Measured from left shoulder point to right shoulder point & 38\,cm & 40\,cm & 42\,cm & 44\,cm & 46\,cm \\
 \hline
-PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER \\
+Chest Circumference (#5, #6): Measured around the fullest part of the chest & 90\,cm & 95\,cm & 100\,cm & 105\,cm & 110\,cm \\
 \hline
-PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER \\
+Waist Circumference (#4): Measured around the ribbed waistband for a snug fit & 80\,cm & 85\,cm & 90\,cm & 95\,cm & 100\,cm \\
+\hline
+Sleeve Length (#2, #3): From shoulder seam down to the cuff edge & 58\,cm & 60\,cm & 62\,cm & 64\,cm & 66\,cm \\
+\hline
+Front Length (#1): From the base of the collar to the front hem & 60\,cm & 62\,cm & 64\,cm & 66\,cm & 68\,cm \\
+\hline
+Pocket Depth (#5, #6): From the top of the pocket opening to bottom & 20\,cm & 20\,cm & 21\,cm & 21\,cm & 22\,cm \\
 \hline
 \end{tabularx}
 % ---------------------------------------------------------------------------------------------
 \newpage
 
 % --------------------------------- BACK VIEW SECTION ---------------------------------
-\techsection{BACK VIEW}
-\vspace{-0.3cm}
+\techsection{BACK VIEW}\vspace{-0.3cm}
 
 \begin{tabular}{p{0.49\textwidth}|p{0.49\textwidth}}
 % Left side - BACK VIEW with better frame
 \begin{center}
 \begin{tikzpicture}
 \node[draw=bordercolor, line width=0.5pt, inner sep=4pt, fill=white, rounded corners=3pt] {
-    \includegraphics[width=0.35\textwidth,height=12cm,keepaspectratio]{}
+    \includegraphics[width=0.35\textwidth,height=12cm,keepaspectratio]{jacket_back.png}
 };
 % Add a small label on top
 \node[anchor=north, fill=accentgold, text=white, font=\small\bfseries, rounded corners=2pt, inner sep=2pt] 
@@ -258,12 +275,25 @@ PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDE
 &
 % Right side - Attributes Table BACK VIEW with improved formatting
 \begin{center}
-\begin{tabular}{|>{\columncolor{lightblue}\bfseries}p{3.5cm}|p{8cm}|}
+\begin{tabular}{|>{\columncolor{lightblue}\bfseries}p{3.5cm}|p{7cm}|}
 \hline
 \rowcolor{mediumblue}\multicolumn{1}{|c|}{\textcolor{white}{\textbf{\faIcon{list} Component}}} & \multicolumn{1}{c|}{\textcolor{white}{\textbf{\faIcon{info} Specifications}}} \\
 \hline
-PLACEHOLDER & PLACEHOLDER \\
-PLACEHOLDER & PLACEHOLDER \\
+Keypoint #1 -- Collar & The back of the collar sits slightly higher for warmth. It is tightly ribbed and stitched to maintain its shape. \\
+\hline
+Keypoint #2 -- Left Hem & The bottom edge on the left side of the back, finished with an elastic band. Reinforced with bartacks at stress points. \\
+\hline
+Keypoint #3 -- Right Hem & The bottom edge on the right side of the back, mirroring the left hem. Double-stitched to prevent unraveling. \\
+\hline
+Keypoint #4 -- Left Waist & The seam on the left waist is contoured to fit the body. It includes a hidden layer of interfacing for added stability. \\
+\hline
+Keypoint #5 -- Center Waistband & The central segment of the lower back, framed by ribbed material. Secured with topstitching to hold snugly in place. \\
+\hline
+Keypoint #6 -- Left Back Panel & This panel covers the mid-torso area on the left side of the back. Reinforced at the upper seam to minimize tearing. \\
+\hline
+Keypoint #7 -- Right Back Panel & Symmetrical to the left panel, it provides coverage for the mid-torso. Constructed with the same seam reinforcement. \\
+\hline
+Keypoint #8 -- Shoulder Seam & The shoulder seam on the back is slightly curved for comfort. It uses a second layer of stitching to handle stress. \\
 \hline
 \end{tabular}
 \end{center}
@@ -278,15 +308,20 @@ PLACEHOLDER & PLACEHOLDER \\
 \hline
 \rowcolor{mediumblue}\textcolor{white}{\textbf{Component}} & \textcolor{white}{\textbf{XS}} & \textcolor{white}{\textbf{S}} & \textcolor{white}{\textbf{M}} & \textcolor{white}{\textbf{L}} & \textcolor{white}{\textbf{XL}} \\
 \hline
-PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER \\
+Shoulder to Shoulder (#8): Measured across the back from one shoulder seam to the other & 38\,cm & 40\,cm & 42\,cm & 44\,cm & 46\,cm \\
 \hline
-PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER \\
+Center Back Length (#1--#5): From the collar seam to the bottom of the waistband & 62\,cm & 64\,cm & 66\,cm & 68\,cm & 70\,cm \\
 \hline
-PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER \\
+Back Yoke Depth: From the shoulder line down to where the back panels join & 20\,cm & 21\,cm & 22\,cm & 23\,cm & 24\,cm \\
+\hline
+Armhole Depth (#6 or #7): Vertical distance from shoulder seam to lower armhole & 24\,cm & 25\,cm & 26\,cm & 27\,cm & 28\,cm \\
+\hline
+Hem Width (#2, #3): Straight measurement across the bottom hem at the back & 42\,cm & 44\,cm & 46\,cm & 48\,cm & 50\,cm \\
+\hline
+Back Panel Width (#6, #7): Horizontal measurement across mid-torso & 38\,cm & 40\,cm & 42\,cm & 44\,cm & 46\,cm \\
 \hline
 \end{tabularx}
 % ---------------------------------------------------------------------------------------------
-
 \newpage
 
 % REFERENCE IMAGES SECTION with callouts
@@ -298,7 +333,7 @@ PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDE
 \begin{center}
 \begin{tikzpicture}
 \node[draw=bordercolor, line width=0.5pt, inner sep=4pt, fill=white, rounded corners=3pt] (img) {
-    \includegraphics[width=0.35\textwidth,height=12cm,keepaspectratio]{}
+    \includegraphics[width=0.35\textwidth,height=12cm,keepaspectratio]{jacket_reference.png}
 };
 
 % Sample callout annotations (uncomment and modify when image is added)
@@ -319,9 +354,11 @@ PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDE
 \hline
 \begin{minipage}[t]{\linewidth}
 \vspace{0.3cm}
-PLACEHOLDER
+A reference leather jacket showcasing a refined silhouette and warm brown tone. It offers hints of traditional biker elements, while maintaining a sleek, modern design.
 \begin{itemize}[leftmargin=*, label={\textcolor{accentgold}{\faIcon{check-circle}}}]
-  \item PLACEHOLDER
+  \item Rich brown leather finish
+  \item Subtle seam detailing on shoulders
+  \item Minimalist style for versatile pairing
 \end{itemize}
 \vspace{0.3cm}
 \end{minipage} \\
@@ -339,15 +376,23 @@ PLACEHOLDER
 \hline
 \rowcolor{mediumblue}\textcolor{white}{\textbf{Material}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Unit Cost}} & \textcolor{white}{\textbf{Total Cost}} \\
 \hline
-PLACEHOLDER & PLACEHOLDER  & PLACEHOLDER  & PLACEHOLDER   \\
+Leather Fabric & Mid-weight top grain & \$28/m & \$56 \\
 \hline
-PLACEHOLDER & PLACEHOLDER  & PLACEHOLDER  & PLACEHOLDER   \\
+Lining & Polyester satin & \$4/m & \$8 \\
 \hline
-PLACEHOLDER & PLACEHOLDER  & PLACEHOLDER  & PLACEHOLDER   \\
+Ribbing & Cotton blend (collar, cuffs, hem) & \$3/m & \$6 \\
 \hline
-PLACEHOLDER & PLACEHOLDER  & PLACEHOLDER  & PLACEHOLDER   \\
+Zipper & YKK antique brass & \$4/pc & \$4 \\
 \hline
-\multicolumn{3}{|r|}{\textbf{Total Material Cost:}} & PLACEHOLDER \\
+Thread & Polyester, heavy-duty & \$0.5/spool & \$1 \\
+\hline
+Interfacing & Fusible, medium weight & \$2/m & \$4 \\
+\hline
+Snap Buttons & Brass finish & \$0.2/each & \$1 \\
+\hline
+Label & Woven brand label & \$0.4/label & \$0.4 \\
+\hline
+\multicolumn{3}{|r|}{\textbf{Total Material Cost:}} & \$80.4 \\
 \hline
 \end{tabularx}
 
@@ -363,15 +408,15 @@ PLACEHOLDER & PLACEHOLDER  & PLACEHOLDER  & PLACEHOLDER   \\
 \hline
 \begin{minipage}[t]{\linewidth}
 \vspace{0.3cm}
-\large % ENTER CARE INSTRUCTIONS HERE
+\large 
 \begin{center}
 \begin{tabular}{ccccc}
-\textcolor{primaryblue}{\Large\faIcon{tshirt}} & 
 \textcolor{primaryblue}{\Large\faIcon{ban}} & 
-\textcolor{primaryblue}{\Large\faIcon{sync}} & 
-\textcolor{primaryblue}{\Large\faIcon{temperature-high}} & 
-\textcolor{primaryblue}{\Large\faIcon{ban}} \\
-Machine Wash & No Bleach & Tumble Dry & Iron Medium & No Dry Clean \\
+\textcolor{primaryblue}{\Large\faIcon{ban}} & 
+\textcolor{primaryblue}{\Large\faIcon{ban}} & 
+\textcolor{primaryblue}{\Large\faIcon{ban}} & 
+\textcolor{primaryblue}{\Large\faIcon{check-circle}} \\
+No Machine Wash & No Bleach & No Tumble Dry & No Iron & Professional Clean \\
 \end{tabular}
 \end{center}
 
@@ -389,12 +434,15 @@ Machine Wash & No Bleach & Tumble Dry & Iron Medium & No Dry Clean \\
 \hline
 \begin{minipage}[t]{\linewidth}
 \vspace{0.3cm}
-\large % ADDITIONAL COMMENT HERE
+\large 
+% (Designer may fill in additional remarks here)
+\vspace{0.3cm}
 \end{minipage} \\
 \hline
 \end{tabularx}
 
 \vspace{0.7cm}
+
 % SIGNATURES
 \techsection{SIGNATURES}
 \vspace{-0.3cm}
@@ -410,16 +458,17 @@ Machine Wash & No Bleach & Tumble Dry & Iron Medium & No Dry Clean \\
 
 \newpage
 
-% DISCLAIMER AND CONFIDENTIALITY
-\begin{center}
-\begin{tabular}{|p{23cm}|}
+% USER DISCLAIMER AND CONFIDENTIALITY
+\techsection{USER DISCLAIMER AND CONFIDENTIALITY}
+\vspace{-0.3cm}
+\noindent\begin{tabularx}{\textwidth}{|X|}
 \hline
-\rowcolor{primaryblue}\multicolumn{1}{|c|}{\textcolor{white}{\textbf{DISCLAIMER AND CONFIDENTIALITY}}} \\
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3cm}
+\large This document is the property of J.Lindeberg. All design elements, measurements, and materials are strictly confidential. Unauthorized distribution or sharing of this information is prohibited.
+\vspace{0.3cm}
+\end{minipage} \\
 \hline
-\large % INSERT DISCLAIMER AND CONFIDENTIALITY HERE
-\\
-\hline
-\end{tabular}
-\end{center}
+\end{tabularx}
 
 \end{document}

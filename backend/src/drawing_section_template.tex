@@ -2,20 +2,23 @@
 \vspace{-0.3cm}
 
 \begin{tabular}{p{0.49\textwidth}|p{0.49\textwidth}}
-% Left side 
+% Left side - FRONT VIEW with better frame
 \begin{center}
 \begin{tikzpicture}
-\node[draw=bordercolor, line width=1pt, inner sep=4pt, fill=white, rounded corners=2pt] {
+\node[draw=bordercolor, line width=0.5pt, inner sep=4pt, fill=white, rounded corners=3pt] {
     \includegraphics[width=0.35\textwidth,height=12cm,keepaspectratio]{}
 };
+% Add a small label on top
+\node[anchor=north, fill=accentgold, text=white, font=\small\bfseries, rounded corners=2pt, inner sep=2pt] 
+    at ([yshift=0.5cm]current bounding box.north) {FRONT VIEW};
 \end{tikzpicture}
 \end{center}
 &
-% Right side - Attributes Table 
+% Right side - Attributes Table FRONT VIEW with improved formatting
 \begin{center}
 \begin{tabular}{|>{\columncolor{lightblue}\bfseries}p{3.5cm}|p{7cm}|}
 \hline
-\rowcolor{mediumblue}\multicolumn{1}{|c|}{\textcolor{white}{\textbf{Component}}} & \multicolumn{1}{c|}{\textcolor{white}{\textbf{Specifications}}} \\
+\rowcolor{mediumblue}\multicolumn{1}{|c|}{\textcolor{white}{\textbf{\faIcon{list} Component}}} & \multicolumn{1}{c|}{\textcolor{white}{\textbf{\faIcon{info} Specifications}}} \\
 \hline
 PLACEHOLDER & PLACEHOLDER \\
 PLACEHOLDER & PLACEHOLDER \\
@@ -26,17 +29,17 @@ PLACEHOLDER & PLACEHOLDER \\
 
 \vspace{0.5cm}
 
-% MEASUREMENTS TABLE 
+% MEASUREMENTS TABLE FRONT VIEW - WITH IMPROVED STYLING
 \noindent\begin{tabularx}{\textwidth}{|>{\columncolor{lightblue}\bfseries}X|X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|}
 \hline
-\rowcolor{primaryblue}\multicolumn{6}{|c|}{\textcolor{white}{\large\textbf{FRONT MEASUREMENTS}}} \\
+\rowcolor{primaryblue}\multicolumn{6}{|c|}{\textcolor{white}{\large\textbf{\faIcon{ruler-combined} FRONT MEASUREMENTS}}} \\
 \hline
 \rowcolor{mediumblue}\textcolor{white}{\textbf{Component}} & \textcolor{white}{\textbf{XS}} & \textcolor{white}{\textbf{S}} & \textcolor{white}{\textbf{M}} & \textcolor{white}{\textbf{L}} & \textcolor{white}{\textbf{XL}} \\
 \hline
-PLACEHOLDER & & & & & \\
+PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER \\
 \hline
-PLACEHOLDER & & & & & \\
+PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER \\
 \hline
-PLACEHOLDER & & & & & \\
+PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER \\
 \hline
 \end{tabularx}
