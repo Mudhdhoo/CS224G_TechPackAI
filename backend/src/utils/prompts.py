@@ -136,7 +136,7 @@ f"You are an assistant tasked with creating a structured table for each numberd 
   - For each numberd keypoint on the garment, create one row in the applicable table (front or back). The first collumn is the number that is the label of the keypoint\n\
   - Columns to include:\n\
        a) The garment feature (e.g., collar, sleeve, pocket, hem).\n\
-       b) Construction details (e.g., reinforced stitching, interfacing). Make this 2-3 sentences\n\n\
+       b) Construction details (e.g., reinforced stitching, interfacing). Make this 1 sentence\n\n\
 3. Fill out the messuremtnts table of the Front View and Back View.\n\
  Here, list the garment’s critical measurements. It should be at least 6 rows\n\
 - Select relevant keypoints from both front and back views for which precise measurements are needed (e.g., shoulder width, sleeve length, waist circumference).\n\n\
@@ -182,7 +182,7 @@ f"You are an assistant tasked with examining an image of a garment (e.g., a blaz
 2. From these keypoints, select those that best represent the important features like the ones listed above.\n\
 3. If two or more keypoints are very close to each other or represent the same garment feature, choose only the single best keypoint among them (the one that is best positioned to describe that feature).\n\
 4. You must preserve symmetry. For instance, if you select a point on the left shoulder, also select the corresponding point on the right shoulder (assuming it exists).\n\
-5. You must not select more than 10 keypoints in total.\n\
+5. You must not select more than 9 keypoints in total.\n\
 </Task>\n\
 <IMPORTANT>\n\
 - Evaluate the keypoints systematically (look at them one by one).\n\
