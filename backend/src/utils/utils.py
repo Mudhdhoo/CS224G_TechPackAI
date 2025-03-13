@@ -3,6 +3,7 @@ import torch
 from loguru import logger
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
+import cv2
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -43,69 +44,80 @@ def load_checkpoint(checkpoint_path, model, optimizer=None, scheduler=None):
     # Return starting epoch and previous train losses
     return checkpoint['epoch'], checkpoint.get('train_losses', [])
 
-def draw_keypoints(image_array, keypoints, color=(0, 255, 0), radius=8):
-    """
-    Draw keypoints with numbers on an image array using PIL
+def draw_keypoints(
+    image, coordinates, radius=12, text_size=1, 
+    dot_color=(0, 255, 0),  # Green in RGB format
+    text_color=(0, 0, 255),  # White
+    start_num=1
+):
+    """ Draw dots with numbers at specified coordinates on an image.
     
-    Args:
-        image_array: Numpy array of the image
-        keypoints: List of (x, y) coordinates
-        color: RGB color tuple for the keypoints
-        radius: Radius of the keypoint circles
-    
+    Parameters:
+    -----------
+    image : numpy.ndarray
+        The input image as a numpy array
+    coordinates : list of tuples
+        List of (x, y) coordinates where dots should be drawn
+    radius : int, optional
+        Radius of the dots to be drawn (default: 10)
+    text_size : float, optional
+        Size of the text (default: 0.5)
+    dot_color : tuple, optional
+        Color of the dots in RGB format (default: green (0, 255, 0))
+    text_color : tuple, optional
+        Color of the text in RGB format (default: white (255, 255, 255))
+    start_num : int, optional
+        Starting number for the dots (default: 1)
+        
     Returns:
-        Numpy array of the image with keypoints and numbers
+    --------
+    numpy.ndarray
+        The image with dots and numbers drawn on it
     """
-    if image_array.ndim < 3:
-        image_array = np.stack([image_array, image_array, image_array], axis=-1)
+
+    if image.dtype != np.uint8:
+        image = image.astype(np.uint8)
+
+    if image.shape[-1] == 4:
+        image = image[:,:,:3]
+
+    result_image = image.copy()
     
-    # Convert numpy array to PIL Image
-    image = Image.fromarray(image_array)
+    # Get image dimensions
+    height, width = result_image.shape[:2]
     
-    # Create a transparent version of the image for overlays
-    overlay = Image.new('RGBA', image.size, (0, 0, 0, 0))
-    image = image.convert('RGBA')
-    
-    # Create a drawing object for the overlay
-    draw = ImageDraw.Draw(overlay)
-    
-    # Set a default font
-    try:
-        font = ImageFont.truetype("arial.ttf", size=radius * 3)
-    except IOError:
-        font = ImageFont.load_default()
-    
-    # Create transparent fill color with the same RGB but 50% opacity
-    fill_color = color #+ (128,)  # Add alpha channel (128 = 50% opacity)
-    border_color = (0, 0, 0)     # Black border
-    
-    # Draw each keypoint as a circle with a number inside
-    for idx, point in enumerate(keypoints, start=1):
-        x, y = int(point[0]), int(point[1])
+    # Draw dots and numbers at each coordinate
+    for i, (x, y) in enumerate(coordinates):
+        # Convert coordinates to integers if they aren't already
+        x, y = int(x), int(y)
         
-        # Draw a circle with transparent fill and solid border
-        draw.ellipse((x - radius, y - radius, x + radius, y + radius), 
-                     fill=fill_color, outline=border_color)
+        # Ensure coordinates are within image bounds
+        if x < 0 or x >= width or y < 0 or y >= height:
+            continue
         
-        # Calculate text size and position using font.getbbox()
-        text = str(idx)
-        bbox = font.getbbox(text)
-        text_width = bbox[2] - bbox[0]
-        text_height = bbox[3] - bbox[1]
-        text_x = x - text_width // 2
-        text_y = y - text_height // 2
+        # Convert RGB to BGR for OpenCV functions
+        bgr_dot_color = dot_color[::-1]  # Reverse the RGB tuple to get BGR
+        bgr_text_color = text_color[::-1]  # Reverse the RGB tuple to get BGR
         
-        # Draw the number inside the keypoint
-        draw.text((text_x, text_y), text, fill=(255, 0, 0), font=font)
+        # Draw the dot
+        cv2.circle(result_image, (x, y), radius, bgr_dot_color, -1)  # -1 fills the circle
+        
+        # Calculate text to be drawn
+        text = str(i + start_num)
+        text_font = cv2.FONT_HERSHEY_SIMPLEX
+        text_thickness = 2
+        
+        # Get text size to center it properly
+        (text_width, text_height), baseline = cv2.getTextSize(text, text_font, text_size, text_thickness)
+        
+        # Calculate position to center text in the dot
+        text_x = int(x - text_width / 2)
+        text_y = int(y + text_height / 2)
+        
+        # Draw the number
+        cv2.putText(result_image, text, (text_x, text_y), text_font, text_size, bgr_text_color, text_thickness)
     
-    # Composite the overlay with the original image
-    result = Image.alpha_composite(image, overlay)
-    
-    # Convert back to RGB for numpy compatibility if needed
-    result = result.convert('RGB')
-    
-    # Convert back to numpy array
-    return np.array(result)
+    return result_image
 
 def normalize_image(image: Image.Image):
     """
@@ -122,6 +134,9 @@ def normalize_image(image: Image.Image):
 
     if image_array.ndim < 3:
         image_array = np.stack([image_array, image_array, image_array],axis=-1)
+    
+    if image_array.shape[-1] == 4:
+        image_array = image_array[:,:,:3]
 
     # Define mean and standard deviation
     mean = np.array([0.485, 0.456, 0.406])

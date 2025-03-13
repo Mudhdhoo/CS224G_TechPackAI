@@ -102,15 +102,20 @@ f"You are an assistant who's job is to analyze images of clothes and use this in
 Here is the latex template: \n\
 <TEMPLATE>\n\
 {DRAWING_TEMPLATE}\n\
-</TEMPLATE>"
+</TEMPLATE>\n\
+<NOTE>\n\
+The given template is for the front view, make the necessary adjustments when filling out the back view. \n\
+</NOTE>"
 
 SYSTEM_PROMPT_COMBINE_SECTIONS_AGENT = \
 f"You are a helpful latex coding assistant. You will be given a latex template for a fashion tech pack, along with 2 code sections. The 2 code sections are updated versions of corresponding sections in the tech pack template.\
 Your job is to update the tech pack template by merging these 2 sections with the current template. The sections encode the front view and back view pages of the tech pack. Only modify these sections in the template, and nothing else."
 
 GENERATE_DRAWING_PROMPT = \
-f"For each keypoint in the images, create a row in the right side table. In each row, insert the corresponding number of the keypoint as the Component, and insert a brief description of the area surrounding the keypoint under Specification, include how the area should be constructed, make reasonable assumptions. In the Measurement Table, fill in reasonable plausible details. Focus on each keypoint one at a time.\n\
-Do this for both the front view and the back view, make sure to insert the front facing image of the clothing to the front view template, and the back facing to the back view template."
+f"Please complete these following tasks: \n\
+1) For each keypoint in the images, create a corresponding row in the right side table. In each row, insert the corresponding number of the keypoint (the number inside the green dot) as the Component, and insert a brief description of the area surrounding the keypoint under Specification, include how the area should be constructed, make reasonable assumptions. Think step by step when completing this task. \n\
+2) In the Measurement Table, fill in reasonable plausible details. Replace the PLACEHOLDER inputs. Fill in at least 5 rows, but no more than 10.\n\
+Do these tasks for both the front view and the back view, make sure to insert the front facing image of the clothing to the front view template, and the back facing to the back view template. Focus on each keypoint one at a time."
 
 # IMAGE ANALYSIS AGENT
 SYSTEM_PROMPT_IMAGE_ANALYSIS_AGENT_CLASSIFICATION = \

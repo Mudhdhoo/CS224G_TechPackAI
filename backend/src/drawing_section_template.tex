@@ -2,24 +2,41 @@
 \vspace{-0.3cm}
 
 \begin{tabular}{p{0.49\textwidth}|p{0.49\textwidth}}
-% Left side
+% Left side 
 \begin{center}
 \begin{tikzpicture}
 \node[draw=bordercolor, line width=1pt, inner sep=4pt, fill=white, rounded corners=2pt] {
-    \includegraphics[width=0.35\textwidth,height=12cm,keepaspectratio]{}    % INSERT IMAGE HERE
+    \includegraphics[width=0.35\textwidth,height=12cm,keepaspectratio]{}
 };
 \end{tikzpicture}
 \end{center}
 &
 % Right side - Attributes Table 
-\specificationtable{
-& \\
-}
+\begin{center}
+\begin{tabular}{|>{\columncolor{lightblue}\bfseries}p{3.5cm}|p{7cm}|}
+\hline
+\rowcolor{mediumblue}\multicolumn{1}{|c|}{\textcolor{white}{\textbf{Component}}} & \multicolumn{1}{c|}{\textcolor{white}{\textbf{Specifications}}} \\
+\hline
+PLACEHOLDER & PLACEHOLDER \\
+PLACEHOLDER & PLACEHOLDER \\
+\hline
+\end{tabular}
+\end{center}
 \end{tabular}
 
 \vspace{0.5cm}
 
-% MEASUREMENTS TABLE
-\measurementtable{
-& & & & & & \\
-}
+% MEASUREMENTS TABLE 
+\noindent\begin{tabularx}{\textwidth}{|>{\columncolor{lightblue}\bfseries}X|X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|}
+\hline
+\rowcolor{primaryblue}\multicolumn{6}{|c|}{\textcolor{white}{\large\textbf{FRONT MEASUREMENTS}}} \\
+\hline
+\rowcolor{mediumblue}\textcolor{white}{\textbf{Component}} & \textcolor{white}{\textbf{XS}} & \textcolor{white}{\textbf{S}} & \textcolor{white}{\textbf{M}} & \textcolor{white}{\textbf{L}} & \textcolor{white}{\textbf{XL}} \\
+\hline
+PLACEHOLDER & & & & & \\
+\hline
+PLACEHOLDER & & & & & \\
+\hline
+PLACEHOLDER & & & & & \\
+\hline
+\end{tabularx}
