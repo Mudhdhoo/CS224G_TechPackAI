@@ -96,8 +96,8 @@ class CustomerAgent:
                 # For regular messages, use streaming
                 streaming_completion = self.client.chat.completions.create(
                     model=self.model,
-                    messages=self.conv_history,
                     temperature=0.7,
+                    messages=self.conv_history,
                     stream=True
                 )
                 
@@ -122,10 +122,10 @@ class CustomerAgent:
     def get_completion(self):
         completion = self.client.chat.completions.create(
             model=self.model,
+            temperature=0.7,
             messages=self.conv_history,
             functions=self.functions,
             function_call="auto",
-            temperature=0.7,
             stream=False
         )
 
@@ -183,7 +183,7 @@ class CustomerAgent:
             completion = self.client.chat.completions.create(
                 model="gpt-4o",
                 messages=self.conv_history,
-                temperature = 0.7,
+                temperature=0.7,
                 stream = False
             )
             response = completion.choices[0].message.content
