@@ -1,6 +1,0 @@
-python main.py --brand_name "Vacheron Constantin" \
-               --designer_name "John Cao" \
-               --model OpenAI \
-               --model_name gpt-4o \
-               --reference_dir ../reference/ \
-               --illustration_dir ../illustration/
