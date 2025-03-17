@@ -68,3 +68,7 @@ backend/src/test_yolo.ipynb
 deepfashion/*
 
 fun
+
+finetune/outputs/*
+
+backend/src/detector/checkpoint_epoch_30.pth
