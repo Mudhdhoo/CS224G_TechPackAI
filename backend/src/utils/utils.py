@@ -4,12 +4,20 @@ from loguru import logger
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 import cv2
+import re
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
+    
+def replace_between_markers(original, start_marker, end_marker, new_content):
+    pattern = re.compile(
+        rf'({re.escape(start_marker)})(.*?){re.escape(end_marker)}',
+        re.DOTALL
+    )
+    return pattern.sub(lambda m: f"{m.group(1)}\n{new_content}\n{end_marker}", original)
     
 def load_checkpoint(checkpoint_path, model, optimizer=None, scheduler=None):
     """

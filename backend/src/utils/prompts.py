@@ -1,8 +1,8 @@
-with open("template.tex", "r", encoding="utf-8") as f:
+with open("./templates/template.tex", "r", encoding="utf-8") as f:
    TEMPLATE = f.read()
 
 
-with open("drawing_section_template.tex", "r", encoding="utf-8") as f:
+with open("./templates/drawing_section_template.tex", "r", encoding="utf-8") as f:
    DRAWING_TEMPLATE = f.read()
 
 # CUSTOMER AGENT
@@ -104,40 +104,49 @@ Here is the Latex template you should fill out: \n\
 {TEMPLATE_INSTRUCTION_PROMPT}\n\
 </TEMPLATE_INSTRUCTIONS>\n\
 <IMPORTANT>\n\
-In the given template, there are comments which gives clues to what the different sections are, and how you should fill them out. Use these clues if you feel unsure. \n\
-YOU MUST ONLY RESPOND WITH THE LATEX CODE AND NOTHING ELSE\n\
-Do not edit FRONT VIEW SECTION and BACK VIEW SECTION, call the generate_drawing_section in your tool box to do that. Do not define this function in Latex.\n\
-If you are requested to edit information which do not belong to FRONT VIEW SECTION and BACK VIEW SECTION, do not call generate_drawing_section, and edit the template directly.\n\
+1. In the given template, there are comments which gives clues to what the different sections are, and how you should fill them out. Use these clues if you feel unsure. \n\
+2. YOU MUST ONLY RESPOND WITH THE LATEX CODE AND NOTHING ELSE\n\
+3. Do not edit FRONT VIEW SECTION and BACK VIEW SECTION, call the generate_drawing_section in your tool box to do that. Do not define this function in Latex.\n\
+4. If you are requested to edit information which do not belong to FRONT VIEW SECTION and BACK VIEW SECTION, do not call generate_drawing_section, and edit the template directly. Think hard about if you need to call this function or not. Some tasks, such as changing the code in the beginning of the template, do not require changing the drawing sections. \n\
+5. Always work with the latest latex code template you have generated. For example, you generate a template, and then the user asks for a modification, then you must modify the template you just generated, and not the original template.\n\
 </IMPOARTANT>"
 
 
 SYSTEM_PROMPT_DRAWING_AGENT = \
-f"You are an assistant who's job is to analyze images of clothes and use this information to fill out a latex template.\n\
+f"You are an assistant who's job is to analyze images of clothes and use this information to fill out a latex template. You should fill out one template for each image.\n\
 Here is the latex template: \n\
 <TEMPLATE>\n\
 {DRAWING_TEMPLATE}\n\
-</TEMPLATE>"
+</TEMPLATE>\n\
+<IMPORTANT>\n\
+Make sure to fill out one template for EVERY image. Double check to make sure you do not miss any images. The user will become VERY ANGRY if you miss an image.\n\
+</IMPORTANT>"
 
 
 SYSTEM_PROMPT_COMBINE_SECTIONS_AGENT = \
-f"You are a helpful latex coding assistant. You will be given a latex template for a fashion tech pack, along with 2 code sections. The 2 code sections are updated versions of corresponding sections in the tech pack template.\
-Your job is to update the tech pack template by merging these 2 sections with the current template. The sections encode the front view and back view pages of the tech pack. Only modify these sections in the template, and nothing else."
+f"You are a helpful latex coding assistant. You will be given a latex template for a fashion tech pack, along with a few blocks of code. The code blocks are updated versions of corresponding sections in the tech pack template.\
+Your job is to update the tech pack template by merging these code blocks with the current template. The sections encode the front view and back view pages of the tech pack. Note that you might be given more code blocks than the current\
+template contains, in that case, just simply replace the current amount with the new amount, you just need to replace the corresponding sections in the template with the given code blocks.\n\
+<IMPORTANT>\n\
+1. Only modify the sections corresponding to the given code blocks in the template, and nothing else.\n\
+2. The order by which the code blocks appear in the updated template must be the same as the order you received them in. \n\
+</IMPORTANT>"
 
 
-#Klar för nu
 GENERATE_DRAWING_PROMPT = \
-f"You are an assistant tasked with creating a structured table for each numberd labled keypoint identified on an image of a garment. The garment will have two views: front and back.\n\
+f"Please create a structured table for each numbered labled keypoint identified on an image of a garment. The garment will have two possible views: front and back.\n\
 <Task>\n\
-1. **Front and Back Views:**\n\
+1. For each image you are given, determine if it is a front facing image or a back facing image of the clothing. Then for each image, execute the following tasks and modify the given code block template to each of the images. Make sure that you create one template for each image you have, create the code for the front-facing images first, then the code for the back-facing images. The rest of the tasks describe how you should modify each image.\n\
+2. **Front and Back Views:**\n\
   - Use the front view image to fill in a 'Front View' table.\n\
   - Use the back view image to fill in a 'Back View' table.\n\
   - Make sure to insert the front facing image of the clothing to the front view template, and the back facing to the back view template.\n\n\
-2. **Table Columns and Rows:**\n\
-  - For each numberd keypoint on the garment, create one row in the applicable table (front or back). The first collumn is the number that is the label of the keypoint\n\
+3. **Table Columns and Rows:**\n\
+  - For each numbered keypoint on the garment, create one row in the applicable table (front or back). The first column is the number that is the label of the keypoint\n\
   - Columns to include:\n\
        a) The garment feature (e.g., collar, sleeve, pocket, hem).\n\
        b) Construction details (e.g., reinforced stitching, interfacing). Make this 1 sentence\n\n\
-3. Fill out the messuremtnts table of the Front View and Back View.\n\
+4. Fill out the measuremtnts table of the Front View and Back View.\n\
  Here, list the garment’s critical measurements. It should be at least 6 rows\n\
 - Select relevant keypoints from both front and back views for which precise measurements are needed (e.g., shoulder width, sleeve length, waist circumference).\n\n\
 - Include:\n\

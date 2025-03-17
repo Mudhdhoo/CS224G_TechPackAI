@@ -10,7 +10,7 @@ import json
 import base64
 import os
 from utils.compile import compile_latex_from_txt
-from utils.utils import load_checkpoint, draw_keypoints, normalize_image, DEVICE
+from utils.utils import load_checkpoint, draw_keypoints, normalize_image, replace_between_markers, DEVICE
 from detector.FashionDetector import ViTFashionDetector
 from utils.keypoints import augment_upper_body_kpts, extract_keypoints_from_heatmap
 import torch
@@ -317,15 +317,15 @@ class CodeAgent:
         message = response.choices[0].message
         if message.function_call.name == "generate_drawing_section":
             logger.info("Generating Drawing Section")
-            front_template_code, back_template_code = self.drawing_agent.generate_drawing_section()
+            code_blocks = self.drawing_agent.generate_drawing_section()
             logger.info("Generating Remaining Tech Pack")
             logger.info("Combining sections")
-            new_template = self.combine_sections_agent.combine_sections(response_template.choices[0].message.content, front_template_code, back_template_code)
-            self.conv_history.append({"role":"assistant", "content":f"{new_template}"})
+            new_template = self.combine_sections_agent.combine_sections(response_template.choices[0].message.content, code_blocks)
+            self.conv_history.append({"role":"assistant", "content":f"Here is the new tempalte:\n{new_template}"})
         else:
             logger.info("Editing template")
             new_template = response_template.choices[0].message.content
-            self.conv_history.append({"role":"assistant", "content":f"{new_template}"})
+            self.conv_history.append({"role":"assistant", "content":f"Here is the new template:\n{new_template}"})
 
         self.current_template = new_template
 
@@ -343,7 +343,7 @@ class ImageAnalysisAgent:
         self.__SYSTEM_PROMPT_SELECTION = SYSTEM_PROMPT_IMAGE_ANALYSIS_AGENT_SELECTION
         self.model = model
         self.kpt_detector = ViTFashionDetector(num_labels=6).to(DEVICE)
-        load_checkpoint("/Users/johncao/Documents/Programming/Stanford/CS224G/finetune/outputs/checkpoint_epoch_30.pth", self.kpt_detector)
+        load_checkpoint("./detector/checkpoint_epoch_30.pth", self.kpt_detector)
         self.client = client
         self.conv_history_classification =[
             {"role": "developer", "content": self.__SYSTEM_PROMPT_CLASSIFICATION},     # Provide general instructions and tasks
@@ -499,10 +499,13 @@ class DrawingSectionAgent:
             messages=self.conv_history,
             response_format=DrawingCodeTemplate,
         )
-        front_code, back_code = response.choices[0].message.parsed.front_code, response.choices[0].message.parsed.back_code
-        self.conv_history.append({"role":"assistant", "content": f"Front Section Code:\n{front_code}\nBack Section Code\n {back_code}"})
+        # front_code, back_code = response.choices[0].message.parsed.front_code, response.choices[0].message.parsed.back_code
+        code_blocks = response.choices[0].message.parsed.code_blocks
+        logger.info(f'NUM BLOCKS: {len(code_blocks)}')
+        for idx, block in enumerate(code_blocks):
+            self.conv_history.append({"role":"assistant", "content": f"Here is code block {idx+1}: {block}"})
 
-        return front_code, back_code
+        return code_blocks
 
 class CombinedSectionsAgent:
     def __init__(self, client, model):
@@ -513,20 +516,51 @@ class CombinedSectionsAgent:
             {"role": "developer", "content": self.__SYSTEM_PROMPT},  
             ]
     
-    def combine_sections(self, current_template, front_code, back_code):
-        print(current_template)
-        self.conv_history.append({"role":"user", "content": f"Here is the current template: \n\ {current_template}"})
-        self.conv_history.append({"role":"user", "content": f"Here is the front section template, copy this over to the current template: \n\ {front_code}"})
-        self.conv_history.append({"role":"user", "content": f"Here is the back section template, copy this over to the current template: \n\ {back_code}"})
+    # def combine_sections(self, current_template, front_code, back_code):
+    #     print(current_template)
+    #     self.conv_history.append({"role":"user", "content": f"Here is the current template: \n\ {current_template}"})
+    #     self.conv_history.append({"role":"user", "content": f"Here is the front section template, copy this over to the current template: \n\ {front_code}"})
+    #     self.conv_history.append({"role":"user", "content": f"Here is the back section template, copy this over to the current template: \n\ {back_code}"})
 
-        response = self.client.beta.chat.completions.parse(
-            model=self.model,
-            messages=self.conv_history,
-            response_format=FullTemplate,
-        )
+    #     response = self.client.beta.chat.completions.parse(
+    #         model=self.model,
+    #         messages=self.conv_history,
+    #         response_format=FullTemplate,
+    #     )
 
-        self.conv_history = [
-            {"role": "developer", "content": self.__SYSTEM_PROMPT},  
-            ]
+    #     self.conv_history = [
+    #         {"role": "developer", "content": self.__SYSTEM_PROMPT},  
+    #         ]
 
-        return response.choices[0].message.parsed.template_code
+    #     return response.choices[0].message.parsed.template_code
+
+    # def combine_sections(self, current_template, code_blocks):
+    #     self.conv_history.append({"role":"user", "content": f"Here is the current template: \n\ {current_template}"})
+    #     self.conv_history.append({"role":"user", "content": f"Here are the code templates you should merge with the current template. I will give you them one by one. Merge them in the same order as you receive them.\n\
+    #                               <IMPORTANT>Make sure to merge ALL the code blocks. Double check to that you do not accidentally leave one out.</IMPORTANT>"})
+    #     for idx, block in enumerate(code_blocks):
+    #         self.conv_history.append({"role":"user", "content": f" Here is code block {idx}: {block}"})
+
+    #     response = self.client.beta.chat.completions.parse(
+    #         model=self.model,
+    #         messages=self.conv_history,
+    #         response_format=FullTemplate,
+    #     )
+
+    #     self.conv_history = [
+    #         {"role": "developer", "content": self.__SYSTEM_PROMPT},  
+    #         ]
+
+    #     return response.choices[0].message.parsed.template_code
+
+    def combine_sections(self, current_template, code_blocks):
+        drawing_code = ""
+        for block in code_blocks:
+            drawing_code += f"{block}\n"
+        
+        template = replace_between_markers(current_template,
+                                           "%%START_DRAWING_SECTION%%",
+                                           "%%END_DRAWING_SECTION%%",
+                                           drawing_code)
+
+        return template

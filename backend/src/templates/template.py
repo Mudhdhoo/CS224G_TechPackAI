@@ -1,3 +1,5 @@
+TEMPLATE_WITHOUT_DRAWING_SECTION_TOP = \
+r"""
 \documentclass[landscape]{article}
 \usepackage[a4paper,landscape,margin=1.5cm]{geometry}
 \usepackage{graphicx}
@@ -189,106 +191,10 @@
 \end{center}
 
 \newpage
+"""
 
-% --------------------------------- FRONT VIEW SECTION ---------------------------------
-\techsection{FRONT VIEW}
-\vspace{-0.3cm}
-
-\begin{tabular}{p{0.49\textwidth}|p{0.49\textwidth}}
-% Left side - FRONT VIEW with better frame
-\begin{center}
-\begin{tikzpicture}
-\node[draw=bordercolor, line width=0.5pt, inner sep=4pt, fill=white, rounded corners=3pt] {
-    \includegraphics[width=0.35\textwidth,height=12cm,keepaspectratio]{}
-};
-% Add a small label on top
-\node[anchor=north, fill=accentgold, text=white, font=\small\bfseries, rounded corners=2pt, inner sep=2pt] 
-    at ([yshift=0.5cm]current bounding box.north) {FRONT VIEW};
-\end{tikzpicture}
-\end{center}
-&
-% Right side - Attributes Table FRONT VIEW with improved formatting
-\begin{center}
-\begin{tabular}{|>{\columncolor{lightblue}\bfseries}p{3.5cm}|p{8cm}|}
-\hline
-\rowcolor{mediumblue}\multicolumn{1}{|c|}{\textcolor{white}{\textbf{\faIcon{list} Component}}} & \multicolumn{1}{c|}{\textcolor{white}{\textbf{\faIcon{info} Specifications}}} \\
-\hline
-PLACEHOLDER & PLACEHOLDER \\
-PLACEHOLDER & PLACEHOLDER \\
-\hline
-\end{tabular}
-\end{center}
-\end{tabular}
-
-\vspace{0.5cm}
-
-% MEASUREMENTS TABLE FRONT VIEW - WITH IMPROVED STYLING
-\noindent\begin{tabularx}{\textwidth}{|>{\columncolor{lightblue}\bfseries}X|X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|}
-\hline
-\rowcolor{primaryblue}\multicolumn{6}{|c|}{\textcolor{white}{\large\textbf{\faIcon{ruler-combined} FRONT MEASUREMENTS}}} \\
-\hline
-\rowcolor{mediumblue}\textcolor{white}{\textbf{Component}} & \textcolor{white}{\textbf{XS}} & \textcolor{white}{\textbf{S}} & \textcolor{white}{\textbf{M}} & \textcolor{white}{\textbf{L}} & \textcolor{white}{\textbf{XL}} \\
-\hline
-PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER \\
-\hline
-PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER \\
-\hline
-PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER \\
-\hline
-\end{tabularx}
-% ---------------------------------------------------------------------------------------------
-\newpage
-
-% --------------------------------- BACK VIEW SECTION ---------------------------------
-\techsection{BACK VIEW}
-\vspace{-0.3cm}
-
-\begin{tabular}{p{0.49\textwidth}|p{0.49\textwidth}}
-% Left side - BACK VIEW with better frame
-\begin{center}
-\begin{tikzpicture}
-\node[draw=bordercolor, line width=0.5pt, inner sep=4pt, fill=white, rounded corners=3pt] {
-    \includegraphics[width=0.35\textwidth,height=12cm,keepaspectratio]{}
-};
-% Add a small label on top
-\node[anchor=north, fill=accentgold, text=white, font=\small\bfseries, rounded corners=2pt, inner sep=2pt] 
-    at ([yshift=0.5cm]current bounding box.north) {BACK VIEW};
-\end{tikzpicture}
-\end{center}
-&
-% Right side - Attributes Table BACK VIEW with improved formatting
-\begin{center}
-\begin{tabular}{|>{\columncolor{lightblue}\bfseries}p{3.5cm}|p{8cm}|}
-\hline
-\rowcolor{mediumblue}\multicolumn{1}{|c|}{\textcolor{white}{\textbf{\faIcon{list} Component}}} & \multicolumn{1}{c|}{\textcolor{white}{\textbf{\faIcon{info} Specifications}}} \\
-\hline
-PLACEHOLDER & PLACEHOLDER \\
-PLACEHOLDER & PLACEHOLDER \\
-\hline
-\end{tabular}
-\end{center}
-\end{tabular}
-
-\vspace{0.5cm}
-
-% MEASUREMENTS TABLE BACK VIEW - WITH IMPROVED STYLING
-\noindent\begin{tabularx}{\textwidth}{|>{\columncolor{lightblue}\bfseries}X|X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|}
-\hline
-\rowcolor{primaryblue}\multicolumn{6}{|c|}{\textcolor{white}{\large\textbf{\faIcon{ruler-combined} BACK MEASUREMENTS}}} \\
-\hline
-\rowcolor{mediumblue}\textcolor{white}{\textbf{Component}} & \textcolor{white}{\textbf{XS}} & \textcolor{white}{\textbf{S}} & \textcolor{white}{\textbf{M}} & \textcolor{white}{\textbf{L}} & \textcolor{white}{\textbf{XL}} \\
-\hline
-PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER \\
-\hline
-PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER \\
-\hline
-PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER & PLACEHOLDER \\
-\hline
-\end{tabularx}
-% ---------------------------------------------------------------------------------------------
-
-\newpage
-
+TEMPLATE_WITHOUT_DRAWING_SECTION_BOTTOM = \
+r"""
 % REFERENCE IMAGES SECTION with callouts
 \techsection{REFERENCE}
 \vspace{-0.3cm}
@@ -423,3 +329,4 @@ Machine Wash & No Bleach & Tumble Dry & Iron Medium & No Dry Clean \\
 \end{center}
 
 \end{document}
+"""
