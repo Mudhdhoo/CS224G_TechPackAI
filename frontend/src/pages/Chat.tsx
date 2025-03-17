@@ -1,13 +1,13 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Send, PenTool, FileText } from "lucide-react";
+import { Send, PenTool, FileText, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { techpackAI } from "@/lib/techpack-ai";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { isErrored } from "stream";
 import React from "react";
 
 type Message = {
@@ -31,15 +30,21 @@ const Chat = () => {
   const [inputMessage, setInputMessage] = useState("");
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [pdfNeedsRefresh, setPdfNeedsRefresh] = useState(false);
   const { id: projectId } = useParams();
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // Use a ref to track current streamed content to avoid race conditions
   const streamedContentRef = useRef("");
+
+  // Animation states
+  const [animationText, setAnimationText] = useState("Thinking");
+  const [dotCount, setDotCount] = useState(0);
 
   const { data: messages = [], isLoading: messagesLoading } = useQuery({
     queryKey: ['messages', projectId],
@@ -49,28 +54,6 @@ const Chat = () => {
       const uniqueMessages = Array.from(
         new Map(response.map(msg => [msg.id, msg])).values()
       );
-      
-      /*
-      // Create the welcome message
-      const welcomeMessage = {
-        id: "0", 
-        type: 'assistant', 
-        content: "Thank you for uploading you illustration and reference images! To get started, please prove your brand name and designer name.", 
-        created_at: "0", 
-        user_id: user.id, 
-        project_id: projectId
-      };
-      
-      // Check if this content already exists in any message
-      const welcomeContentExists = uniqueMessages.some(msg => 
-        msg.content === welcomeMessage.content
-      );
-      
-      // Only insert the welcome message if its content doesn't already exist
-      if (!welcomeContentExists) {
-        uniqueMessages.unshift(welcomeMessage);
-      }
-        */
       
       return uniqueMessages;
     },
@@ -91,12 +74,34 @@ const Chat = () => {
   });
 
   // Effect to refresh PDF when needed
-  React.useEffect(() => {
+  useEffect(() => {
     if (pdfNeedsRefresh) {
       refetchPdf();
       setPdfNeedsRefresh(false);
     }
   }, [pdfNeedsRefresh]);
+
+  // Animation effect for the dots
+  useEffect(() => {
+    if (!isGenerating) return;
+
+    const dotInterval = setInterval(() => {
+      setDotCount((prev) => (prev >= 3 ? 0 : prev + 1));
+    }, 500);
+
+    return () => clearInterval(dotInterval);
+  }, [isGenerating]);
+
+  // Effect to update the animation text with dots
+  useEffect(() => {
+    if (!isGenerating) return;
+    setAnimationText(`Thinking${".".repeat(dotCount)}`);
+  }, [dotCount, isGenerating]);
+
+  // Scroll to bottom effect
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isGenerating]);
 
   const { isLoading: isPdfLoading, refetch: refetchPdf } = useQuery({
     queryKey: ['pdf', projectId],
@@ -182,9 +187,11 @@ const Chat = () => {
     try {
       // Reset streamed content
       streamedContentRef.current = "";
-      setIsStreaming(true);
-
-      // Create temporary message objects for UI
+      
+      // Show generating animation
+      setIsGenerating(true);
+      
+      // Create temporary user message object for UI
       const tempUserMessage: Message = {
         id: `temp-user-${Date.now()}`,
         content: content,
@@ -194,45 +201,58 @@ const Chat = () => {
         created_at: new Date().toISOString(),
       };
 
-      const tempAssistantId = `temp-assistant-${Date.now()}`;
-      const tempAssistantMessage: Message = {
-        id: tempAssistantId,
-        content: "", // Will be updated while streaming
-        type: 'assistant',
-        project_id: projectId,
-        user_id: user.id,
-        created_at: new Date().toISOString(),
-      };
-
-      // Update UI with temporary messages
+      // Update UI with temporary user message only
       queryClient.setQueryData(['messages', projectId], (oldData: Message[] = []) => [
         ...oldData, 
-        tempUserMessage, 
-        tempAssistantMessage
+        tempUserMessage
       ]);
 
-      // Start streaming
-      await techpackAI.sendMessageStream(content, projectId, (chunk) => {
-        // Update the content ref with new chunk
-        streamedContentRef.current += chunk;
+      try {
+        // Prepare temporary assistant message ID for when streaming completes
+        const tempAssistantId = `temp-assistant-${Date.now()}`;
         
-        // Check if the chunk mentions PDF generation
-        if (
-          chunk.includes("tech pack has been updated") ||
-          chunk.includes("PDF has been generated")
-        ) {
-          setPdfNeedsRefresh(true);
-        }
+        // Start streaming but keep the animation visible
+        setIsStreaming(true);
         
-        // Update the assistant's message with the current streamed content
-        queryClient.setQueryData(['messages', projectId], (oldData: Message[] = []) => {
-          return oldData.map(msg => 
-            msg.id === tempAssistantId 
-              ? { ...msg, content: streamedContentRef.current } 
-              : msg
-          );
+        // Stream the content while showing the animation
+        let fullResponse = "";
+        await techpackAI.sendMessageStream(content, projectId, (chunk) => {
+          // Accumulate the full response
+          fullResponse += chunk;
+          
+          // Check if the chunk mentions PDF generation
+          if (
+            chunk.includes("tech pack has been updated") ||
+            chunk.includes("PDF has been generated")
+          ) {
+            setPdfNeedsRefresh(true);
+          }
         });
-      });
+        
+        // Only once we have the complete response, hide the animation and show the message
+        setIsGenerating(false);
+        
+        // Create final assistant message with the complete response
+        const assistantMessage: Message = {
+          id: tempAssistantId,
+          content: fullResponse,
+          type: 'assistant',
+          project_id: projectId,
+          user_id: user.id,
+          created_at: new Date().toISOString(),
+        };
+        
+        // Add the completed assistant message to the UI
+        queryClient.setQueryData(['messages', projectId], (oldData: Message[] = []) => [
+          ...oldData,
+          assistantMessage
+        ]);
+        
+        // When streaming is done, refetch to get the proper IDs from the database
+        queryClient.invalidateQueries({ queryKey: ['messages', projectId] });
+      } catch (error) {
+        throw error;
+      }
 
       // When streaming is done, refetch to get the proper IDs from the database
       queryClient.invalidateQueries({ queryKey: ['messages', projectId] });
@@ -244,6 +264,7 @@ const Chat = () => {
         variant: "destructive",
       });
     } finally {
+      setIsGenerating(false);
       setIsStreaming(false);
       setInputMessage("");
     }
@@ -327,7 +348,7 @@ const Chat = () => {
       <p className="text-muted-foreground">Enter your brand and designer names to begin.</p>
 
       <Card className="p-6 min-h-[500px] h-[600px] flex flex-col">
-        <div className="flex-1 space-y-4 overflow-y-auto" style={{ height: "450px" }}>
+        <div className="flex-1 space-y-4 overflow-y-auto pb-4" style={{ height: "450px" }}>
           {messages.map((message) => (
             <div
               key={message.id}
@@ -340,6 +361,21 @@ const Chat = () => {
               <p>{message.content}</p>
             </div>
           ))}
+          
+          {/* Generating Template Animation */}
+          {isGenerating && (
+            <div className="bg-muted p-4 rounded-lg flex items-center space-x-3 max-w-[80%] animate-pulse">
+              <div className="animate-spin">
+                <Loader2 size={18} className="text-primary" />
+              </div>
+              <div className="relative">
+                <p className="font-medium">{animationText}</p>
+                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary/50 to-primary animate-pulse"></div>
+              </div>
+            </div>
+          )}
+          
+          <div ref={messagesEndRef} />
         </div>
 
         <div className="border-t pt-4 mt-4">
@@ -350,9 +386,13 @@ const Chat = () => {
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              disabled={isStreaming}
+              disabled={isStreaming || isGenerating}
             />
-            <Button size="icon" onClick={handleSendMessage} disabled={isStreaming}>
+            <Button 
+              size="icon" 
+              onClick={handleSendMessage} 
+              disabled={isStreaming || isGenerating}
+            >
               <Send size={18} />
             </Button>
           </div>

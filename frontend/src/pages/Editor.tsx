@@ -10,7 +10,7 @@ import { techpackAI } from "@/lib/techpack-ai";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, Send, Loader2 } from "lucide-react";
 
 // ---- Types ----
 type Message = {
@@ -71,40 +71,13 @@ const PdfEmbed = ({ projectId }: { projectId: string | undefined }) => {
   );
 };
 
-// Add this new Animation component
-const ThinkingAnimation = () => {
-  const [text, setText] = useState("thinking...");
-  
-  useEffect(() => {
-    const messages = ["thinking...", "evaluating...", "creating..."];
-    let index = 0;
-    
-    const interval = setInterval(() => {
-      index = (index + 1);
-      setText(messages[index]);
-      
-      // Stop the interval when we reach "creating..."
-      if (index === messages.length - 1) {
-        clearInterval(interval);
-      }
-    }, 2000);
-    
-    return () => clearInterval(interval);
-  }, []);
-  
-  return (
-    <div className="p-4 rounded-lg bg-muted animate-pulse">
-      <p className="text-sm font-medium text-muted-foreground">{text}</p>
-    </div>
-  );
-};
-
 function Editor() {
   const navigate = useNavigate();
   const { id: projectId } = useParams();
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // For user's input in the text box
   const [inputMessage, setInputMessage] = useState("");
@@ -114,6 +87,10 @@ function Editor() {
   // Holds the incremental streamed content for the assistant
   const streamedContentRef = useRef("");
 
+  // Animation states (matching the first implementation)
+  const [animationText, setAnimationText] = useState("Thinking");
+  const [dotCount, setDotCount] = useState(0);
+  
   // 1) Fetch existing messages
   const {
     data: messages = [],
@@ -133,6 +110,28 @@ function Editor() {
     },
     enabled: !!projectId,
   });
+
+  // Animation effect for the dots
+  useEffect(() => {
+    if (!isStreaming) return;
+
+    const dotInterval = setInterval(() => {
+      setDotCount((prev) => (prev >= 3 ? 0 : prev + 1));
+    }, 500);
+
+    return () => clearInterval(dotInterval);
+  }, [isStreaming]);
+
+  // Effect to update the animation text with dots
+  useEffect(() => {
+    if (!isStreaming) return;
+    setAnimationText(`Thinking${".".repeat(dotCount)}`);
+  }, [dotCount, isStreaming]);
+
+  // Scroll to bottom effect
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isStreaming]);
 
   // 2) Streaming logic
   const sendStreamingMessage = async (content: string) => {
@@ -159,40 +158,41 @@ function Editor() {
         created_at: new Date().toISOString(),
       };
 
-      // Create a temporary assistant message for streaming content
-      const tempAssistantId = `temp-assistant-${Date.now()}`;
-      const tempAssistantMessage: Message = {
-        id: tempAssistantId,
-        content: "",
-        type: "assistant",
-        project_id: projectId,
-        user_id: user.id,
-        created_at: new Date().toISOString(),
-      };
-
-      // Update UI with these temporary messages
+      // Update UI with temporary user message
       queryClient.setQueryData(["messages", projectId], (oldMsgs: Message[] = []) => [
         ...oldMsgs,
-        tempUserMessage,
-        tempAssistantMessage,
+        tempUserMessage
       ]);
 
       // Start streaming from the backend
       await techpackAI.sendMessageStream(content, projectId, (chunk: string) => {
         streamedContentRef.current += chunk;
-        // Update the assistant's message in local state
-        queryClient.setQueryData(["messages", projectId], (oldMsgs: Message[] = []) =>
-          oldMsgs.map((msg) =>
-            msg.id === tempAssistantId
-              ? { ...msg, content: streamedContentRef.current }
-              : msg
-          )
-        );
+        
+        // For debugging
+        console.log("Received chunk:", chunk);
+        console.log("Current streamed content:", streamedContentRef.current);
       });
+
+      // When complete, create the final assistant message
+      const assistantMessage: Message = {
+        id: `final-assistant-${Date.now()}`,
+        content: streamedContentRef.current,
+        type: "assistant",
+        project_id: projectId,
+        user_id: user.id,
+        created_at: new Date().toISOString(),
+      };
+      
+      // Add the assistant message to the UI
+      queryClient.setQueryData(["messages", projectId], (oldMsgs: Message[] = []) => [
+        ...oldMsgs,
+        assistantMessage
+      ]);
 
       // When streaming finishes, re-fetch to get proper message IDs from the DB
       queryClient.invalidateQueries({ queryKey: ["messages", projectId] });
     } catch (error) {
+      console.error("Streaming error:", error);
       toast({
         title: "Failed to send message",
         description: error instanceof Error ? error.message : "Unknown error",
@@ -307,8 +307,23 @@ function Editor() {
                 <p>{msg.content}</p>
               </div>
             ))}
-            {isStreaming && <ThinkingAnimation />}
+            
+            {/* Generating Animation - Matching the first implementation */}
+            {isStreaming && (
+              <div className="bg-muted p-4 rounded-lg flex items-center space-x-3 max-w-[80%] animate-pulse">
+                <div className="animate-spin">
+                  <Loader2 size={18} className="text-primary" />
+                </div>
+                <div className="relative">
+                  <p className="font-medium">{animationText}</p>
+                  <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary/50 to-primary animate-pulse"></div>
+                </div>
+              </div>
+            )}
+            
+            <div ref={messagesEndRef} />
           </div>
+          
           {/* Input and Buttons */}
           <div className="border-t pt-4">
             <div className="flex gap-2">
@@ -325,7 +340,7 @@ function Editor() {
               </Button>
             </div>
             <div className="mt-3 text-right">
-              <Button variant="outline" onClick={handleApplyEdits}>
+              <Button variant="outline" onClick={handleApplyEdits} disabled={isStreaming}>
                 Apply ChatGPT Edits to Sheet
               </Button>
             </div>

@@ -1,8 +1,7 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Upload } from "lucide-react";
+import { Upload, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { useParams, useNavigate } from "react-router-dom";
@@ -19,6 +18,7 @@ const ProjectSetup = () => {
   const [referenceFiles, setReferenceFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [projectData, setProjectData] = useState<ProjectData>({
     name: "",
     description: "",
@@ -74,17 +74,22 @@ const ProjectSetup = () => {
     toast({
       title: "Files added successfully",
       description: `Added ${newFiles.length} file(s)`,
+      className: "slide-in-toast",
     });
   };
 
-  const removeFile = (index: number) => {
-    /*
-    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  const removeFile = (index: number, fileType: 'illustration' | 'reference') => {
+    if (fileType === 'illustration') {
+      setIllustrationFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    } else {
+      setReferenceFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    }
+    
     toast({
       title: "File removed",
       description: "The file has been removed from the list",
+      className: "slide-in-toast",
     });
-    */
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -100,12 +105,30 @@ const ProjectSetup = () => {
       toast({
         title: "Project name required",
         description: "Please enter a project name before continuing",
-        variant: "destructive"
+        variant: "destructive",
+        className: "shake-toast",
       });
       return;
     }
 
     try {
+      // Set submitting state and show persistent loading toast
+      setIsSubmitting(true);
+      
+      // Show a loading toast - without storing its ID
+      toast({
+        title: "Creating your project",
+        description: (
+          <div className="flex items-center space-x-2">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <span>Setting up your tech pack environment...</span>
+          </div>
+        ),
+        // Use a shorter duration instead of infinity
+        duration: 10000, // 10 seconds should be enough for most operations
+        className: "static-toast",
+      });
+
       // Create project in Supabase
       const { data: project, error } = await supabase
         .from('projects')
@@ -122,24 +145,29 @@ const ProjectSetup = () => {
         throw new Error('Project creation failed');
       }
 
+      // Upload design files
+      const conv_init_status = await beginConversation(e, project.id);
+      const uploadIllustration = await handleSubmit(e, "upload_illustration", user.id, project.id);
+      const uploadReference = await handleSubmit(e, "upload_reference", user.id, project.id);
+      
+      // Add a success toast that will auto-dismiss
       toast({
         title: "Project created successfully",
-        description: "Initializing Environment...",
+        description: "Redirecting to chat...",
+        duration: 1500, // Short duration
+        className: "slide-in-toast",
       });
-
-      // Upload design files
-      const conv_init_status = beginConversation(e, project.id)
-      const uploadIllustration = await handleSubmit(e, "upload_illustration", user.id, project.id)
-      const uploadReference = await handleSubmit(e, "upload_reference", user.id, project.id)
-
-      // Navigate to the chat page using the Supabase-generated project ID
+      
+      // Navigate to the next page
       navigate(`/project/${project.id}/chat`);
     } catch (error) {
       console.error('Error creating project:', error);
+      setIsSubmitting(false);
       toast({
         title: "Failed to create project",
         description: "Please try again",
-        variant: "destructive"
+        variant: "destructive",
+        className: "shake-toast",
       });
     }
   };
@@ -157,8 +185,10 @@ const ProjectSetup = () => {
 
       const data = await response.json();
       console.log("Success:", data);
+      return data;
     } catch (error) {
       console.error("Error starting conversation:", error);
+      throw error;
     }
   };
 
@@ -188,8 +218,10 @@ const ProjectSetup = () => {
 
       const data = await response.json();
       console.log("Success:", data);
+      return data;
     } catch (error) {
       console.error("Error uploading files:", error);
+      throw error;
     }
   };
 
@@ -263,7 +295,7 @@ const ProjectSetup = () => {
             </label>
           </div>
 
-          <h2 className="heading-md mb-4">Upload Reference Images</h2>
+          <h2 className="heading-md mb-4 mt-6">Upload Reference Images</h2>
           <div
             className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
               isDragging
@@ -315,7 +347,7 @@ const ProjectSetup = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => removeFile(index)}
+                      onClick={() => removeFile(index, 'illustration')}
                     >
                       Remove
                     </Button>
@@ -338,7 +370,7 @@ const ProjectSetup = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => removeFile(index)}
+                      onClick={() => removeFile(index, 'reference')}
                     >
                       Remove
                     </Button>
@@ -349,11 +381,61 @@ const ProjectSetup = () => {
           )}
         </Card>
 
-
         <div className="flex justify-end">
-          <Button onClick={(e) => handleContinue(e)}>Continue to Chat</Button>
+          <Button 
+            onClick={(e) => handleContinue(e)} 
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <div className="flex items-center">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...
+              </div>
+            ) : (
+              "Continue to Chat"
+            )}
+          </Button>
         </div>
       </div>
+
+      {/* Add the necessary CSS for toast animations */}
+      <style jsx global>{`
+        /* Toast animations */
+        @keyframes slideIn {
+          0% { transform: translateX(100%); opacity: 0; }
+          100% { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes gentlePulse {
+          0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.2); }
+          50% { box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+          100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+        }
+        
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+          20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .slide-in-toast {
+          animation: slideIn 0.5s ease forwards;
+        }
+        
+        .pulse-toast {
+          animation: gentlePulse 3s infinite;
+          border-left: 4px solid #4F46E5;
+        }
+        
+        .static-toast {
+          border-left: 4px solid #4F46E5;
+          box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+        }
+        
+        .shake-toast {
+          animation: shake 0.5s ease-in-out;
+          border-left: 4px solid #EF4444;
+        }
+      `}</style>
     </div>
   );
 };
