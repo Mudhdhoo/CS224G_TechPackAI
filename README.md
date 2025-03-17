@@ -19,7 +19,7 @@ conda env create -f backend/environment.yml
 conda activate cs224G_techpack_ai
 ```
 ### Run the frontend and backend servers
-The application is still being hosted locally in this sprint. To run it, we need to initialize the backend and frontend separately.
+To run it, we need to initialize the backend and frontend servers separately.
 
 #### Activate Backend
 ```
@@ -40,6 +40,20 @@ cd frontend
 # Run frontend
 npm run dev
 ```
+If any front end packages are missing, run the following line in the front end directory:
+```
+# Run frontend
+npm install
+```
+
+### Download Keypoint Detection Model
+We use a fine-tuned [ViTPose](https://arxiv.org/abs/2204.12484) model to detect keypoints on clothes. We fine-tuned the model on the [Deep Fashion](https://mmlab.ie.cuhk.edu.hk/projects/DeepFashion.html) dataset. Download the model [here](https://drive.google.com/drive/folders/1mJlOkhoSKFrPDZHlxY2iMQ7UqbmJyT8L?usp=sharing), and place it in the /backend/src/detector directory.
+
+### Install MacTeX
+The application uses MacTeX to compile Latex code in the backend, it can be install [here](https://www.tug.org/mactex/).
+
+## Running The Application
+Create an account and login to begin creating a tech pack. Create a project by uploading the illustrations and reference images. Creation of each tech pack takes around 5-10 minutes.
 
 ## Team Contributions - Sprint 1
 
