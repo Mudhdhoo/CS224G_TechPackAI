@@ -49,8 +49,28 @@ npm install
 ### Download Keypoint Detection Model
 We use a fine-tuned [ViTPose](https://arxiv.org/abs/2204.12484) model to detect keypoints on clothes. We fine-tuned the model on the [Deep Fashion](https://mmlab.ie.cuhk.edu.hk/projects/DeepFashion.html) dataset. Download the model [here](https://drive.google.com/drive/folders/1mJlOkhoSKFrPDZHlxY2iMQ7UqbmJyT8L?usp=sharing), and place it in the /backend/src/detector directory.
 
-### Install MacTeX
-The application uses MacTeX to compile Latex code in the backend, it can be install [here](https://www.tug.org/mactex/).
+### Install Latex Compiler
+This application compiles latex code in the backend to create the tech pack. To enable this, a compiler is needed.
+#### Option 1 - MacTex
+For Mac, MacTex is an all-in-one software suite that can includes everything for compiling latex code. It can be install [here](https://www.tug.org/mactex/).
+
+#### Option 2 - BasicTex
+MacTex is a huge package, occupying around 10 GB. A more space efficient alternative is BasicTex. Install it [here](https://www.tug.org/mactex/morepackages.html), then run the following commands in the terminal:
+```
+# Export TeX path to make the commands immediately accesible via terminal
+export PATH=$PATH:/Library/TeX/texbin
+```
+```
+# Install necessary packages
+sudo tlmgr install pagecolor
+sudo tlmgr install multirow
+sudo tlmgr install lastpage
+sudo tlmgr install tgheros
+sudo tlmgr tex-gyre
+sudo tlmgr makecell
+sudo tlmgr enumitem
+sudo tlmgr fontawesome5
+```
 
 ## Running The Application
 Create an account and login to begin creating a tech pack. Create a project by uploading the illustrations and reference images. Creation of each tech pack takes around 5-10 minutes.
