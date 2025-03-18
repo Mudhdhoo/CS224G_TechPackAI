@@ -5,6 +5,12 @@ In the fashion industry, a Tech Pack serves as a crucial blueprint that communic
 This is the problem we are attempting to solve in this project - To automate the manual process of tech pack curation, with the aim of drastically reducing the time and mental burden required for this task. We aim to tackle this problem by building an AI assistant which works alongside the designer to execute the tedious parts of the task. The process usually begins with a set of illustration of the design to be manufactured, accompanied with a set of reference images which serves as inspiration for the final product. Given these inputs, our AI will output information such as the materials needed for manufacturing and highlight areas of potential ambiguity in the design. The aim of the final product is to extrapolate these current capabilities to include automatic completion of a tech pack template, and additional information extraction through an interactive conversation interface between the designer and the AI.
 
 ## Installation Guide
+Installation comprises of the following steps:
+* Clone this repository.
+* Create the backend environment.
+* Install keypoint detection model.
+* Install Latex Compiler.
+  
 ### Clone the repository
 ```
 git clone https://github.com/Mudhdhoo/CS224G_TechPackAI.git
