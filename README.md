@@ -40,7 +40,7 @@ cd frontend
 # Run frontend
 npm run dev
 ```
-If any front end packages are missing, run the following line in the front end directory:
+Install all frontend packages:
 ```
 # Run frontend
 npm install
