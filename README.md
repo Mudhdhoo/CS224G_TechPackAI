@@ -37,13 +37,12 @@ python App.py
 cd frontend
 ```
 ```
+# Install all frontend packages
+npm install
+```
+```
 # Run frontend
 npm run dev
-```
-Install all frontend packages:
-```
-# Run frontend
-npm install
 ```
 
 ### Download Keypoint Detection Model
